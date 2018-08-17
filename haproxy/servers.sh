@@ -7,14 +7,14 @@ set -e
 
 # For debugging with nginx
 # IMAGE=nginx
-# PORT=80
 
 # For running shiny
 IMAGE=rocker/shiny
-PORT=3838
 
-docker run -d -p 8001:$PORT --rm --name server1 $IMAGE
-docker run -d -p 8002:$PORT --rm --name server2 $IMAGE
+docker network create haproxy
+
+docker run -d --network=haproxy --rm --name server1 $IMAGE
+docker run -d --network=haproxy --rm --name server2 $IMAGE
 
 function cleanup() {
     docker kill server1 server2
