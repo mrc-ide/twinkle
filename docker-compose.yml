@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  haproxy:
+    image: haproxy:1.8
+    depends_on:
+      - shiny
+    ports:
+      - "8080:8080"
+    volumes:
+      - "${PWD}/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro"
+  shiny:
+    image: mrcide/shiny:3.5.1
