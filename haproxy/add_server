@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -e
+
+SERVER=$1
+IP=$(getent hosts $2 | cut -d ' ' -f1)
+echo "set server servers/$SERVER addr $IP" | \
+    socat stdio /var/run/hapee-lb.sock
+echo "set server servers/$SERVER state ready" | \
+    socat stdio /var/run/hapee-lb.sock
