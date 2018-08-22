@@ -3,17 +3,20 @@ version: "3"
 services:
   haproxy:
     image: mrcide/haproxy:1.8
-    ports:
-      - "8080:8080"
     volumes:
       - "${PWD}/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro"
+
   shiny:
     image: mrcide/shiny-server-base:3.5.1
-  nginx:
+
+  apache:
     depends_on:
       - haproxy
-    image: nginx:1.15
+    image: httpd:2.4
     ports:
-      - "8081:8081"
+      - "80:80"
+      - "443:443"
     volumes:
-      - "${PWD}/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "${PWD}/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro"
+      - "${PWD}/apache/auth:/usr/local/apache2/conf/auth:ro"
+      - "${PWD}/apache/ssl:/usr/local/apache2/conf/ssl:ro"
