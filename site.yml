@@ -1,0 +1,20 @@
+apps:
+  typochallenge:
+    type: github
+    spec: acori/typochallenge@auto_provision
+    protect:
+      - emails.db
+      - contributions
+
+  debug:
+    type: local
+    spec: shiny/applications/debug
+    # groups: admin
+
+  hello:
+    type: local
+    spec: shiny/applications/hello
+
+  test:
+    type: local
+    spec: shiny/applications/test
