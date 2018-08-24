@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -e
+
+CALLER_UID=`id -u`
+CALLER_GID=`id -g`
+TARGET=$1
+echo "Provisioning ${PWD}/${TARGET}"
+docker run -it \
+       -v ${PWD}/$TARGET:/target \
+       -w /target \
+       --user="${CALLER_UID}:${CALLER_GID}" \
+       mrcide/shiny-server-builder:3.5.1 \
+       provision_server
