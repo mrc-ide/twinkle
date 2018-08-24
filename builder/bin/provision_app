@@ -1,0 +1,15 @@
+#!/usr/bin/env Rscript
+if (file.exists("provision.yml")) {
+  target <- ".lib"
+  dat <- yaml::yaml.load_file("provision.yml")
+  src <- provisionr::package_sources(spec = dat$package_sources,
+                                     cran = "https://cran.rstudio.com",
+                                     local_drat = ".drat")
+  ## This will need a little support to enable other forms of updating
+  provisionr::provision_library(dat$packages, target, src = src)
+  if (!is.null(dat$after)) {
+    .libPaths(c(target, .libPaths()))
+    message("Running post-provisioning script")
+    source(dat$after, echo = TRUE)
+  }
+}
