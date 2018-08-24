@@ -8,6 +8,8 @@ services:
 
   shiny:
     image: mrcide/shiny-server-base:3.5.1
+    volumes:
+      - "${PWD}/applications:/shiny/apps"
 
   apache:
     depends_on:
