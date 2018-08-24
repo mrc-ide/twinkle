@@ -1,8 +1,16 @@
 FROM rocker/shiny:3.5.1
 
+RUN apt-get update && apt-get install -y \
+    git \
+    libcurl4-openssl-dev \
+    libmagick++-dev \
+    libssl-dev \
+    libxml2-dev
+
 # This will allow the use of a per-shiny-app library path, overriding
 # all other libraries
-RUN echo 'if (file.exists("lib")) .libPaths(c("lib", .libPaths()))' >> \
+# options(repos = c(CRAN = 'https://cran.rstudio.com/'), download.file.method = 'libcurl')
+RUN echo 'if (file.exists(".lib")) .libPaths(c(".lib", .libPaths()))' >> \
     /usr/local/lib/R/etc/Rprofile.site
 
 # Override the rocker defaults with our defaults
