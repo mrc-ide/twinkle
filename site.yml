@@ -1,7 +1,7 @@
 apps:
   typochallenge:
     type: github
-    spec: acori/typochallenge@auto_provision
+    spec: mrc-ide/typochallenge@auto_provision
     protect:
       - emails.db
       - contributions
