@@ -8,8 +8,9 @@ services:
 
   shiny:
     image: mrcide/shiny-server-base:3.5.1
+    user: shiny
     volumes:
-      - "${PWD}/applications:/shiny/apps"
+      - "applications:/shiny/apps"
 
   apache:
     depends_on:
@@ -22,3 +23,6 @@ services:
       - "${PWD}/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro"
       - "${PWD}/apache/auth:/usr/local/apache2/conf/auth:ro"
       - "${PWD}/apache/ssl:/usr/local/apache2/conf/ssl:ro"
+
+volumes:
+  applications:
