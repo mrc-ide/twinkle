@@ -1,4 +1,9 @@
 #!/usr/bin/env Rscript
+args <- commandArgs(TRUE)
+stopifnot(length(args) == 1L)
+path <- args[[1L]]
+setwd(path)
+
 if (file.exists("provision.yml")) {
   target <- ".lib"
   dat <- yaml::yaml.load_file("provision.yml")
