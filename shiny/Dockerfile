@@ -13,6 +13,8 @@ RUN apt-get update && apt-get install -y \
 RUN echo 'if (file.exists(".lib")) .libPaths(c(".lib", .libPaths()))' >> \
     /usr/local/lib/R/etc/Rprofile.site
 
+RUN mkdir -p /shiny && chown shiny.shiny /shiny
+
 # Override the rocker defaults with our defaults
 COPY shiny-server.conf /etc/shiny-server/shiny-server.conf
 COPY applications /shiny/apps
