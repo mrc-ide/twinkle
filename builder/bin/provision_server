@@ -28,16 +28,27 @@ git_run <- function(args, root, check = TRUE) {
 }
 
 
-system3 <- function(command, args, check = FALSE) {
-  output <- suppressWarnings(
-    system2(command, args, stdout = TRUE, stderr = TRUE))
-  code <- attr(output, "status") %||% 0
+system3 <- function(command, args, check = FALSE, output = FALSE) {
+  if (output) {
+    code <- system2(command, args, stdout = "", stderr = "")
+    output <- NULL
+  } else {
+    output <- suppressWarnings(
+      system2(command, args, stdout = TRUE, stderr = TRUE))
+    code <- attr(output, "status") %||% 0
+    attr(output, "status") <- NULL
+  }
+
   success <- code == 0L
-  attr(output, "status") <- NULL
 
   if (check && !success) {
-    stop(sprintf("Error code %d running command:\n%s", code,
-                 paste0("  > ", output, collapse = "\n")))
+    if (output) {
+      msg <- sprintf("Error code %d running command", code)
+    } else {
+      msg <- sprintf("Error code %d running command:\n%s", code,
+                     paste0("  > ", output, collapse = "\n"))
+    }
+    stop(msg)
   }
 
   list(success = code == 0, code = code, output = output)
@@ -87,8 +98,9 @@ update_app <- function(app) {
     stop("Unknown path")
   }
 
+  message(sprintf("Updating '%s'", app$path))
   provision_app <- sys_which("provision_app")
-  withr::with_path(path, system3(provision_app, TRUE))
+  system3(provision_app, path, check = TRUE, output = TRUE)
 
   dir.create("applications", FALSE, TRUE)
   dest <- file.path("applications", app$path)
