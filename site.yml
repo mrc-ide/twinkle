@@ -6,10 +6,10 @@ apps:
       - emails.db
       - contributions
 
-  debug:
-    type: local
-    spec: shiny/applications/debug
-    # groups: admin
+  # debug:
+  #   type: local
+  #   spec: shiny/applications/debug
+  #   # groups: admin
 
   hello:
     type: local
