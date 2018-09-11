@@ -151,6 +151,16 @@ provision_app <- function(app) {
 
 provision_all <- function(dat) {
   sync <- vapply(dat$apps, provision_app, character(1))
+  if (file.exists("static")) {
+    ## TODO:  This can't  handle file  deletions, only deletions from
+    ## within directories that are not themselves deleted.
+    sync_static <- paste(
+      c("rsync", "-vaz", "--delete", "$(find static -maxdepth 1 -mindepth 1)",
+        "/applications/"),
+      collapse = " ")
+    sync <- c(sync, sync_static)
+  }
+
   dir.create("sources", FALSE, TRUE)
   writeLines(c("set -e", sync), "sources/sync.sh")
 }
