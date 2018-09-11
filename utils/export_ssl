@@ -4,15 +4,17 @@ ROOT=$(realpath $(dirname $0)/..)
 VAULT_ENV=$ROOT/.vault
 CALLER_UID=`id -u`
 CALLER_GID=`id -g`
+SSL_DIR=$ROOT/apache/ssl
 
 if [[ ! -f $VAULT_ENV ]]; then
     echo "Run ./util/vault_auth to authenticate with vault server"
     exit 1
 fi
 
+mkdir -p $SSL_DIR
 docker run --rm -it \
        --env-file=$VAULT_ENV \
-       -v $ROOT/apache/ssl:/ssl \
+       -v $SSL_DIR:/ssl \
        -w /ssl \
        --user="${CALLER_UID}:${CALLER_GID}" \
        mrcide/shiny-server-builder:3.5.1 \
