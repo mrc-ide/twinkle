@@ -6,11 +6,6 @@
 source("/usr/local/lib/shiny.R")
 
 
-read_string <- function(filename) {
-  readChar(filename, file.size(filename))
-}
-
-
 import_ssl <- function(cert, key) {
   if (length(cert) < 1L) {
     stop("Expected at least one certificate")
