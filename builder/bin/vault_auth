@@ -14,7 +14,7 @@ build_vault_env_str <- function(dat) {
   if (nzchar(gh_token)) {
     message("Using GitHub token found from host environment")
   } else {
-    gh_token <- trimws(readline("Enter GitHub token: "))
+    gh_token <- trimws(getPass::getPass("Enter GitHub token: "))
   }
 
   cl <- vaultr::vault_client("github", addr = address, gh_token = gh_token)
