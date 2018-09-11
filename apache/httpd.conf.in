@@ -2,8 +2,8 @@
 # https://wiki.apache.org/httpd/Minimal_Config
 # https://support.rstudio.com/hc/en-us/articles/213733868-Running-Shiny-Server-with-a-Proxy
 
-ServerAdmin "r.fitzjohn@imperial.ac.uk"
-ServerName "web-dev.dide.ic.ac.uk"
+ServerAdmin {{{admin}}}
+ServerName {{{host}}}
 
 ServerRoot "/usr/local/apache2"
 
@@ -60,7 +60,6 @@ TypesConfig conf/mime.types
 
 PidFile logs/httpd.pid
 
-# Comment this out if running httpd as a non root user
 User nobody
 
 # Port to Listen on

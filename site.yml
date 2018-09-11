@@ -1,3 +1,7 @@
+server:
+  address: "shiny.dide.ic.ac.uk"
+  admin: "r.fitzjohn@imperial.ac.uk"
+
 vault:
   address: "https://vault.dide.ic.ac.uk:8200"
   root: "/secret/shiny.dide"
