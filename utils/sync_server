@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-VOLUME_BASE=$(basename $PWD)
+ROOT=$(realpath $(dirname $0)/..)
+VOLUME_BASE=$(basename $ROOT)
 VOLUME="${VOLUME_BASE}_applications"
 docker volume create $VOLUME
 docker run -it \
-       -v "${PWD}:/src:ro" \
+       -v "${ROOT}:/src:ro" \
        -v "${VOLUME}:/applications" \
        -w "/src" \
-       mrcide/shiny-server-builder:3.5.1 \
+       mrcide/shiny-server-builder:latest \
        sync_server

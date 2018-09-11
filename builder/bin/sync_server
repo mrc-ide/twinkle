@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
+set -e
 chown shiny.shiny /applications
 sudo -u shiny bash sources/sync.sh
