@@ -1,3 +1,7 @@
+vault:
+  address: "https://vault.dide.ic.ac.uk:8200"
+  root: "/secret/shiny.dide"
+
 apps:
   typochallenge:
     type: github

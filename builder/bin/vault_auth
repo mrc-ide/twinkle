@@ -29,7 +29,7 @@ build_vault_env_str <- function(dat) {
            VAULT_TOKEN = token,
            VAULT_ROOT = root)
 
-  sprintf('%s="%s"', names(env), unname(env))
+  sprintf('%s=%s', names(env), unname(env))
 }
 
 
