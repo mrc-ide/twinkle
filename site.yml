@@ -14,10 +14,19 @@ apps:
       - emails.db
       - contributions
 
-  # debug:
-  #   type: local
-  #   spec: shiny/applications/debug
-  #   # groups: admin
+  eppasmviewer:
+    type: github
+    spec: mrc-ide/eppasmviewer/inst/shiny/eppasmviewer@auto_provision
+    auth:
+      type: deploy_key
+    groups:
+      - dide-internal
+
+  debug:
+    type: local
+    spec: shiny/applications/debug
+    groups:
+      - admin
 
   hello:
     type: local
@@ -26,3 +35,10 @@ apps:
   test:
     type: local
     spec: shiny/applications/test
+
+groups:
+  dide-internal:
+    - rich
+    - jeff
+  admin:
+    - admin
