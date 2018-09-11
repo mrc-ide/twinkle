@@ -156,3 +156,8 @@ provision_all <- function(dat) {
 vault_client <- function() {
   vaultr::vault_client(quiet = TRUE)
 }
+
+
+read_string <- function(filename) {
+  readChar(filename, file.size(filename))
+}
