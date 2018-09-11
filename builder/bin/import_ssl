@@ -1,0 +1,60 @@
+#!/usr/bin/env Rscript
+"Usage:
+  import_ssl <key> <cert>...
+  import_ssl --self-signed" -> USAGE
+
+source("/usr/local/lib/shiny.R")
+
+
+read_string <- function(filename) {
+  readChar(filename, file.size(filename))
+}
+
+
+import_ssl <- function(cert, key) {
+  if (length(cert) < 1L) {
+    stop("Expected at least one certificate")
+  }
+  cert <- vapply(cert, read_string, "")
+  key <- read_string(key)
+  vault_root <- Sys.getenv("VAULT_ROOT")
+  vault <- vaultr::vault_client(quiet = TRUE)
+  dest <- sprintf("%s/ssl", vault_root)
+  vault$write(dest, list(cert = cert, key = key))
+}
+
+
+create_self_signed <- function() {
+  key <- tempfile()
+  cert <- tempfile()
+
+  data <- c(C = "UK",
+            ST = "London",
+            O = "DIDE",
+            localityName = "London",
+            commonName = "testing.dide.ic.ac.uk",
+            organizationalUnitName = "DIDE",
+            emailAddress = "admin@example.com")
+  subj <- sprintf(
+    "/%s/",
+    paste(sprintf("%s=%s", names(data), unname(data)), collapse = "/"))
+  args <- c("req", "-batch", "-subj", subj, "-newkey", "rsa:2048",
+            "-nodes", "-x509", "-days 365",
+            "-keyout", key, "-out", cert)
+  system3("openssl", args, check = TRUE)
+  list(cert = cert, key = key)
+}
+
+
+main <- function() {
+  args <- docopt::docopt(USAGE)
+  if (isTRUE(args$"--self-signed")) {
+    message("Generating self-signed certificate")
+    args <- create_self_signed()
+  }
+  message("Importing certificate into vault")
+  import_ssl(args$cert, args$key)
+}
+
+
+main()
