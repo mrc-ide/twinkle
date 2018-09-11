@@ -16,5 +16,5 @@ docker run --rm -it \
        -v $APACHE_DIR:/apache \
        -v $ROOT/site.yml:/site.yml:ro \
        --user="${CALLER_UID}:${CALLER_GID}" \
-       mrcide/shiny-server-builder:3.5.1 \
+       mrcide/shiny-server-builder:latest \
        update_httpd_conf

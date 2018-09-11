@@ -17,5 +17,5 @@ docker run --rm -it \
        -v $SSL_DIR:/ssl \
        -w /ssl \
        --user="${CALLER_UID}:${CALLER_GID}" \
-       mrcide/shiny-server-builder:3.5.1 \
+       mrcide/shiny-server-builder:latest \
        export_ssl

@@ -10,5 +10,5 @@ docker run --rm -it \
        --user="${CALLER_UID}:${CALLER_GID}" \
        -v $ROOT:/target \
        -w /target \
-       mrcide/shiny-server-builder:3.5.1 \
+       mrcide/shiny-server-builder:latest \
        vault_auth
