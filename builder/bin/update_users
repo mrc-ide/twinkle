@@ -1,0 +1,62 @@
+#!/usr/bin/env Rscript
+source("/usr/local/lib/shiny.R")
+dat <- read_site_yml()
+
+'<Location %s>
+  AuthType Basic
+  AuthName "Restricted Access - Authenticate"
+  AuthBasicProvider file
+  AuthUserFile conf/auth/users
+  AuthGroupFile conf/auth/groups
+  # Require valid-user
+  Require group %s
+  ErrorDocument 401 "Authorisation Required"
+</Location>' -> template
+
+if (!is.null(dat$groups)) {
+  vault_root <- Sys.getenv("VAULT_ROOT")
+  vault <- vaultr::vault_client(quiet = TRUE)
+
+  user_keys <- vault$list(sprintf("%s/users", vault_root))
+
+  used <- unique(unlist(dat$groups, FALSE, FALSE))
+  unk <- setdiff(used, basename(user_keys))
+  if (length(unk) > 0L) {
+    stop("Unknown users: %s", paste(unk, collapse = ", "))
+  }
+
+  users <- vapply(user_keys, vault$read, "", field = "password",
+                  USE.NAMES = FALSE)
+
+  groups <- vapply(dat$groups, paste, "", collapse =  " ")
+  groups <- sprintf("%s: %s", names(dat$groups), unname(groups))
+} else {
+  users <- groups <- character(0)
+}
+
+groups_used <- lapply(dat$apps, function(x) x$groups)
+groups_used <- groups_used[lengths(groups_used) > 0L]
+
+unk <- setdiff(unlist(groups_used, FALSE, FALSE),
+               names(dat$groups))
+if (length(unk) > 0L) {
+  stop("Unknown groups: %s", paste(unk, collapse = ", "))
+}
+
+write_conf <- function(app) {
+  dest <- sprintf("/auth/%s.conf", gsub("/", "_", app$path))
+  value <- sprintf(template, app$path, paste(app$groups, collapse = " "))
+  message(sprintf("Writing auth configuration for '%s'", app$path))
+  writeLines(value, dest)
+  dest
+}
+
+conf <- vapply(dat$app[names(groups_used)], write_conf, "")
+
+extra <- setdiff(dir("/auth", pattern = "\\.conf$", full.name = TRUE),
+                 conf)
+unlink(extra)
+message(sprintf("Adding %d users", length(users)))
+writeLines(users, "/auth/users")
+message(sprintf("Adding %d groups", length(groups)))
+writeLines(groups, "/auth/groups")
