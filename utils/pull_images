@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -e
+docker pull mrcide/haproxy
+docker pull mrcide/shiny-server
+docker pull mrcide/shiny-server-builder
