@@ -2,7 +2,7 @@
 source("/usr/local/lib/shiny.R")
 dat <- read_site_yml()
 
-'<Location %s>
+'<Location /%s>
   AuthType Basic
   AuthName "Restricted Access - Authenticate"
   AuthBasicProvider file
