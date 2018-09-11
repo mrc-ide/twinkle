@@ -2,7 +2,7 @@ version: "3"
 
 services:
   haproxy:
-    image: mrcide/haproxy:1.8
+    image: mrcide/haproxy:latest
     volumes:
       - "${PWD}/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro"
 
