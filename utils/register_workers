@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+ROOT=$(realpath $(dirname $0)/..)
+SERVER_NAME_BASE=$(basename $ROOT)
+SERVER_N=${1:-100}
+docker exec "${SERVER_NAME_BASE}_haproxy_1" \
+       update_shiny_servers "$SERVER_NAME_BASE" "$SERVER_N"
