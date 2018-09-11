@@ -121,3 +121,8 @@ provision_all <- function(dat) {
   dir.create("sources", FALSE, TRUE)
   writeLines(c("set -e", sync), "sources/sync.sh")
 }
+
+
+`%||%` <- function(a, b) {
+  if (is.null(a)) b else a
+}
