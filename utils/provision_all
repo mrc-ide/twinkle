@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -e
+
+ROOT=$(realpath $(dirname $0)/..)
+VAULT_ENV=$ROOT/.vault
+
+if [[ ! -f $VAULT_ENV ]]; then
+    echo "Run ./util/vault_auth to authenticate with vault server"
+    exit 1
+fi
+
+CALLER_UID=`id -u`
+CALLER_GID=`id -g`
+echo "Provisioning ${ROOT}"
+
+mkdir -p sources
+docker run -it \
+       --env-file=$VAULT_ENV \
+       -v ${ROOT}:/target \
+       -w /target \
+       --user="${CALLER_UID}:${CALLER_GID}" \
+       -v /etc/passwd:/etc/passwd:ro \
+       mrcide/shiny-server-builder:latest \
+       provision_all
