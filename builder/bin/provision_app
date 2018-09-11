@@ -1,20 +1,34 @@
 #!/usr/bin/env Rscript
 args <- commandArgs(TRUE)
-stopifnot(length(args) == 1L)
-path <- args[[1L]]
-setwd(path)
+stopifnot(length(args) == 2L)
+path_source <- args[[1L]]
+path_app <- args[[2L]]
 
-if (file.exists("provision.yml")) {
-  target <- ".lib"
-  dat <- yaml::yaml.load_file("provision.yml")
-  src <- provisionr::package_sources(spec = dat$package_sources,
-                                     cran = "https://cran.rstudio.com",
-                                     local_drat = ".drat")
+provision_yml <- file.path(path_app, "provision.yml")
+
+if (file.exists(provision_yml)) {
+  target <- file.path(path_app, ".lib")
+  dat <- yaml::yaml.load_file(provision_yml)
+
+  if (isTRUE(dat$self)) {
+    dat$package_sources <-
+      c(dat$package_sources, sprintf("local::%s", path_source))
+    dat$packages <- union(
+      dat$packages,
+      read.dcf(file.path(path_source, "DESCRIPTION"), "Package")[[1L]])
+  }
+
+  src <- provisionr::package_sources(
+    spec = dat$package_sources,
+    cran = "https://cran.rstudio.com",
+    local_drat = file.path(path_app, ".drat"))
+
   ## This will need a little support to enable other forms of updating
   provisionr::provision_library(dat$packages, target, src = src)
   if (!is.null(dat$after)) {
     .libPaths(c(target, .libPaths()))
     message("Running post-provisioning script")
+    setwd(path_app)
     source(dat$after, echo = TRUE)
   }
 }

@@ -9,14 +9,17 @@ read_site_yml <- function() {
       spec <- remotes::parse_github_repo_spec(app$spec)
       path_source <- file.path("sources", app$path)
       if (nzchar(spec$subdir)) {
-        path_source <- file.path(path_source, spec$subdir)
+        path_app <- file.path(path_source, spec$subdir)
+      } else {
+        path_app <- path_source
       }
     } else if (app$type == "local") {
-      path_source <- app$spec
+      path_source <- path_app <- app$spec
     } else {
       stop(sprintf("Unknown app type '%s'", app$type))
     }
     app$path_source <- path_source
+    app$path_app <- path_app
     dat$apps[[i]] <- app
   }
   dat
@@ -32,22 +35,22 @@ sys_which <- function(name) {
 }
 
 
-git_run <- function(args, root, check = TRUE) {
+git_run <- function(args, root, check = TRUE, env = NULL) {
   git <- sys_which("git")
   if (!is.null(root)) {
     args <- c("-C", root, args)
   }
-  system3(git, args, check = check)
+  system3(git, args, check = check, env = env)
 }
 
 
-system3 <- function(command, args, check = FALSE, output = FALSE) {
+system3 <- function(command, args, check = FALSE, output = FALSE, env = NULL) {
   if (output) {
-    code <- system2(command, args, stdout = "", stderr = "")
+    code <- system2(command, args, stdout = "", stderr = "", env = env)
     logs <- NULL
   } else {
     logs <- suppressWarnings(
-      system2(command, args, stdout = TRUE, stderr = TRUE))
+      system2(command, args, stdout = TRUE, stderr = TRUE, env = env))
     code <- attr(logs, "status") %||% 0
     attr(logs, "status") <- NULL
   }
@@ -76,19 +79,40 @@ system3 <- function(command, args, check = FALSE, output = FALSE) {
 update_app_github_source <- function(app) {
   spec <- remotes::parse_github_repo_spec(app$spec)
   path <- file.path("sources", app$path)
-  if (file.exists(path)) {
-    git_run("fetch", path)
-  } else {
-    dir.create(dirname(path), FALSE, TRUE)
+  env <- NULL
+
+  if (is.null(app$auth)) {
     git_url <- sprintf("https://github.com/%s/%s",
                        spec$username, spec$repo)
-    git_run(c("clone", git_url, path), NULL)
+  } else {
+    vault <- vault_client()
+    if (app$auth$type == "deploy_key") {
+      vault_root <- Sys.getenv("VAULT_ROOT")
+      user_repo <- sprintf("%s/%s", spec$username, spec$repo)
+      vault_path <- sprintf("%s/deploy-keys/%s", vault_root, user_repo)
+      ssh_id <- tempfile()
+      writeLines(vault$read(vault_path, "key"), ssh_id)
+      Sys.chmod(ssh_id, "600")
+      on.exit(unlink(ssh_id))
+      env <- sprintf('GIT_SSH_COMMAND="ssh -i %s"', ssh_id)
+      git_url <- sprintf("git@github.com:%s/%s.git",
+                         spec$username, spec$repo)
+    } else {
+      stop("auth mode unsupported")
+    }
+  }
+
+  if (file.exists(path)) {
+    git_run("fetch", path, env = env)
+  } else {
+    dir.create(dirname(path), FALSE, TRUE)
+    git_run(c("clone", git_url, path), NULL, env = env)
   }
 
   ## NOTE: PR not allowed
   if (!nzchar(spec$ref)) {
     ## NOTE: this assumes master is default branch which is not going
-    ## to always be th case.
+    ## to always be the case.
     ref <- "origin/master"
   } else {
     ref <- paste0("origin/", spec$ref)
@@ -104,15 +128,16 @@ provision_app <- function(app) {
 
   message(sprintf("Provisioning '%s'", app$path))
   provision_app <- sys_which("provision_app")
-  system3(provision_app, app$path_source, check = TRUE, output = TRUE)
+  system3(provision_app, app$path_source, app$path_app,
+          check = TRUE, output = TRUE)
 
   ## This should only happen if the provisioning changed I think.
-  file.create(file.path(app$path_source, "restart.txt"))
+  file.create(file.path(app$path_app, "restart.txt"))
 
   dest <- file.path("/applications", app$path)
   protect <- sprintf("--exclude='%s'", app$protect)
   paste(c("rsync", "-vaz", "--delete", protect,
-          paste0(app$path_source, "/"), dest), collapse = " ")
+          paste0(app$path_app, "/"), dest), collapse = " ")
 }
 
 
@@ -125,4 +150,9 @@ provision_all <- function(dat) {
 
 `%||%` <- function(a, b) {
   if (is.null(a)) b else a
+}
+
+
+vault_client <- function() {
+  vaultr::vault_client(quiet = TRUE)
 }
