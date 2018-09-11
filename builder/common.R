@@ -102,7 +102,11 @@ update_app_github_source <- function(app) {
     }
   }
 
-  if (file.exists(path)) {
+  update <- file.exists(path)
+  message(sprintf("%s source for '%s'",
+          if (update) "Updating" else "Cloning", app$path))
+
+  if (update) {
     git_run("fetch", path, env = env)
   } else {
     dir.create(dirname(path), FALSE, TRUE)
@@ -128,13 +132,17 @@ provision_app <- function(app) {
 
   message(sprintf("Provisioning '%s'", app$path))
   provision_app <- sys_which("provision_app")
-  system3(provision_app, app$path_source, app$path_app,
+  system3(provision_app, c(app$path_source, app$path_app),
           check = TRUE, output = TRUE)
 
-  ## This should only happen if the provisioning changed I think.
-  file.create(file.path(app$path_app, "restart.txt"))
-
   dest <- file.path("/applications", app$path)
+
+  if (file.exists(dest)) {
+    ## This should only happen if the provisioning changed, but that's
+    ## hard to detect!
+    file.create(file.path(app$path_app, "restart.txt"))
+  }
+
   protect <- sprintf("--exclude='%s'", app$protect)
   paste(c("rsync", "-vaz", "--delete", protect,
           paste0(app$path_app, "/"), dest), collapse = " ")
