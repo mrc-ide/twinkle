@@ -7,7 +7,7 @@ services:
       - "${PWD}/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro"
 
   shiny:
-    image: mrcide/shiny-server-base:3.5.1
+    image: mrcide/shiny-server-base:latest
     user: shiny
     volumes:
       - "applications:/shiny/apps"
