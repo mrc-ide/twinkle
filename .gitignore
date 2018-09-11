@@ -3,3 +3,4 @@ sources
 .vault
 apache/auth
 apache/ssl
+apache/httpd.conf
