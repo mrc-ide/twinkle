@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 set -e
 HERE=$(realpath $(dirname $0))
+IMAGE_NAME="mrcide/shiny-server"
 docker pull rocker/shiny:latest
-docker build --rm --tag "mrcide/shiny-server-base" $HERE
+
+TAG_GIT_SHA=$(git rev-parse --short=7 HEAD)
+TAG_VERSION=$(cat $HERE/../version)
+
+docker build --rm \
+       --tag "${IMAGE_NAME}:${TAG_GIT_SHA}" \
+       --tag "${IMAGE_NAME}:${TAG_VERSION}" \
+       $HERE
