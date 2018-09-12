@@ -11,3 +11,8 @@ docker build --rm \
        --tag "${IMAGE_NAME}:${TAG_GIT_SHA}" \
        --tag "${IMAGE_NAME}:${TAG_VERSION}" \
        $HERE
+
+if [[ "$TWINKLE_PUSH" = "true" ]]; then
+    docker push "${IMAGE_NAME}:${TAG_VERSION}"
+    docker push "${IMAGE_NAME}:${TAG_GIT_SHA}"
+fi
