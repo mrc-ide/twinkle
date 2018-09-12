@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -e
+docker pull mrcide/haproxy:{{{twinkle_version}}}
+docker pull mrcide/shiny-server-base:{{{twinkle_version}}}
+docker pull mrcide/shiny-server-builder:{{{twinkle_version}}}
+docker pull httpd:2.4

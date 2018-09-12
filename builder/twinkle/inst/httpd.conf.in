@@ -2,8 +2,8 @@
 # https://wiki.apache.org/httpd/Minimal_Config
 # https://support.rstudio.com/hc/en-us/articles/213733868-Running-Shiny-Server-with-a-Proxy
 
-ServerAdmin {{{admin}}}
-ServerName {{{address}}}
+ServerAdmin {{{email}}}
+ServerName {{{hostname}}}
 
 ServerRoot "/usr/local/apache2"
 
@@ -63,8 +63,8 @@ PidFile logs/httpd.pid
 User nobody
 
 # Port to Listen on
-Listen *:80
-Listen *:443
+Listen *:{{{port_http}}}
+Listen *:{{{port_https}}}
 
 # In a basic setup httpd can only serve files from its document root
 DocumentRoot "/usr/local/apache2/htdocs"
@@ -83,12 +83,12 @@ DirectoryIndex index.html
   Require all granted
 </Directory>
 
-<VirtualHost *:80>
+<VirtualHost *:{{{port_http}}}>
   RewriteEngine On
   RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
 </VirtualHost>
 
-<VirtualHost *:443>
+<VirtualHost *:{{{port_https}}}>
   SSLEngine on
   # or server.crt
   SSLCertificateFile "/usr/local/apache2/conf/ssl/certificate.pem"

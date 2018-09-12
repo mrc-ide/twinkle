@@ -8,7 +8,9 @@ RUN Rscript /bootstrap.R && rm /bootstrap.R
 
 RUN ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts
 
-COPY bin /usr/local/bin
-COPY common.R /usr/local/lib/shiny.R
+COPY twinkle /twinkle
+RUN R CMD INSTALL twinkle && \
+  cp /twinkle/entrypoint /usr/local/bin/twinkle && \
+  rm -rf /twinkle
 
-CMD ["bash"]
+ENTRYPOINT ["/usr/local/bin/twinkle"]

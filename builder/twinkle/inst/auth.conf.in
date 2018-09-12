@@ -1,0 +1,10 @@
+<Location /%s>
+  AuthType Basic
+  AuthName "Restricted Access - Authenticate"
+  AuthBasicProvider file
+  AuthUserFile conf/auth/users
+  AuthGroupFile conf/auth/groups
+  # Require valid-user
+  Require group %s
+  ErrorDocument 401 "Authorisation Required"
+</Location>

@@ -1,8 +1,9 @@
-#!/usr/bin/env Rscript
-source("/usr/local/lib/shiny.R")
+vault_path_ssl <- function(root) {
+  sprintf("%s/ssl", root)
+}
 
 
-build_vault_env_str <- function(dat) {
+vault_env_str <- function(dat) {
   if (is.null(dat$vault)) {
     return(character())
   }
@@ -33,11 +34,8 @@ build_vault_env_str <- function(dat) {
 }
 
 
-write_vault_env <- function() {
-  dat <- read_site_yml()
-  env <- build_vault_env_str(dat)
-  writeLines(env, ".vault")
+vault_auth <- function(path = ".") {
+  dat <- read_site_yml(path)
+  env <- vault_env_str(dat)
+  writeLines(env, file.path(path, ".vault"))
 }
-
-
-write_vault_env()

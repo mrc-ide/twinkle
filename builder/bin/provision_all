@@ -1,3 +1,0 @@
-#!/usr/bin/env Rscript
-source("/usr/local/lib/shiny.R")
-provision_all(read_site_yml())

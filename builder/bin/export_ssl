@@ -1,6 +1,0 @@
-#!/usr/bin/env Rscript
-vault_root <- Sys.getenv("VAULT_ROOT")
-vault <- vaultr::vault_client(quiet = TRUE)
-dat <- vault$read(sprintf("%s/ssl", vault_root))
-writeLines(dat$cert, "certificate.pem")
-writeLines(dat$key, "key.pem")

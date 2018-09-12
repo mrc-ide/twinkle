@@ -1,6 +1,0 @@
-#!/usr/bin/env Rscript
-source("/usr/local/lib/shiny.R")
-dat <- read_site_yml()
-template <- read_string("/apache/httpd.conf.in")
-str <- whisker::whisker.render(template, dat$server)
-writeLines(str, "/apache/httpd.conf")
