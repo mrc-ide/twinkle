@@ -3,8 +3,6 @@ version: "3"
 services:
   haproxy:
     image: mrcide/haproxy:latest
-    volumes:
-      - "${PWD}/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro"
 
   shiny:
     image: mrcide/shiny-server-base:latest
