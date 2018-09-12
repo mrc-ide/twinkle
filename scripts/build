@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+ROOT=$(realpath $(dirname $0)/..)
+export TWINKLE_PUSH=true
+
+$ROOT/haproxy/build
+$ROOT/shiny/build
+$ROOT/builder/build
