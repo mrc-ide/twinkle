@@ -17,4 +17,7 @@ RUN mkdir -p /shiny && chown shiny.shiny /shiny
 
 # Override the rocker defaults with our defaults
 COPY shiny-server.conf /etc/shiny-server/shiny-server.conf
+
+# These will be replaced by our docker compose file but that's ok at
+# least for now.
 COPY applications /shiny/apps

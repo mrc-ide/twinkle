@@ -2,10 +2,10 @@ version: "3"
 
 services:
   haproxy:
-    image: mrcide/haproxy:latest
+    image: mrcide/haproxy:v0.0.1
 
   shiny:
-    image: mrcide/shiny-server-base:latest
+    image: mrcide/shiny-server:v0.0.1
     user: shiny
     volumes:
       - "applications:/shiny/apps"
