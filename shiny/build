@@ -2,7 +2,6 @@
 set -e
 HERE=$(realpath $(dirname $0))
 IMAGE_NAME="mrcide/shiny-server"
-docker pull rocker/shiny:latest
 
 TAG_GIT_SHA=$(git rev-parse --short=7 HEAD)
 TAG_VERSION=$(cat $HERE/../version)
