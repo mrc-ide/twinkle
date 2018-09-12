@@ -1,4 +1,4 @@
-twinkle_tag: {{{version}}}
+twinkle_tag: {{{twinkle_version}}}
 
 server:
   address: "shiny.example.com"
