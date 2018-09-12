@@ -7,5 +7,5 @@ docker run -it \
        -v "${ROOT}:/src:ro" \
        -v "${VOLUME}:/applications" \
        -w "/src" \
-       mrcide/shiny-server-builder:latest \
+       mrcide/shiny-server-builder:{{{twinkle_version}}} \
        sync_server

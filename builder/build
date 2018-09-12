@@ -7,7 +7,7 @@ TAG_GIT_SHA=$(git rev-parse --short=7 HEAD)
 TAG_VERSION=$(cat $HERE/../version)
 
 docker build --rm \
-       --build-arg SERVER_VERSION=$TAG_GIT_SHA \
+       --build-arg SERVER_VERSION=$TAG_VERSION \
        --tag "${IMAGE_NAME}:${TAG_GIT_SHA}" \
        --tag "${IMAGE_NAME}:${TAG_VERSION}" \
        $HERE

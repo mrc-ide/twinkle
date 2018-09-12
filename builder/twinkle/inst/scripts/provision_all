@@ -20,5 +20,5 @@ docker run -it \
        -w /target \
        --user="${CALLER_UID}:${CALLER_GID}" \
        -v /etc/passwd:/etc/passwd:ro \
-       mrcide/shiny-server-builder:latest \
+       mrcide/shiny-server-builder:{{{twinkle_version}}} \
        provision_all

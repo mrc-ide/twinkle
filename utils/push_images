@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-set -e
-docker push mrcide/haproxy
-docker push mrcide/shiny-server-base
-docker push mrcide/shiny-server-builder

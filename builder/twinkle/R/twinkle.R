@@ -1,6 +1,6 @@
-read_site_yml <- function() {
+read_site_yml <- function(path = ".") {
   ## TODO: yaml validation here too
-  dat <- yaml::yaml.load_file("site.yml")
+  dat <- yaml::yaml.load_file(file.path(path, "site.yml"))
   for (i in seq_along(dat$apps)) {
     app <- dat$apps[[i]]
     app$path <- names(dat$apps)[[i]]
@@ -131,7 +131,7 @@ provision_app <- function(app) {
   }
 
   message(sprintf("Provisioning '%s'", app$path))
-  provision_app <- sys_which("provision_app")
+  provision_app <- twinkle_file("provision_app")
   system3(provision_app, c(app$path_source, app$path_app),
           check = TRUE, output = TRUE)
 
@@ -149,7 +149,8 @@ provision_app <- function(app) {
 }
 
 
-provision_all <- function(dat) {
+provision_all <- function(path = ".") {
+  dat <- read_site_yml(path)
   sync <- vapply(dat$apps, provision_app, character(1))
   if (file.exists("static")) {
     ## TODO:  This can't  handle file  deletions, only deletions from
@@ -166,16 +167,69 @@ provision_all <- function(dat) {
 }
 
 
-`%||%` <- function(a, b) {
-  if (is.null(a)) b else a
-}
-
-
 vault_client <- function() {
   vaultr::vault_client(quiet = TRUE)
 }
 
 
-read_string <- function(filename) {
-  readChar(filename, file.size(filename))
+hello <- function(...) {
+  message("hello!")
+  args <- vapply(list(...), identity, character(1))
+  n <- length(args)
+  if (n == 0L) {
+    message(" - no args")
+  } else {
+    message(sprintf(
+      " - %d %s: %s",
+      n, ngettext(n, "arg", "args"),
+      paste(args, collapse = ", ")))
+  }
+}
+
+
+sync_server <- function() {
+  system3(twinkle_file("sync_server"), NULL, check = TRUE, output = TRUE)
+  invisible()
+}
+
+
+do_add_deploy_key <- function(user_repo, overwrite = FALSE) {
+  re <- "^([^/]+)/([^/]+)$"
+  if (!grepl(re, user_repo)) {
+    stop("Expected 'repo' in the format username/repo")
+  }
+  user <- sub(re, "\\1", user_repo)
+  repo <- sub(re, "\\2", user_repo)
+
+  vault_root <- Sys.getenv("VAULT_ROOT")
+
+  url_key <- sprintf("https://github.com/%s/settings/keys/new", user_repo)
+  vault_path <- sprintf("%s/deploy-keys/%s", vault_root, user_repo)
+
+  vault <- vaultr::vault_client(quiet = TRUE)
+
+  if (!is.null(vault$read(vault_path)) && !overwrite) {
+    message(sprintf("Deploy key already exists for '%s'", user_repo))
+    message(sprintf("Public key is:\n\n%s", vault$read(vault_path, "pub")))
+    return()
+  }
+
+  key <- openssl::rsa_keygen()
+  str_key <- openssl::write_pem(key, NULL)
+  str_pub <- openssl::write_ssh(key, NULL)
+  data <- list(key = str_key, pub = str_pub)
+
+  message(sprintf("Writing keys to vault at '%s'", vault_path))
+  vault$write(vault_path, data)
+  message(sprintf("Add the public key to github at\n  %s\n", url_key))
+  message(sprintf("with content:\n\n%s\n", data$pub))
+}
+
+
+add_deploy_key <- function(args) {
+  "Usage:
+  add_deploy_key [--overwrite] <repo>" -> usage
+  args <- docopt::docopt(usage, args)
+  do_add_deploy_key(args$repo, args$overwrite)
+  invisible()
 }
