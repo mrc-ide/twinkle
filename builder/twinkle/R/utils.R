@@ -21,7 +21,7 @@ write_if_changed <- function(str, dest, collapse = FALSE, description = NULL) {
   write <- !(file.exists(dest) && identical(read_string(dest), str))
   if (write) {
     message(sprintf("Writing: %s", description))
-    writeChar(str, dest)
+    writeLines(str, dest, sep = "")
   } else {
     message(sprintf("Skipping: %s", description))
   }

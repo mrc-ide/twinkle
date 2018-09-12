@@ -1,4 +1,5 @@
-init <- function(target = "/target") {
+init <- function(args) {
+  target <- "/target"
   version <- packageVersion("twinkle")
   dir.create(target, FALSE, TRUE)
   init_ignore(target)
