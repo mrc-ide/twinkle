@@ -1,4 +1,5 @@
-FROM mrcide/shiny-server-base:latest
+ARG SERVER_VERSION
+FROM mrcide/shiny-server:${SERVER_VERSION}
 
 RUN apt-get update && apt-get install -y apache2-utils
 
