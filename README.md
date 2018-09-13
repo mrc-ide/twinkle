@@ -3,7 +3,8 @@
 ```
 docker run \
   -v ${PWD}:/target \
-  --user=`id -u` \
-  mrcide/shiny-server-builder:v0.0.1 \
+  -w /target \
+  --user="`id -u`:`id -u`" \
+  mrcide/shiny-server-builder:0.0.1 \
   init
 ```
