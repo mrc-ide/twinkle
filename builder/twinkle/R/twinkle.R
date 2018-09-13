@@ -4,22 +4,6 @@ read_site_yml <- function(path = ".") {
   for (i in seq_along(dat$apps)) {
     app <- dat$apps[[i]]
     app$path <- names(dat$apps)[[i]]
-
-    if (app$type == "github") {
-      spec <- remotes::parse_github_repo_spec(app$spec)
-      path_source <- file.path("sources", app$path)
-      if (nzchar(spec$subdir)) {
-        path_app <- file.path(path_source, spec$subdir)
-      } else {
-        path_app <- path_source
-      }
-    } else if (app$type == "local") {
-      path_source <- path_app <- app$spec
-    } else {
-      stop(sprintf("Unknown app type '%s'", app$type))
-    }
-    app$path_source <- path_source
-    app$path_app <- path_app
     dat$apps[[i]] <- app
   }
   dat
@@ -76,9 +60,32 @@ system3 <- function(command, args, check = FALSE, output = FALSE, env = NULL) {
 }
 
 
-update_app_github_source <- function(app) {
+update_app_source <- function(app, dest) {
+  switch(app$type,
+         local = update_app_source_local(app, dest),
+         github = update_app_source_github(app, dest),
+         stop("Unimplemented app type?"))
+}
+
+
+update_app_source_local <- function(app, dest, path_local = "local") {
+  message(sprintf("Updating source for '%s'", app$path))
+  ## This won't play nicely with provisioning scripts probably, unless
+  ## they also have protected paths, but then they might not want
+  ## syncing too...
+  path_app_upstream <- file.path(path_local, paste0(app$spec, "/"))
+  path_app_source <- file.path(dest, app$path)
+  protect <- sprintf("--exclude='%s'",
+                     c(".lib", ".drat", app$protect$paths))
+  args <- c("-vaz", "--delete", protect, path_app_upstream, path_app_source)
+  system3("rsync", args, check = TRUE, output = TRUE)
+  path_app_source
+}
+
+
+update_app_source_github <- function(app, dest) {
   spec <- remotes::parse_github_repo_spec(app$spec)
-  path <- file.path("sources", app$path)
+  path <- file.path(dest, app$path)
   env <- NULL
 
   if (is.null(app$auth)) {
@@ -113,57 +120,36 @@ update_app_github_source <- function(app) {
     git_run(c("clone", git_url, path), NULL, env = env)
   }
 
-  ## NOTE: PR not allowed
+  ## NOTE: PR not allowed, master assumed default branch
   if (!nzchar(spec$ref)) {
-    ## NOTE: this assumes master is default branch which is not going
-    ## to always be the case.
     ref <- "origin/master"
   } else {
     ref <- paste0("origin/", spec$ref)
   }
   git_run(c("reset", "--hard", ref), path)
+
+  application_source_path(app, dest)
 }
 
 
-provision_app <- function(app) {
-  if (app$type == "github") {
-    update_app_github_source(app)
-  }
+provision_app <- function(app, dest) {
+  ## Root of the application source tree
+  path_source <- file.path(dest, app$path)
+  ## Root of the app itself within that tree
+  path_app <- update_app_source(app, dest)
 
   message(sprintf("Provisioning '%s'", app$path))
   provision_app <- twinkle_file("provision_app")
-  system3(provision_app, c(app$path_source, app$path_app),
+  system3(provision_app, c(path_source, path_app),
           check = TRUE, output = TRUE)
-
-  dest <- file.path("/applications", app$path)
-
-  if (file.exists(dest)) {
-    ## This should only happen if the provisioning changed, but that's
-    ## hard to detect!
-    file.create(file.path(app$path_app, "restart.txt"))
-  }
-
-  protect <- sprintf("--exclude='%s'", app$protect$paths)
-  paste(c("rsync", "-vaz", "--delete", protect,
-          paste0(app$path_app, "/"), dest), collapse = " ")
 }
 
 
-provision_all <- function(path = ".") {
-  dat <- read_site_yml(path)
-  sync <- vapply(dat$apps, provision_app, character(1))
-  if (file.exists("static")) {
-    ## TODO:  This can't  handle file  deletions, only deletions from
-    ## within directories that are not themselves deleted.
-    sync_static <- paste(
-      c("rsync", "-vaz", "--delete", "$(find static -maxdepth 1 -mindepth 1)",
-        "/applications/"),
-      collapse = " ")
-    sync <- c(sync, sync_static)
+provision_all <- function(root = ".", dest = "/source") {
+  dat <- read_site_yml(root)
+  for (app in dat$apps) {
+    provision_app(app, dest)
   }
-
-  dir.create("sources", FALSE, TRUE)
-  writeLines(c("set -e", sync), "sources/sync.sh")
 }
 
 
@@ -187,8 +173,53 @@ hello <- function(...) {
 }
 
 
-sync_server <- function() {
-  system3(twinkle_file("sync_server"), NULL, check = TRUE, output = TRUE)
+application_source_path <- function(app, dest) {
+  spec <- remotes::parse_github_repo_spec(app$spec)
+  path <- file.path(dest, app$path)
+  if (nzchar(spec$subdir)) {
+    file.path(path, spec$subdir)
+  } else {
+    path
+  }
+}
+
+
+sync_server <- function(root = ".", src = "/source", dest = "/applications",
+                        static = "/static") {
+  dat <- read_site_yml(root)
+
+  system3("chown", c("shiny.shiny", dest), check = TRUE)
+  chown <- c("--owner", "--group", "--chown=shiny:shiny")
+  common <- c("-vaz", "--delete", chown)
+
+  for (app in dat$apps) {
+    message(sprintf("Synchonising '%s'", app$path))
+    path_app_src <- application_source_path(app, src)
+    path_app_dest <- file.path(dest, app$path)
+    protect <- sprintf("--exclude='%s'", app$protect$paths)
+    args <- c(common, protect, paste0(path_app_src, "/"), path_app_dest)
+    system3("rsync", args, check = TRUE, output = TRUE)
+    ## TODO: restart app here if needed!
+  }
+
+  known <- names(dat$apps)
+
+  if (file.exists(static)) {
+    args <- c(static, "-maxdepth", "1", "-mindepth", "1")
+    static_files <- system3("find", args, check = TRUE, output = FALSE)$output
+    message("Synchonising static files")
+    args <- c(common, static_files, paste0(dest, "/"))
+    system3("rsync", args, check = TRUE, output = TRUE)
+    known <- c(known, sub(paste0(static, "/"), "", static_files))
+  }
+
+  found <- dir(dest, all.files = TRUE, no.. = TRUE)
+  extra <- setdiff(found, known)
+
+  if (length(extra) > 0L) {
+    message("Removing extra files")
+    unlink(file.path(dest, extra), recursive = TRUE)
+  }
 }
 
 
