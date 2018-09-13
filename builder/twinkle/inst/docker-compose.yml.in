@@ -5,7 +5,7 @@ services:
     image: "mrcide/haproxy:{{{twinkle_tag}}}"
 
   shiny:
-    image: "mrcide/shiny-server-base:{{{twinkle_tag}}}"
+    image: "mrcide/shiny-server:{{{twinkle_tag}}}"
     user: shiny
     volumes:
       - "applications:/shiny/apps"
