@@ -14,7 +14,7 @@ CALLER_GID=`id -g`
 echo "Provisioning ${ROOT}"
 
 mkdir -p sources
-docker run -it \
+docker run -it --rm \
        --env-file=$VAULT_ENV \
        -v ${ROOT}:/target \
        -w /target \

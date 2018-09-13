@@ -3,7 +3,7 @@ ROOT=$(realpath $(dirname $0)/..)
 VOLUME_BASE=$(basename $ROOT)
 VOLUME="${VOLUME_BASE}_applications"
 docker volume create $VOLUME
-docker run -it \
+docker run -it --rm \
        -v "${ROOT}:/src:ro" \
        -v "${VOLUME}:/applications" \
        -w "/src" \
