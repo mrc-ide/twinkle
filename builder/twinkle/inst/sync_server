@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-set -e
-chown shiny.shiny /applications
-sudo -u shiny bash sources/sync.sh
-## This can be generalised later
-sudo -u shiny cp static/index.html /applications

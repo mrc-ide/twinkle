@@ -27,3 +27,8 @@ write_if_changed <- function(str, dest, collapse = FALSE, description = NULL) {
   }
   invisible(write)
 }
+
+
+vcapply <- function(X, FUN, ...) {
+  vapply(X, FUN, character(1), ...)
+}

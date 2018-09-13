@@ -9,8 +9,8 @@ init <- function(target = ".") {
 
 
 init_ignore <- function(target) {
-  paths <- c(".vault", "sources", "apache", "docker-compose.yml", "scripts",
-             "restart.txt")
+  paths <- c(".vault", "apache", "docker-compose.yml", "restart.txt",
+             "scripts")
   target_gitignore <- file.path(target, ".gitignore")
   if (file.exists(target_gitignore)) {
     prev <- readLines(target_gitignore)

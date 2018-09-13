@@ -9,16 +9,20 @@ if [[ ! -f $VAULT_ENV ]]; then
     exit 1
 fi
 
-CALLER_UID=`id -u`
-CALLER_GID=`id -g`
-echo "Provisioning ${ROOT}"
+VOLUME_BASE=$(basename $ROOT)
+VOLUME_SOURCE="${VOLUME_BASE}_source"
+docker volume create $VOLUME_SOURCE
 
-mkdir -p sources
+echo "Provisioning ${ROOT} into ${VOLUME_SOURCE}"
+
+if [ -d ${ROOT}/local ]; then
+    VOLUME_LOCAL="-v ${ROOT}/local:/local:ro"
+fi
+
 docker run -it --rm \
        --env-file=$VAULT_ENV \
-       -v ${ROOT}:/target \
-       -w /target \
-       --user="${CALLER_UID}:${CALLER_GID}" \
-       -v /etc/passwd:/etc/passwd:ro \
+       -v ${VOLUME_SOURCE}:/source \
+       -v ${ROOT}/site.yml:/site.yml:ro \
+       $VOLUME_LOCAL \
        mrcide/shiny-server-builder:{{{twinkle_version}}} \
        provision_all
