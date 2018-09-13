@@ -1,4 +1,5 @@
 main_vault_auth <- function(args) {
+  no_args("vault_auth", args)
   vault_auth()
   invisible()
 }
@@ -29,6 +30,7 @@ main_import_ssl <- function(args) {
 
 
 main_provision_all <- function(args) {
+  no_args("provision_all", args)
   provision_all()
   invisible()
 }
@@ -43,6 +45,7 @@ main_set_password <- function(args) {
 
 
 main_sync_server <- function(args) {
+  no_args("sync_server", args)
   sync_server()
   invisible()
 }
@@ -62,18 +65,27 @@ main_update_apache <- function(args) {
 
 
 main_update_users <- function(args) {
+  no_args("update_users", args)
   update_users()
   invisible()
 }
 
 
 main_vault_auth <- function(args) {
+  no_args("vault_auth", args)
   vault_auth()
   invisible()
 }
 
 
 main_init <- function(args) {
+  no_args("init", args)
   init()
   invisible()
+}
+
+
+no_args <- function(name, args) {
+  usage <- sprintf("Usage:\n  %s", name)
+  docopt::docopt(usage, args)
 }
