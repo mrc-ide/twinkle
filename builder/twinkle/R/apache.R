@@ -1,4 +1,4 @@
-do_update_apache <- function(path = ".", self_signed = NULL,
+update_apache <- function(path = ".", self_signed = NULL,
                              port_http = NULL, port_https = NULL) {
   dat <- read_site_yml(path)
 
@@ -19,19 +19,6 @@ do_update_apache <- function(path = ".", self_signed = NULL,
   update_httpd_ssl(path, self_signed)
   update_users(path, dat)
   update_httpd_compose(path, twinkle_tag, port_http, port_https)
-  invisible()
-}
-
-
-update_apache <- function(args) {
-  "Usage:
-  update_apache [options]
-
-  --self-signed      use a self signed certificate
-  --port-http=PORT   port to use for http
-  --port-https=PORT  port to use for https" -> usage
-  args <- docopt::docopt(usage, args)
-  do_update_apache(".", args$"self-signed", args$port_http, args$port_https)
 }
 
 
@@ -138,7 +125,7 @@ export_ssl <- function(path = ".") {
 }
 
 
-do_import_ssl <- function(cert, key) {
+import_ssl <- function(cert, key) {
   if (length(cert) < 1L) {
     stop("Expected at least one certificate")
   }
@@ -147,21 +134,6 @@ do_import_ssl <- function(cert, key) {
   vault_root <- Sys.getenv("VAULT_ROOT")
   vault <- vaultr::vault_client(quiet = TRUE)
   vault$write(vault_path_ssl(vault_root), list(cert = cert, key = key))
-}
-
-
-import_ssl <- function(args) {
-  "Usage:
-  import_ssl <key> <cert>...
-  import_ssl --self-signed" -> usage
-  args <- docopt::docopt(usage, args)
-  if (isTRUE(args$"--self-signed")) {
-    tmp <- tempfile()
-    message("Generating self-signed certificate")
-    args <- write_self_signed_ssl(tmp)
-  }
-  message("Importing certificate into vault")
-  do_import_ssl(args$cert, args$key)
 }
 
 
@@ -191,7 +163,7 @@ write_self_signed_ssl <- function(path) {
 }
 
 
-do_set_password <- function(user, password = NULL) {
+set_password <- function(user, password = NULL) {
   vault_root <- Sys.getenv("VAULT_ROOT")
   password <- password %||% trimws(getPass::getPass("Password: "))
   vault_path <- sprintf("%s/users/%s", vault_root, user)
@@ -204,12 +176,4 @@ do_set_password <- function(user, password = NULL) {
 
   vault <- vault_client()
   vault$write(vault_path, list(password = value))
-}
-
-
-set_password <- function(args) {
-  "Usage:
-  set_password <user> [<password>]"-> usage
-  args <- docopt::docopt(usage, args)
-  do_set_password(args$user, args$password)
 }

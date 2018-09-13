@@ -189,11 +189,10 @@ hello <- function(...) {
 
 sync_server <- function() {
   system3(twinkle_file("sync_server"), NULL, check = TRUE, output = TRUE)
-  invisible()
 }
 
 
-do_add_deploy_key <- function(user_repo, overwrite = FALSE) {
+add_deploy_key <- function(user_repo, overwrite = FALSE) {
   re <- "^([^/]+)/([^/]+)$"
   if (!grepl(re, user_repo)) {
     stop("Expected 'repo' in the format username/repo")
@@ -223,13 +222,4 @@ do_add_deploy_key <- function(user_repo, overwrite = FALSE) {
   vault$write(vault_path, data)
   message(sprintf("Add the public key to github at\n  %s\n", url_key))
   message(sprintf("with content:\n\n%s\n", data$pub))
-}
-
-
-add_deploy_key <- function(args) {
-  "Usage:
-  add_deploy_key [--overwrite] <repo>" -> usage
-  args <- docopt::docopt(usage, args)
-  do_add_deploy_key(args$repo, args$overwrite)
-  invisible()
 }
