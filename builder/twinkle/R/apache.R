@@ -90,7 +90,7 @@ update_users <- function(path = ".", dat = NULL) {
   }
 
   conf <- vapply(dat$app[names(groups_used)], write_auth_conf, "")
-  extra <- setdiff(dir(path_auth, pattern = "\\.conf$", full.name = TRUE),
+  extra <- setdiff(dir(path_auth, pattern = "\\.conf$", full.names = TRUE),
                    conf)
   unlink(extra)
 
