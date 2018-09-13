@@ -1,0 +1,24 @@
+twinkle_tag: 0.0.1
+
+server:
+  address: "localhost"
+  admin: "nobody@example.com"
+  port_http: 80
+  port_https: 443
+  # used for the self-signed certificate
+  self_signed: true
+  country: UK
+  state: London
+  organisation: Ministry of Silly Walks
+
+# vault:
+#   address: "https://vault.example.com:8200"
+#   root: "/secret/shiny"
+
+apps:
+  hello:
+    type: local
+    spec: hello
+  test:
+    type: github
+    spec: mrc-ide/twinkle/shiny/applications/test@haproxy
