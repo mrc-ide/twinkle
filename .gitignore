@@ -4,3 +4,4 @@ sources
 apache/auth
 apache/ssl
 apache/httpd.conf
+*.swp

@@ -1,5 +1,4 @@
-init <- function(args) {
-  target <- "/target"
+init <- function(target = ".") {
   version <- packageVersion("twinkle")
   dir.create(target, FALSE, TRUE)
   init_ignore(target)
@@ -10,15 +9,15 @@ init <- function(args) {
 
 
 init_ignore <- function(target) {
-  paths <- c(".vault", "sources", "apache", "docker-compose.yml", "scripts")
-  ## usethis::use_git_ignore(paths, target)
+  paths <- c(".vault", "sources", "apache", "docker-compose.yml", "scripts",
+             "restart.txt")
   target_gitignore <- file.path(target, ".gitignore")
   if (file.exists(target_gitignore)) {
     prev <- readLines(target_gitignore)
   } else {
     prev <- character()
   }
-  writeLines(union(prev, paths), target_gitignore)
+  write_if_changed(union(prev, paths), target_gitignore, collapse = TRUE)
 }
 
 
