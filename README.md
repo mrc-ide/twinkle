@@ -39,7 +39,9 @@ docker-compose up -d --scale shiny=<n>
 ./scripts/register_workers <n>
 ```
 
-where `<n>` is the number of shiny-server replicas that are wanted
+where `<n>` is the number of shiny-server replicas that are wanted.
+
+Because the core of the system, the directory name you pick is important - the containers and volumes will be named based on it.  There is not currently support for modifying this (e.g., with `--project-name`) because we need to interact with persistent volumes, and one task requires exec access to a container.  This will hopefully be relieved in future if it becomes a real annoyance.
 
 ### Design
 
