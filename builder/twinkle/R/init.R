@@ -1,5 +1,5 @@
 init <- function(target = ".") {
-  version <- packageVersion("twinkle")
+  version <- utils::packageVersion("twinkle")
   dir.create(target, FALSE, TRUE)
   init_ignore(target)
   init_site_yml(target, version)
