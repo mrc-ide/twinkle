@@ -143,7 +143,7 @@ provision_app <- function(app) {
     file.create(file.path(app$path_app, "restart.txt"))
   }
 
-  protect <- sprintf("--exclude='%s'", app$protect)
+  protect <- sprintf("--exclude='%s'", app$protect$paths)
   paste(c("rsync", "-vaz", "--delete", protect,
           paste0(app$path_app, "/"), dest), collapse = " ")
 }
