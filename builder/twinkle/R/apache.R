@@ -1,4 +1,4 @@
-update_apache <- function(path = ".", self_signed = NULL,
+configure_apache <- function(path = ".", self_signed = NULL,
                              port_http = NULL, port_https = NULL) {
   dat <- read_site_yml(path)
 

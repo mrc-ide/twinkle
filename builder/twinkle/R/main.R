@@ -51,15 +51,15 @@ main_sync_server <- function(args) {
 }
 
 
-main_update_apache <- function(args) {
+main_configure_apache <- function(args) {
   "Usage:
-  update_apache [options]
+  configure_apache [options]
 
   --self-signed      use a self signed certificate
   --port-http=PORT   port to use for http
   --port-https=PORT  port to use for https" -> usage
   args <- docopt::docopt(usage, args)
-  update_apache(".", args$"self-signed", args$port_http, args$port_https)
+  configure_apache(".", args$"self-signed", args$port_http, args$port_https)
   invisible()
 }
 

@@ -57,7 +57,7 @@ init_scripts <- function(target, version) {
   Sys.chmod(file.path(dest, basename(scripts)), "755")
   extra <- setdiff(dir(dest), basename(scripts))
   if (length(extra) > 0L) {
-    message("Removing obsolete scripts: %s",
+    message("Removing obsolete scripts: ",
             paste(extra, collapse = ", "))
     unlink(file.path(dest, extra))
   }
