@@ -16,4 +16,4 @@ docker run --rm -it \
        -w /target \
        --user="${CALLER_UID}:${CALLER_GID}" \
        mrcide/shiny-server-builder:{{{twinkle_version}}} \
-       update_apache $*
+       configure_apache $*
