@@ -1,9 +1,11 @@
 configure_apache <- function(path = ".", self_signed = NULL,
-                             port_http = NULL, port_https = NULL) {
+                             port_http = NULL, port_https = NULL,
+                             port_admin = NULL) {
   dat <- read_site_yml(path)
 
   port_http <- port_http %||% dat$server$port_http %||% 80L
   port_https <- port_https %||% dat$server$port_https %||% 443L
+  port_admin <- port_admin %||% dat$server$port_admin %||% 9000L
   self_signed <- self_signed %||% dat$server$self_signed %||% FALSE
   twinkle_tag <- dat$twinkle_tag
 
@@ -15,20 +17,22 @@ configure_apache <- function(path = ".", self_signed = NULL,
   ## 4. update docker-compose.yml (ports)
 
   reload <- update_httpd_conf(path, dat$server$hostname, dat$server$email,
-                              port_http, port_https)
+                              port_http, port_https, port_admin)
   update_httpd_ssl(path, self_signed)
   update_users(path, dat)
-  update_httpd_compose(path, twinkle_tag, port_http, port_https)
+  update_httpd_compose(path, twinkle_tag, port_http, port_https, port_admin)
 }
 
 
-update_httpd_conf <- function(path, hostname, email, port_http, port_https) {
+update_httpd_conf <- function(path, hostname, email, port_http, port_https,
+                              port_admin) {
   path_httpd_conf <- file.path(path, "apache/httpd.conf")
   dir.create(dirname(path_httpd_conf), FALSE, TRUE)
   dat <- list(hostname = hostname,
               email = email,
               port_http = port_http,
-              port_https = port_https)
+              port_https = port_https,
+              port_admin = port_admin)
   template <- read_string(twinkle_file("httpd.conf.in"))
   str <- whisker::whisker.render(template, dat)
   write_if_changed(str, path_httpd_conf)
@@ -99,11 +103,13 @@ update_users <- function(path = ".", dat = NULL) {
 }
 
 
-update_httpd_compose <- function(path, twinkle_tag, port_http, port_https) {
+update_httpd_compose <- function(path, twinkle_tag, port_http, port_https,
+                                 port_admin) {
   template <- read_string(twinkle_file("docker-compose.yml.in"))
   dat <- list(twinkle_tag = twinkle_tag,
               port_http = port_http,
-              port_https = port_https)
+              port_https = port_https,
+              port_admin = port_admin)
   str <- whisker::whisker.render(template, dat)
   write_if_changed(str, file.path(path, "docker-compose.yml"))
 }

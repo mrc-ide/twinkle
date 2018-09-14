@@ -65,6 +65,7 @@ User nobody
 # Port to Listen on
 Listen *:{{{port_http}}}
 Listen *:{{{port_https}}}
+Listen *:{{{port_admin}}}
 
 # In a basic setup httpd can only serve files from its document root
 DocumentRoot "/usr/local/apache2/htdocs"
@@ -106,4 +107,22 @@ DirectoryIndex index.html
   ProxyPassReverse / http://haproxy:8080/
 
   IncludeOptional conf/auth/*.conf
+</VirtualHost>
+
+<VirtualHost *:{{{port_admin}}}>
+  SSLEngine on
+  # or server.crt
+  SSLCertificateFile "/usr/local/apache2/conf/ssl/certificate.pem"
+  # or server.key
+  SSLCertificateKeyFile "/usr/local/apache2/conf/ssl/key.pem"
+  CustomLog "/usr/local/apache2/logs/ssl_request_log" \
+          "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+
+  RewriteEngine on
+  RewriteCond %{HTTP:Upgrade} =websocket
+  RewriteRule /(.*) ws://admin:3838/$1 [P,L]
+  RewriteCond %{HTTP:Upgrade} !=websocket
+  RewriteRule /(.*) http://admin:3838/$1 [P,L]
+  ProxyPass / http://admin:3838/
+  ProxyPassReverse / http://admin:3838/
 </VirtualHost>

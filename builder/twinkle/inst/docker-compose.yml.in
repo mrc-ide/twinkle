@@ -10,13 +10,25 @@ services:
     volumes:
       - "applications:/shiny/apps"
 
+  admin:
+    image: "mrcide/shiny-server-builder:{{{twinkle_tag}}}"
+    user: shiny
+    volumes:
+      - "${PWD}/apache/auth:/apache_auth"
+      - "applications:/applications"
+      - "source:/source"
+    # Restore to the original
+    entrypoint: "/usr/bin/shiny-server.sh"
+
   apache:
     depends_on:
       - haproxy
+      - admin
     image: httpd:2.4
     ports:
       - "{{{port_http}}}:{{{port_http}}}"
       - "{{{port_https}}}:{{{port_https}}}"
+      - "{{{port_admin}}}:{{{port_admin}}}"
     volumes:
       - "${PWD}/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro"
       - "${PWD}/apache/auth:/usr/local/apache2/conf/auth:ro"
@@ -24,3 +36,4 @@ services:
 
 volumes:
   applications:
+  source:

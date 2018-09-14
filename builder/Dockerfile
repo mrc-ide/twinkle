@@ -13,4 +13,7 @@ RUN R CMD INSTALL twinkle && \
   cp /twinkle/entrypoint /usr/local/bin/twinkle && \
   rm -rf /twinkle
 
+RUN rm -rf /shiny/apps/*
+COPY admin /shiny/apps
+
 ENTRYPOINT ["/usr/local/bin/twinkle"]
