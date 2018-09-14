@@ -15,6 +15,7 @@ services:
     user: shiny
     volumes:
       - "${PWD}/apache/auth:/apache_auth"
+      - "${PWD}/.vault:/.vault:ro"
       - "applications:/applications"
       - "source:/source"
     # Restore to the original
