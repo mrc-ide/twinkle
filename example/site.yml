@@ -1,10 +1,11 @@
 twinkle_tag: 0.0.1
 
 server:
-  address: "localhost"
-  admin: "nobody@example.com"
+  hostname: "localhost"
+  email: "nobody@example.com"
   port_http: 80
   port_https: 443
+  port_admin: 9000
   # used for the self-signed certificate
   self_signed: true
   country: UK
