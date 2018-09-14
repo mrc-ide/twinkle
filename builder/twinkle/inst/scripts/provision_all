@@ -3,6 +3,7 @@ set -e
 
 ROOT=$(realpath $(dirname $0)/..)
 VAULT_ENV=$ROOT/.vault
+TWINKLE_TAG=$(cat $ROOT/twinkle_tag)
 
 if [[ ! -f $VAULT_ENV ]]; then
     echo "Run ./util/vault_auth to authenticate with vault server"
@@ -19,10 +20,10 @@ if [ -d ${ROOT}/local ]; then
     VOLUME_LOCAL="-v ${ROOT}/local:/local:ro"
 fi
 
-docker run -it --rm \
+docker run --rm \
        --env-file=$VAULT_ENV \
        -v ${VOLUME_SOURCE}:/source \
        -v ${ROOT}/site.yml:/site.yml:ro \
        $VOLUME_LOCAL \
-       mrcide/shiny-server-builder:{{{twinkle_version}}} \
+       mrcide/shiny-server-builder:${TWINKLE_TAG} \
        provision_all

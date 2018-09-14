@@ -1,5 +1,3 @@
-twinkle_tag: {{{twinkle_version}}}
-
 server:
   address: "shiny.example.com"
   admin: "you@example.com"

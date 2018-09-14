@@ -2,6 +2,7 @@
 set -e
 ROOT=$(realpath $(dirname $0)/..)
 VAULT_ENV=$ROOT/.vault
+TWINKLE_TAG=$(cat $ROOT/twinkle_tag)
 
 if [[ ! -f $VAULT_ENV ]]; then
     echo "Run ./util/vault_auth to authenticate with vault server"
@@ -10,5 +11,5 @@ fi
 
 docker run --rm -it \
        --env-file=$VAULT_ENV \
-       mrcide/shiny-server-builder:{{{twinkle_version}}} \
+       mrcide/shiny-server-builder:${TWINKLE_TAG} \
        add_deploy_key $*
