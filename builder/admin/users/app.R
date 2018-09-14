@@ -2,32 +2,22 @@ passwordfile <- Sys.getenv("APACHE_PASSWORD_FILE", "/apache_auth/users")
 groupfile <- Sys.getenv("APACHE_PASSWORD_FILE", "/apache_auth/groups")
 vault_env_file <- Sys.getenv("VAULT_ENV_FILE", "/.vault")
 
-ui <- shiny::fluidPage(
-  shiny::titlePanel("User management"),
-  shiny::sidebarLayout(
-    ## This bit might get done more commonly, and so moved into a
-    ## module.
-    shiny::sidebarPanel(
-      shiny::h3("Admin Login"),
-      shiny::textInput("username", "Username"),
-      shiny::passwordInput("password", "Password"),
-      shiny::div(
-        class = "panel-group",
-        shiny::actionButton("login", "Login", class = "btn-primary"),
-        shiny::actionButton("logout", "Logout", class = "btn-danger")),
-      shiny::textOutput("login_status")),
-    shiny::mainPanel(
-      shiny::uiOutput("main"))))
+login_ui <- function(id) {
+  ns <- shiny::NS(id)
+  shiny::tagList(
+    shiny::h3("Admin Login"),
+    shiny::textInput(ns("username"), "Username"),
+    shiny::passwordInput(ns("password"), "Password"),
+    shiny::div(
+      class = "panel-group",
+      shiny::actionButton(ns("login"), "Login", class = "btn-primary"),
+      shiny::actionButton(ns("logout"), "Logout", class = "btn-danger")),
+    shiny::textOutput(ns("login_status")))
+}
 
 
-server <- function(input, output, session) {
-  set_vault_env(vault_env_file)
-  auth <- shiny::reactiveValues(
-    username = NULL, groups = NULL, is_admin = FALSE)
-
-  shiny::observe({
-    output$main <- shiny::renderUI(server_main_panel(auth$is_admin))
-  })
+login_server <- function(input, output, session) {
+  auth <- shiny::reactiveValues(user = NULL, groups = NULL, is_admin = FALSE)
 
   shiny::observeEvent(
     input$login, {
@@ -59,9 +49,28 @@ server <- function(input, output, session) {
       output$login_status <- NULL
     })
 
-  ## To improve here:
-  ##
-  ## avoid shell
+  auth
+}
+
+
+ui <- shiny::fluidPage(
+  shiny::titlePanel("User management"),
+  shiny::sidebarLayout(
+    shiny::sidebarPanel(
+      login_ui("login")),
+    shiny::mainPanel(
+      shiny::uiOutput("main"))))
+
+
+server <- function(input, output, session) {
+  set_vault_env(vault_env_file)
+
+  auth <- shiny::callModule(login_server, "login")
+
+  shiny::observe({
+    output$main <- shiny::renderUI(server_main_panel(auth$is_admin))
+  })
+
   shiny::observeEvent(
     input$pw_set, {
       if (!nzchar(input$pw_usr)) {
