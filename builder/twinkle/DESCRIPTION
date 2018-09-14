@@ -15,6 +15,7 @@ Imports:
   openssl,
   provisionr,
   remotes,
+  shiny,
   vaultr,
   yaml,
   whisker
