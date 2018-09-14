@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
-docker pull mrcide/haproxy:{{{twinkle_version}}}
-docker pull mrcide/shiny-server-base:{{{twinkle_version}}}
-docker pull mrcide/shiny-server-builder:{{{twinkle_version}}}
+TWINKLE_TAG=$(cat $ROOT/twinkle_tag)
+docker pull mrcide/haproxy:${TWINKLE_TAG}
+docker pull mrcide/shiny-server-base:${TWINKLE_TAG}
+docker pull mrcide/shiny-server-builder:${TWINKLE_TAG}
 docker pull httpd:2.4

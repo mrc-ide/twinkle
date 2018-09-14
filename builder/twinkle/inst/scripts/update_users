@@ -4,6 +4,7 @@ ROOT=$(realpath $(dirname $0)/..)
 VAULT_ENV=$ROOT/.vault
 CALLER_UID=`id -u`
 CALLER_GID=`id -g`
+TWINKLE_TAG=$(cat $ROOT/twinkle_tag)
 
 if [[ ! -f $VAULT_ENV ]]; then
     echo "Run ./util/vault_auth to authenticate with vault server"
@@ -15,5 +16,5 @@ docker run --rm -it \
        -v $ROOT:/target \
        -w /target \
        --user="${CALLER_UID}:${CALLER_GID}" \
-       mrcide/shiny-server-builder:{{{twinkle_version}}} \
+       mrcide/shiny-server-builder:${TWINKLE_TAG} \
        update_users

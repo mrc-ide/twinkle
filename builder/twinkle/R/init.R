@@ -1,9 +1,9 @@
 init <- function(target = ".") {
-  version <- utils::packageVersion("twinkle")
   dir.create(target, FALSE, TRUE)
   init_ignore(target)
-  init_site_yml(target, version)
-  init_scripts(target, version)
+  init_site_yml(target)
+  init_scripts(target)
+  init_version(target, utils::packageVersion("twinkle"))
   message("Initialised!")
 }
 
@@ -21,14 +21,12 @@ init_ignore <- function(target) {
 }
 
 
-init_site_yml <- function(target, version) {
+init_site_yml <- function(target) {
   target_site_yml <- file.path(target, "site.yml")
   if (file.exists(target_site_yml)) {
     message("'site.yml' already exists")
   } else {
-    dat <- list(twinkle_version = version)
-    site_yml_template <- read_string(twinkle_file("site.yml.in"))
-    write_if_changed(whisker::whisker.render(site_yml_template, dat),
+    write_if_changed(read_string(twinkle_file("site.yml")),
                      target_site_yml)
     target_hello <- file.path(target, "local/hello")
     if (file.exists(target_hello)) {
@@ -42,17 +40,15 @@ init_site_yml <- function(target, version) {
 }
 
 
-init_scripts <- function(target, version) {
+init_scripts <- function(target) {
   message("Updating scripts")
   dir.create(file.path(target, "scripts"), FALSE, TRUE)
 
   scripts <- dir(twinkle_file("scripts"), full.names = TRUE)
   dest <- file.path(target, "scripts")
   dir.create(dest, FALSE, TRUE)
-  dat <- list(twinkle_version = version)
   for (s in scripts) {
-    write_if_changed(whisker::whisker.render(read_string(s), dat),
-                     file.path(dest, basename(s)))
+    write_if_changed(read_string(s), file.path(dest, basename(s)))
   }
   Sys.chmod(file.path(dest, basename(scripts)), "755")
   extra <- setdiff(dir(dest), basename(scripts))
@@ -61,4 +57,10 @@ init_scripts <- function(target, version) {
             paste(extra, collapse = ", "))
     unlink(file.path(dest, extra))
   }
+}
+
+
+init_version <- function(target, version) {
+  write_if_changed(sprintf("%s\n", as.character(version)),
+                   file.path(target, "twinkle_tag"))
 }

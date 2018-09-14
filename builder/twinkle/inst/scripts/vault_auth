@@ -4,11 +4,12 @@ set -e
 CALLER_UID=`id -u`
 CALLER_GID=`id -g`
 ROOT=$(realpath $(dirname $0)/..)
+TWINKLE_TAG=$(cat $ROOT/twinkle_tag)
 
 docker run --rm -it \
        -e VAULT_AUTH_GITHUB_TOKEN \
        --user="${CALLER_UID}:${CALLER_GID}" \
        -v $ROOT:/target \
        -w /target \
-       mrcide/shiny-server-builder:{{{twinkle_version}}} \
+       mrcide/shiny-server-builder:${TWINKLE_TAG} \
        vault_auth
