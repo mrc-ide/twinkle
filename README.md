@@ -13,6 +13,7 @@ Support for running a self-hosted shiny server:
 
 ```
 docker run \
+  --rm \
   -v ${PWD}:/target \
   -w /target \
   --user="`id -u`:`id -u`" \
