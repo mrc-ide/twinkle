@@ -20,4 +20,4 @@ COPY shiny-server.conf /etc/shiny-server/shiny-server.conf
 
 # These will be replaced by our docker compose file but that's ok at
 # least for now.
-COPY applications /shiny/apps
+COPY --chown=shiny:shiny applications /shiny/apps
