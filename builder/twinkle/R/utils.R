@@ -32,3 +32,8 @@ write_if_changed <- function(str, dest, collapse = FALSE, description = NULL) {
 vcapply <- function(X, FUN, ...) {
   vapply(X, FUN, character(1), ...)
 }
+
+
+squote <- function(x) {
+  sprintf("'%s'", x)
+}

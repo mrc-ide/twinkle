@@ -182,4 +182,41 @@ set_password <- function(user, password = NULL) {
 
   vault <- vault_client()
   vault$write(vault_path, list(password = value))
+  invisible(value)
+}
+
+
+verify_password <- function(username, password, passwordfile) {
+  res <- system3("htpasswd", c("-bv", passwordfile, username, password),
+                 check = FALSE, output = FALSE)
+  res$success
+}
+
+
+read_groups <- function(groupfile) {
+  groups <- strsplit(readLines(groupfile), ":\\s+")
+  members <- strsplit(vcapply(groups, "[[", 2L), "\\s+")
+  names(members) <- vcapply(groups, "[[", 1L)
+  members
+}
+
+
+user_membership <- function(username, groupfile) {
+  groups <- read_groups(groupfile)
+  i <- vapply(groups, function(x) username %in% x, logical(1))
+  names(groups)[i]
+}
+
+
+read_users <- function(passwordfile) {
+  sub(":.*", "", readLines(passwordfile))
+}
+
+
+update_user_password <- function(username, password, passwordfile) {
+  hash <- set_password(username, password)
+  prev <- readLines(passwordfile)
+  new <- sprintf("%s:%s", username, hash)
+  writeLines(c(prev[grepl("^username:", prev)], new),
+             passwordfile)
 }
