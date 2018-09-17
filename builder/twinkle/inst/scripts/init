@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+ROOT=$(realpath $(dirname $0)/..)
+CALLER_UID=`id -u`
+CALLER_GID=`id -g`
+TWINKLE_TAG=$(cat $ROOT/twinkle_tag)
+
+docker run \
+  --rm \
+  -v ${PWD}:/target \
+  -w /target \
+  --user="${CALLER_UID}:${CALLER_GID}" \
+  mrcide/shiny-server-builder:${TWINKLE_TAG} \
+  init
