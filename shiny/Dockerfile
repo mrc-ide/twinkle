@@ -3,6 +3,7 @@ FROM rocker/shiny:latest
 RUN apt-get update && apt-get install -y \
     git \
     libcurl4-openssl-dev \
+    libhiredis-dev \
     libmagick++-dev \
     libssl-dev \
     libxml2-dev
