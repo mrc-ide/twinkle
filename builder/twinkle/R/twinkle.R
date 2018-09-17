@@ -4,6 +4,14 @@ read_site_yml <- function(path = ".") {
   for (i in seq_along(dat$apps)) {
     app <- dat$apps[[i]]
     app$path <- names(dat$apps)[[i]]
+
+    if (!is.null(app$secret)) {
+      for (j in seq_along(app$secret)) {
+        app$secret[[j]]$dest <- names(app$secret)[[j]]
+        app$secret[[j]]$binary <- isTRUE(app$secret[[j]]$binary)
+      }
+    }
+
     dat$apps[[i]] <- app
   }
   dat
@@ -142,6 +150,33 @@ provision_app <- function(app, dest) {
   provision_app <- twinkle_file("provision_app")
   system3(provision_app, c(path_source, path_app),
           check = TRUE, output = TRUE)
+
+  provision_app_secrets(app, dest)
+}
+
+
+provision_app_secrets <- function(app, dest) {
+  if (is.null(app$secret)) {
+    return()
+  }
+
+  vault_root <- Sys.getenv("VAULT_ROOT")
+  vault <- vaultr::vault_client(quiet = TRUE)
+
+  for (s in app$secret) {
+    src <- s$path
+    if (!grepl("^/", s$path)) {
+      src <- file.path(vault_root, s$path)
+    }
+    dest_path <- file.path(dest, app$path, s$dest)
+    message(sprintf("Writing secret '%s' from '%s'", s$dest, src))
+    value <- vault$read(src, s$field)
+    if (s$binary) {
+      writeBin(openssl::base64_decode(value), dest_path)
+    } else {
+      writeLines(value, dest_path)
+    }
+  }
 }
 
 
