@@ -2,6 +2,7 @@
 ROOT=$(realpath $(dirname $0)/..)
 VOLUME_BASE=$(basename $ROOT)
 VOLUME_APPLICATIONS="${VOLUME_BASE}_applications"
+VOLUME_LOGS="${VOLUME_BASE}_logs"
 VOLUME_SOURCE="${VOLUME_BASE}_source"
 if [ -d ${ROOT}/static ]; then
     VOLUME_STATIC="-v ${ROOT}/static:/static:ro"
@@ -9,8 +10,11 @@ fi
 TWINKLE_TAG=$(cat $ROOT/twinkle_tag)
 
 docker volume create $VOLUME_APPLICATIONS
+docker volume create $VOLUME_LOGS
+
 docker run --rm \
        -v "${VOLUME_APPLICATIONS}:/applications" \
+       -v "${VOLUME_LOGS}:/logs" \
        -v "${VOLUME_SOURCE}:/source:ro" \
        $VOLUME_STATIC \
        -v "${ROOT}/site.yml:/site.yml:ro" \

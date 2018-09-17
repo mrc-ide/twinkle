@@ -185,10 +185,10 @@ application_source_path <- function(app, dest) {
 
 
 sync_server <- function(root = ".", src = "/source", dest = "/applications",
-                        static = "/static") {
+                        logs = "/logs", static = "/static") {
   dat <- read_site_yml(root)
 
-  system3("chown", c("shiny.shiny", dest), check = TRUE)
+  system3("chown", c("shiny.shiny", c(dest, logs)), check = TRUE)
   chown <- c("--owner", "--group", "--chown=shiny:shiny")
   common <- c("-vaz", "--delete", chown)
 
