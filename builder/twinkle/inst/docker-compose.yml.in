@@ -9,13 +9,14 @@ services:
     user: shiny
     volumes:
       - "applications:/shiny/apps"
+      - "logs:/shiny/logs"
 
   admin:
     image: "mrcide/shiny-server-builder:{{{twinkle_tag}}}"
-    user: shiny
     volumes:
       - "${PWD}/apache/auth:/apache_auth"
       - "${PWD}/.vault:/.vault:ro"
+      - "logs:/logs"
       - "applications:/applications"
       - "source:/source"
     # Restore to the original
@@ -37,4 +38,5 @@ services:
 
 volumes:
   applications:
+  logs:
   source:
