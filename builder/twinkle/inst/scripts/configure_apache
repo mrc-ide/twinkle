@@ -13,6 +13,7 @@ fi
 
 docker run --rm \
        --env-file=$VAULT_ENV \
+       -e TWINKLE_TAG \
        -v $ROOT:/target \
        -w /target \
        --user="${CALLER_UID}:${CALLER_GID}" \
