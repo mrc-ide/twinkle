@@ -312,11 +312,13 @@ add_deploy_key <- function(user_repo, overwrite = FALSE) {
 write_schedule <- function(dest, root = ".", shiny_apps_path = "/shiny/apps") {
   dat <- read_site_yml(root)
   make_job <- function(s, app) {
-    command <- sprintf("twinkle-task-run %s/%s %s",
-                       shiny_apps_path, app$path, s$command)
-    list(name = s$name,
-         command = command,
-         schedule = s$frequency)
+    if (is.null(s$enabled) || isTRUE(s$enabled)) {
+      command <- sprintf("twinkle-task-run %s/%s %s",
+                         shiny_apps_path, app$path, s$command)
+      list(name = s$name,
+           command = command,
+           schedule = s$frequency)
+    }
   }
   defaults <- list(
     shell = "/bin/bash",
