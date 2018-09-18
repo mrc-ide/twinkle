@@ -16,6 +16,7 @@ Imports:
   provisionr,
   remotes,
   shiny,
+  shinyjs,
   vaultr,
   yaml,
   whisker
