@@ -8,6 +8,14 @@ Support for running a self-hosted shiny server:
 * scriptable provisioning of shiny applications, including from private repositories
 * integration with [`vault`](https://vaultproject.io) for secret management
 
+### How does it look?
+
+A simple configuration is included here:
+
+- [configuration](example/site.yml)
+- [instructions](example/site.yml)
+
+A more complicated example (for which this was developed) is in the [`shiny_dide`](https://github.com/mrc-ide/shiny_dide) repository.
 
 ### Get started
 
@@ -51,3 +59,5 @@ The basic idea is to deviate from the general pattern of bundling an R library *
 Each application has its own separate isolated library, though they do share a common instance of R (so practically probably have to track the same major R version).
 
 The `site.yml` file will describe the desired configuration, and we'll try and get the server into that state.  When running, the shiny server runs in the container as the `shiny` user, who has read/write access to a volume containing the application, library and any persistent data that the application writes.
+
+For all but the most trivial cases a copy of [`vault`](https://vaultproject.io) is needed to hold secrets.  Our setup is in the [`mrc-ide-vault`](https://github.com/mrc-ide/mrc-ide-vault) repository.  Using vault means we can keep sensitive data out of the configuration.
