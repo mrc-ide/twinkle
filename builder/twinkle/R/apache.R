@@ -188,8 +188,12 @@ set_password <- function(user, password = NULL) {
 
 
 verify_password <- function(username, password, passwordfile) {
-  res <- system3("htpasswd", c("-bv", passwordfile, username, password),
-                 check = FALSE, output = FALSE)
+  ## Workaround for apache needing read/write to the password file
+  tmp <- tempfile()
+  on.exit(unlink(tmp))
+  writeLines(readLines(passwordfile), tmp)
+  res <- system3("htpasswd", c("-bv", tmp, username, password),
+                 check = FALSE, output = TRUE)
   res$success
 }
 
