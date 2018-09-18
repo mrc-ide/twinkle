@@ -4,6 +4,8 @@ RUN apt-get update && apt-get install -y \
     git \
     libapparmor-dev \
     libcurl4-openssl-dev \
+    libgdal-dev \
+    libgeos-dev \
     libhiredis-dev \
     libmagick++-dev \
     libssl-dev \
