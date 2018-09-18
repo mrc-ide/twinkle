@@ -182,7 +182,6 @@ provision_app_secrets <- function(app, dest) {
     }
   }
 }
-}
 
 
 provision_all <- function(root = ".", dest = "/staging") {
