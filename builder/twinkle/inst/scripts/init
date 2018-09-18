@@ -5,7 +5,9 @@ ROOT=$(realpath $(dirname $0)/..)
 CALLER_UID=`id -u`
 CALLER_GID=`id -g`
 TWINKLE_TAG=$(cat $ROOT/twinkle_tag)
+IMAGE=mrcide/shiny-server-builder:${TWINKLE_TAG}
 
+docker pull $IMAGE
 docker run \
   --rm \
   -v ${PWD}:/target \
