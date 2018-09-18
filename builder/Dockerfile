@@ -14,7 +14,6 @@ RUN ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts
 
 COPY twinkle /twinkle
 RUN R CMD INSTALL twinkle && \
-  cp /twinkle/entrypoint /usr/local/bin/twinkle && \
   cp /twinkle/bin/* /usr/local/bin/ && \
   rm -rf /twinkle
 
