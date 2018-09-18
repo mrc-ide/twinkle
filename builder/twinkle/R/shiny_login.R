@@ -13,11 +13,12 @@ login_server <- function(input, output, session, passwordfile, groupfile) {
   shiny::observeEvent(
     input$login, {
       username <- input$username
+      password <- input$password
       if (!nzchar(username)) {
         modal_error("Username not provided", "Error logging in")
-      } else if (!nzchar(input$password)) {
+      } else if (!nzchar(password)) {
         modal_error("Password not provided", "Error logging in")
-      } else if (!verify_password(username, input$password, passwordfile)) {
+      } else if (!verify_password(username, password, passwordfile)) {
         modal_error("Incorrect username/password", "Error logging in")
       } else {
         groups <- user_membership(username, groupfile)
@@ -26,7 +27,7 @@ login_server <- function(input, output, session, passwordfile, groupfile) {
         auth$is_admin <- "dide-internal" %in% auth$groups
         output$login_status <- shiny::renderText(
           sprintf("Logged in as '%s', member of %s", username,
-                  paste(squote(groups)), collapse = ", "))
+                  paste(squote(groups), collapse = ", ")))
         output$login_ui <- login_ui_fn(ns, TRUE)
       }
     })
