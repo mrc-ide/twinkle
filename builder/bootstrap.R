@@ -6,6 +6,8 @@ install.packages(c(
   "openssl",
   "provisionr",
   "remotes",
+  "shinyjs",
+  "sys",
   "vaultr",
   "yaml",
   "whisker"))
