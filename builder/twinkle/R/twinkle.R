@@ -12,6 +12,12 @@ read_site_yml <- function(path = ".") {
       }
     }
 
+    if (!is.null(app$schedule)) {
+      for (j in seq_along(app$schedule)) {
+        app$schedule[[j]]$name <- names(app$schedule)[[j]]
+      }
+    }
+
     dat$apps[[i]] <- app
   }
   dat
@@ -299,4 +305,27 @@ add_deploy_key <- function(user_repo, overwrite = FALSE) {
   vault$write(vault_path, data)
   message(sprintf("Add the public key to github at\n  %s\n", url_key))
   message(sprintf("with content:\n\n%s\n", data$pub))
+}
+
+
+## Ingredients here:
+write_schedule <- function(dest, root = ".", shiny_apps_path = "/shiny/apps") {
+  dat <- read_site_yml(root)
+  make_job <- function(s, app) {
+    command <- sprintf("twinkle-task-run %s/%s %s",
+                       shiny_apps_path, app$path, s$command)
+    list(name = s$name,
+         command = command,
+         schedule = s$frequency)
+  }
+  defaults <- list(
+    shell = "/bin/bash",
+    failsWhen = list(
+      nonzeroReturn = TRUE,
+      producesStdout = FALSE,
+      producesStderr = FALSE))
+  jobs <- unlist(lapply(dat$apps, function(x) lapply(x$schedule, make_job, x)),
+                 FALSE, FALSE)
+  str <- yaml::as.yaml(list(jobs = jobs, defaults = defaults))
+  write_if_changed(str, dest)
 }

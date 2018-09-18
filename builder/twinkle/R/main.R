@@ -85,6 +85,15 @@ main_init <- function(args) {
 }
 
 
+main_write_schedule <- function(args) {
+  "Usage:
+  write_schedule <dest>" -> usage
+  args <- docopt::docopt(usage, args)
+  write_schedule(args$dest)
+  invisible()
+}
+
+
 no_args <- function(name, args) {
   usage <- sprintf("Usage:\n  %s", name)
   docopt::docopt(usage, args)
