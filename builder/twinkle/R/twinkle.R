@@ -180,7 +180,7 @@ provision_app_secrets <- function(app, dest) {
 }
 
 
-provision_all <- function(root = ".", dest = "/source") {
+provision_all <- function(root = ".", dest = "/staging") {
   dat <- read_site_yml(root)
   for (app in dat$apps) {
     provision_app(app, dest)
@@ -219,22 +219,15 @@ application_source_path <- function(app, dest) {
 }
 
 
-sync_server <- function(root = ".", src = "/source", dest = "/applications",
-                        logs = "/logs", static = "/static") {
+sync_server <- function(root = ".", staging = "/staging",
+                        dest = "/applications", logs = "/logs",
+                        static = "/static") {
   dat <- read_site_yml(root)
 
   system3("chown", c("shiny.shiny", c(dest, logs)), check = TRUE)
-  chown <- c("--owner", "--group", "--chown=shiny:shiny")
-  common <- c("-vaz", "--delete", chown)
 
   for (app in dat$apps) {
-    message(sprintf("Synchonising '%s'", app$path))
-    path_app_src <- application_source_path(app, src)
-    path_app_dest <- file.path(dest, app$path)
-    protect <- sprintf("--exclude='%s'", app$protect$paths)
-    args <- c(common, protect, paste0(path_app_src, "/"), path_app_dest)
-    system3("rsync", args, check = TRUE, output = TRUE)
-    ## TODO: restart app here if needed!
+    sync_app(app, staging, dest)
   }
 
   known <- names(dat$apps)
@@ -243,6 +236,8 @@ sync_server <- function(root = ".", src = "/source", dest = "/applications",
     args <- c(static, "-maxdepth", "1", "-mindepth", "1")
     static_files <- system3("find", args, check = TRUE, output = FALSE)$output
     message("Synchonising static files")
+    chown <- c("--owner", "--group", "--chown=shiny:shiny")
+    common <- c("-vaz", "--delete", chown)
     args <- c(common, static_files, paste0(dest, "/"))
     system3("rsync", args, check = TRUE, output = TRUE)
     known <- c(known, sub(paste0(static, "/"), "", static_files))
@@ -255,6 +250,18 @@ sync_server <- function(root = ".", src = "/source", dest = "/applications",
     message("Removing extra files")
     unlink(file.path(dest, extra), recursive = TRUE)
   }
+}
+
+
+sync_app <- function(app, staging, dest, output = TRUE, check = TRUE) {
+  message(sprintf("Synchonising '%s'", app$path))
+  path_app_src <- application_source_path(app, staging)
+  path_app_dest <- file.path(dest, app$path)
+  protect <- sprintf("--exclude='%s'", app$protect$paths)
+  chown <- c("--owner", "--group", "--chown=shiny:shiny")
+  common <- c("-vaz", "--delete", chown)
+  args <- c(common, protect, paste0(path_app_src, "/"), path_app_dest)
+  system3("rsync", args, check = check, output = output)
 }
 
 
