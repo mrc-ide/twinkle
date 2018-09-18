@@ -8,7 +8,7 @@ configure_apache <- function(path = ".", self_signed = NULL,
   port_admin <- port_admin %||% dat$server$port_admin %||% 9000L
   self_signed <- self_signed %||% dat$server$self_signed %||% FALSE
   twinkle_tag <- Sys.getenv("TWINKLE_TAG",
-                            as.character(packageVersion("twinkle")))
+                            as.character(utils::packageVersion("twinkle")))
 
   ## There are three things that we need to do here perhaps:
   ##
