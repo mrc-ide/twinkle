@@ -13,13 +13,16 @@ services:
 
   admin:
     image: "mrcide/shiny-server-builder:{{{twinkle_tag}}}"
+    working_dir: "/twinkle"
     volumes:
-      - "${PWD}/apache/auth:/apache_auth"
-      - "${PWD}/.vault:/.vault:ro"
-      - "logs:/logs"
-      - "applications:/applications"
-      - "source:/source"
-    # Restore to the original
+      # I think that the setup here probably needs reconsidering a little.
+      - "${PWD}/.vault:/twinkle/.vault:ro"
+      - "${PWD}/site.yml:/twinkle/site.yml:ro"
+      - "${PWD}/apache/auth:/twinkle/apache_auth"
+      - "applications:/apps"
+      - "staging:/twinkle/staging"
+      - "logs:/twinkle/logs"
+    # Reset from twinke entrypoint back to shiny server
     entrypoint: "/usr/bin/shiny-server.sh"
 
   apache:
@@ -37,6 +40,6 @@ services:
       - "${PWD}/apache/ssl:/usr/local/apache2/conf/ssl:ro"
 
 volumes:
+  staging:
   applications:
   logs:
-  source:

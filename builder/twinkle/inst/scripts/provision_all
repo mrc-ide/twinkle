@@ -11,10 +11,10 @@ if [[ ! -f $VAULT_ENV ]]; then
 fi
 
 VOLUME_BASE=$(basename $ROOT)
-VOLUME_SOURCE="${VOLUME_BASE}_source"
-docker volume create $VOLUME_SOURCE
+VOLUME_STAGING="${VOLUME_BASE}_staging"
+docker volume create $VOLUME_STAGING
 
-echo "Provisioning ${ROOT} into ${VOLUME_SOURCE}"
+echo "Provisioning ${ROOT} into ${VOLUME_STAGING}"
 
 if [ -d ${ROOT}/local ]; then
     VOLUME_LOCAL="-v ${ROOT}/local:/local:ro"
@@ -22,7 +22,7 @@ fi
 
 docker run --rm \
        --env-file=$VAULT_ENV \
-       -v ${VOLUME_SOURCE}:/source \
+       -v ${VOLUME_STAGING}:/staging \
        -v ${ROOT}/site.yml:/site.yml:ro \
        $VOLUME_LOCAL \
        mrcide/shiny-server-builder:${TWINKLE_TAG} \

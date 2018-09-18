@@ -1,6 +1,6 @@
-passwordfile <- Sys.getenv("APACHE_PASSWORD_FILE", "/apache_auth/users")
-groupfile <- Sys.getenv("APACHE_PASSWORD_FILE", "/apache_auth/groups")
-vault_env_file <- Sys.getenv("VAULT_ENV_FILE", "/.vault")
+passwordfile <- Sys.getenv("APACHE_PASSWORD_FILE", "apache_auth/users")
+groupfile <- Sys.getenv("APACHE_PASSWORD_FILE", "apache_auth/groups")
+vault_env_file <- Sys.getenv("VAULT_ENV_FILE", ".vault")
 
 ui <- shiny::fluidPage(
   shiny::titlePanel("User management"),

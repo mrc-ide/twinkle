@@ -3,7 +3,7 @@ ROOT=$(realpath $(dirname $0)/..)
 VOLUME_BASE=$(basename $ROOT)
 VOLUME_APPLICATIONS="${VOLUME_BASE}_applications"
 VOLUME_LOGS="${VOLUME_BASE}_logs"
-VOLUME_SOURCE="${VOLUME_BASE}_source"
+VOLUME_STAGING="${VOLUME_BASE}_staging"
 if [ -d ${ROOT}/static ]; then
     VOLUME_STATIC="-v ${ROOT}/static:/static:ro"
 fi
@@ -15,7 +15,7 @@ docker volume create $VOLUME_LOGS
 docker run --rm \
        -v "${VOLUME_APPLICATIONS}:/applications" \
        -v "${VOLUME_LOGS}:/logs" \
-       -v "${VOLUME_SOURCE}:/source:ro" \
+       -v "${VOLUME_STAGING}:/staging:ro" \
        $VOLUME_STATIC \
        -v "${ROOT}/site.yml:/site.yml:ro" \
        mrcide/shiny-server-builder:${TWINKLE_TAG} \
