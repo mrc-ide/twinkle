@@ -2,5 +2,6 @@
 sources
 apache
 docker-compose.yml
-scripts
 restart.txt
+scripts/*
+!scripts/init
