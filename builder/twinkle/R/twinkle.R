@@ -27,17 +27,20 @@ sys_which <- function(name) {
 }
 
 
-git_run <- function(args, root, check = TRUE, env = NULL) {
+git_run <- function(args, root, check = TRUE, output = FALSE, env = NULL) {
   git <- sys_which("git")
   if (!is.null(root)) {
     args <- c("-C", root, args)
   }
-  system3(git, args, check = check, env = env)
+  system3(git, args, check = check, output = output, env = env)
 }
 
 
 system3 <- function(command, args, check = FALSE, output = FALSE, env = NULL) {
-  if (output) {
+  if (is.character(output)) {
+    code <- system2(command, args, stdout = output, stderr = output, env = env)
+    logs <- readLines(output)
+  } else if (output) {
     code <- system2(command, args, stdout = "", stderr = "", env = env)
     logs <- NULL
   } else {
@@ -68,15 +71,16 @@ system3 <- function(command, args, check = FALSE, output = FALSE, env = NULL) {
 }
 
 
-update_app_source <- function(app, dest) {
+update_app_source <- function(app, dest, output, check) {
   switch(app$type,
-         local = update_app_source_local(app, dest),
-         github = update_app_source_github(app, dest),
+         local = update_app_source_local(app, dest, output, check),
+         github = update_app_source_github(app, dest, output, check),
          stop("Unimplemented app type?"))
 }
 
 
-update_app_source_local <- function(app, dest, path_local = "local") {
+update_app_source_local <- function(app, dest, output, check,
+                                    path_local = "local") {
   message(sprintf("Updating source for '%s'", app$path))
   ## This won't play nicely with provisioning scripts probably, unless
   ## they also have protected paths, but then they might not want
@@ -86,12 +90,12 @@ update_app_source_local <- function(app, dest, path_local = "local") {
   protect <- sprintf("--exclude='%s'",
                      c(".lib", ".drat", app$protect$paths))
   args <- c("-vaz", "--delete", protect, path_app_upstream, path_app_source)
-  system3("rsync", args, check = TRUE, output = TRUE)
+  system3("rsync", args, check = check, output = output)
   path_app_source
 }
 
 
-update_app_source_github <- function(app, dest) {
+update_app_source_github <- function(app, dest, output, check) {
   spec <- remotes::parse_github_repo_spec(app$spec)
   path <- file.path(dest, app$path)
   env <- NULL
@@ -140,11 +144,11 @@ update_app_source_github <- function(app, dest) {
 }
 
 
-provision_app <- function(app, dest) {
+provision_app <- function(app, dest, output = TRUE, check = TRUE) {
   ## Root of the application source tree
   path_source <- file.path(dest, app$path)
   ## Root of the app itself within that tree
-  path_app <- update_app_source(app, dest)
+  path_app <- update_app_source(app, dest, check, output)
 
   message(sprintf("Provisioning '%s'", app$path))
   provision_app <- twinkle_file("provision_app")
@@ -177,6 +181,7 @@ provision_app_secrets <- function(app, dest) {
       writeLines(value, dest_path)
     }
   }
+}
 }
 
 
