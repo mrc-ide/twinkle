@@ -18,6 +18,10 @@ apps:
   hello:
     type: local
     spec: hello
+    schedule:
+      hello_world:
+        frequency: "* * * * *"
+        command: ./hello_world
   test:
     type: github
     spec: mrc-ide/twinkle/shiny/applications/test@haproxy

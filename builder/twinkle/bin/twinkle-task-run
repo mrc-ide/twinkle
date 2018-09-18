@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+DATE=$(date)
+TASK_DIR=$1
+LOG_DEST=/shiny/logs/scheduler.log
+
+shift
+echo "[${DATE} - ${TASK_DIR}] About to run '$*'" >> $LOG_DEST
+TASK_COMMAND=$1
+shift
+
+cd $TASK_DIR
+$TASK_COMMAND $* tee -a ${LOG_DEST} >&2
+
+echo "[${DATE} - ${TASK_DIR}] Completed successfully" >> $LOG_DEST

@@ -25,6 +25,15 @@ services:
     # Reset from twinke entrypoint back to shiny server
     entrypoint: "/usr/bin/shiny-server.sh"
 
+  scheduler:
+    image: "mrcide/shiny-server-builder:{{{twinkle_tag}}}"
+    user: shiny
+    volumes:
+      - "${PWD}/site.yml:/site.yml:ro"
+      - "applications:/shiny/apps"
+      - "logs:/shiny/logs"
+    entrypoint: ["/usr/local/bin/twinkle-scheduler"]
+
   apache:
     depends_on:
       - haproxy
