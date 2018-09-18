@@ -29,6 +29,11 @@ write_if_changed <- function(str, dest, collapse = FALSE, description = NULL) {
 }
 
 
+vlapply <- function(X, FUN, ...) {
+  vapply(X, FUN, logical(1), ...)
+}
+
+
 vcapply <- function(X, FUN, ...) {
   vapply(X, FUN, character(1), ...)
 }
@@ -36,4 +41,9 @@ vcapply <- function(X, FUN, ...) {
 
 squote <- function(x) {
   sprintf("'%s'", x)
+}
+
+
+filter_null <- function(x) {
+  x[!vlapply(x, is.null)]
 }

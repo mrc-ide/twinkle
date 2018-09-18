@@ -326,8 +326,15 @@ write_schedule <- function(dest, root = ".", shiny_apps_path = "/shiny/apps") {
       nonzeroReturn = TRUE,
       producesStdout = FALSE,
       producesStderr = FALSE))
-  jobs <- unlist(lapply(dat$apps, function(x) lapply(x$schedule, make_job, x)),
-                 FALSE, FALSE)
+
+  jobs <- lapply(dat$apps, function(app)
+    filter_null(lapply(app$schedule, make_job, app)))
+  jobs <- unlist(jobs, FALSE, FALSE)
+  if (length(jobs) == 0L) {
+    jobs <- list(list(name = "dummy",
+                      command = "/bin/true",
+                      schedule = "@reboot"))
+  }
   str <- yaml::as.yaml(list(jobs = jobs, defaults = defaults))
   write_if_changed(str, dest)
 }
