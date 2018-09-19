@@ -6,8 +6,10 @@ CALLER_UID=`id -u`
 CALLER_GID=`id -g`
 TWINKLE_TAG=$(cat $ROOT/twinkle_tag)
 IMAGE=mrcide/shiny-server-builder:${TWINKLE_TAG}
+if [ -z $TWINKLE_NO_PULL ]; then
+    docker pull $IMAGE
+fi
 
-docker pull $IMAGE
 docker run \
   --rm \
   -v ${PWD}:/target \
