@@ -198,6 +198,18 @@ provision_all <- function(root = ".", dest = "/staging") {
 }
 
 
+provision_apps <- function(names, root = ".", dest = "/staging") {
+  dat <- read_site_yml(root)
+  msg <- setdiff(names, names(dat$apps))
+  if (length(msg) > 0L) {
+    stop("Unknown application: ", paste(squote(msg), collapse = ", "))
+  }
+  for (app in dat$apps[names]) {
+    provision_app(app, dest)
+  }
+}
+
+
 vault_client <- function() {
   vaultr::vault_client(quiet = TRUE)
 }

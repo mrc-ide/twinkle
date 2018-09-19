@@ -36,6 +36,15 @@ main_provision_all <- function(args) {
 }
 
 
+main_provision <- function(args) {
+  "Usage:
+  provision <name>..." -> usage
+  args <- docopt::docopt(usage, args)
+  provision_apps(args$name)
+  invisible()
+}
+
+
 main_set_password <- function(args) {
   "Usage:
   set_password <user> [<password>]"-> usage
