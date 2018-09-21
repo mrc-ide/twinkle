@@ -66,7 +66,7 @@ update_users <- function(path = ".", dat = NULL) {
     used <- unique(unlist(dat$groups, FALSE, FALSE))
     unk <- setdiff(used, basename(user_keys))
     if (length(unk) > 0L) {
-      stop("Unknown users: %s", paste(unk, collapse = ", "))
+      stop(sprintf("Unknown users: %s", paste(unk, collapse = ", ")))
     }
 
     users <- vapply(user_keys, vault$read, "", field = "password",
@@ -84,7 +84,7 @@ update_users <- function(path = ".", dat = NULL) {
   unk <- setdiff(unlist(groups_used, FALSE, FALSE),
                  names(dat$groups))
   if (length(unk) > 0L) {
-    stop("Unknown groups: %s", paste(unk, collapse = ", "))
+    stop(sprintf("Unknown groups: %s", paste(unk, collapse = ", ")))
   }
 
   write_auth_conf <- function(app) {
