@@ -198,13 +198,17 @@ provision_all <- function(root = ".", dest = "/staging") {
 }
 
 
-provision_apps <- function(names, root = ".", dest = "/staging") {
+provision_apps <- function(names, root = ".", dest = "/staging",
+                           preclean = FALSE) {
   dat <- read_site_yml(root)
   msg <- setdiff(names, names(dat$apps))
   if (length(msg) > 0L) {
     stop("Unknown application: ", paste(squote(msg), collapse = ", "))
   }
   for (app in dat$apps[names]) {
+    if (preclean) {
+      unlink(file.path(dest, app$path), recursive = TRUE)
+    }
     provision_app(app, dest)
   }
 }
