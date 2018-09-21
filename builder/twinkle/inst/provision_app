@@ -24,7 +24,8 @@ if (file.exists(provision_yml)) {
     local_drat = file.path(path_app, ".drat"))
 
   ## This will need a little support to enable other forms of updating
-  provisionr::provision_library(dat$packages, target, src = src)
+  provisionr::provision_library(dat$packages, target, src = src,
+                                refresh_drat = TRUE)
   if (!is.null(dat$after)) {
     .libPaths(c(target, .libPaths()))
     message("Running post-provisioning script")
