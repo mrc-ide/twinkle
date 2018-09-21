@@ -206,8 +206,10 @@ provision_apps <- function(names, root = ".", dest = "/staging",
     stop("Unknown application: ", paste(squote(msg), collapse = ", "))
   }
   for (app in dat$apps[names]) {
-    if (preclean) {
-      unlink(file.path(dest, app$path), recursive = TRUE)
+    path_app <- file.path(dest, app$path)
+    if (preclean && file.exists(path_app)) {
+      message("Removing previous copy of ", squote(app$path))
+      unlink(path_app, recursive = TRUE)
     }
     provision_app(app, dest)
   }
