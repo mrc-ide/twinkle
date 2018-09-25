@@ -4,6 +4,7 @@ server:
   port_http: 80
   port_https: 443
   port_admin: 9000
+  port_stats: 9001
   # used for the self-signed certificate
   self_signed: true
   country: UK

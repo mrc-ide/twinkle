@@ -66,9 +66,12 @@ main_configure_apache <- function(args) {
 
   --self-signed      use a self signed certificate
   --port-http=PORT   port to use for http
-  --port-https=PORT  port to use for https" -> usage
+  --port-https=PORT  port to use for https
+  --port-admin=PORT  port to use for admin
+  --port-stats=PORT  port to use for statistics" -> usage
   args <- docopt::docopt(usage, args)
-  configure_apache(".", args$"self-signed", args$port_http, args$port_https)
+  configure_apache(".", args$"self-signed", args$port_http, args$port_https,
+                   args$port_admin, args$port_stats)
   invisible()
 }
 

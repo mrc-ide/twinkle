@@ -63,9 +63,10 @@ PidFile logs/httpd.pid
 User nobody
 
 # Port to Listen on
-Listen *:{{{port_http}}}
-Listen *:{{{port_https}}}
-Listen *:{{{port_admin}}}
+Listen *:{{{ports.http}}}
+Listen *:{{{ports.https}}}
+Listen *:{{{ports.admin}}}
+Listen *:{{{ports.stats}}}
 
 # In a basic setup httpd can only serve files from its document root
 DocumentRoot "/usr/local/apache2/htdocs"
@@ -84,12 +85,12 @@ DirectoryIndex index.html
   Require all granted
 </Directory>
 
-<VirtualHost *:{{{port_http}}}>
+<VirtualHost *:{{{ports.http}}}>
   RewriteEngine On
   RewriteRule ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
 </VirtualHost>
 
-<VirtualHost *:{{{port_https}}}>
+<VirtualHost *:{{{ports.https}}}>
   SSLEngine on
   # or server.crt
   SSLCertificateFile "/usr/local/apache2/conf/ssl/certificate.pem"
@@ -109,7 +110,7 @@ DirectoryIndex index.html
   IncludeOptional conf/auth/*.conf
 </VirtualHost>
 
-<VirtualHost *:{{{port_admin}}}>
+<VirtualHost *:{{{ports.admin}}}>
   SSLEngine on
   # or server.crt
   SSLCertificateFile "/usr/local/apache2/conf/ssl/certificate.pem"
@@ -125,4 +126,18 @@ DirectoryIndex index.html
   RewriteRule /(.*) http://admin:3838/$1 [P,L]
   ProxyPass / http://admin:3838/
   ProxyPassReverse / http://admin:3838/
+</VirtualHost>
+
+<VirtualHost *:{{{ports.stats}}}>
+  SSLEngine on
+  # or server.crt
+  SSLCertificateFile "/usr/local/apache2/conf/ssl/certificate.pem"
+  # or server.key
+  SSLCertificateKeyFile "/usr/local/apache2/conf/ssl/key.pem"
+  CustomLog "/usr/local/apache2/logs/ssl_request_log" \
+          "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+
+  RewriteEngine on
+  ProxyPass / http://haproxy:9001/
+  ProxyPassReverse / http://haproxy:9001/
 </VirtualHost>
