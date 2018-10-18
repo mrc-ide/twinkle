@@ -13,7 +13,7 @@ Support for running a self-hosted shiny server:
 A simple configuration is included here:
 
 - [configuration](example/site.yml)
-- [instructions](example/site.yml)
+- [instructions](example/README.md)
 
 A more complicated example (for which this was developed) is in the [`shiny_dide`](https://github.com/mrc-ide/shiny_dide) repository.
 
