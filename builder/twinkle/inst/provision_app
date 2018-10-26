@@ -11,8 +11,7 @@ if (file.exists(provision_yml)) {
   dat <- yaml::yaml.load_file(provision_yml)
 
   if (isTRUE(dat$self)) {
-    dat$package_sources <-
-      c(dat$package_sources, sprintf("local::%s", path_source))
+    dat$package_sources$local <- path_source
     dat$packages <- union(
       dat$packages,
       read.dcf(file.path(path_source, "DESCRIPTION"), "Package")[[1L]])
@@ -20,6 +19,7 @@ if (file.exists(provision_yml)) {
 
   src <- provisionr::package_sources(
     github = dat$package_sources$github,
+    local = dat$package_source$local,
     cran = "https://cran.rstudio.com",
     local_drat = file.path(path_app, ".drat"))
 
