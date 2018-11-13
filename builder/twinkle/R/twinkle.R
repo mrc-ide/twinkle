@@ -237,12 +237,16 @@ hello <- function(...) {
 
 
 application_source_path <- function(app, dest) {
-  spec <- remotes::parse_github_repo_spec(app$spec)
-  path <- file.path(dest, app$path)
-  if (nzchar(spec$subdir)) {
-    file.path(path, spec$subdir)
+  if (app$type == "local") {
+    file.path(dest, app$spec)
   } else {
-    path
+    spec <- remotes::parse_github_repo_spec(app$spec)
+    path <- file.path(dest, app$path)
+    if (nzchar(spec$subdir)) {
+      file.path(path, spec$subdir)
+    } else {
+      path
+    }
   }
 }
 
