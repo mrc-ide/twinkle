@@ -293,6 +293,7 @@ sync_app <- function(app, staging, dest, output = TRUE, check = TRUE) {
   chown <- c("--owner", "--group", "--chown=shiny:shiny")
   common <- c("-vaz", "--delete", chown)
   args <- c(common, protect, paste0(path_app_src, "/"), path_app_dest)
+  dir.create(path_app_dest, FALSE, TRUE)
   system3("rsync", args, check = check, output = output)
 }
 
