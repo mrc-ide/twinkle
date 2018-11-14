@@ -269,7 +269,7 @@ sync_server <- function(root = ".", staging = "/staging",
     static_files <- system3("find", args, check = TRUE, output = FALSE)$output
     message("Synchonising static files")
     chown <- c("--owner", "--group", "--chown=shiny:shiny")
-    common <- c("-vaz", "--delete", chown)
+    common <- c("-vaz", chown)
     args <- c(common, static_files, paste0(dest, "/"))
     system3("rsync", args, check = TRUE, output = TRUE)
     known <- c(known, sub(paste0(static, "/"), "", static_files))
