@@ -276,10 +276,13 @@ sync_server <- function(root = ".", staging = "/staging",
   }
 
   found <- dir(dest, all.files = TRUE, no.. = TRUE)
+
+  i <- grepl("/.+", known)
+  known[i] <- dirname(known[i])
   extra <- setdiff(found, known)
 
   if (length(extra) > 0L) {
-    message("Removing extra files")
+    message("Removing extra files: ", paste(squote(extra), collapse = ", "))
     unlink(file.path(dest, extra), recursive = TRUE)
   }
 }
