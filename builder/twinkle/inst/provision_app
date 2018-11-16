@@ -19,6 +19,7 @@ if (file.exists(provision_yml)) {
 
   src <- provisionr::package_sources(
     github = dat$package_sources$github,
+    repos = dat$package_source$repos,
     local = dat$package_source$local,
     cran = "https://cran.rstudio.com",
     local_drat = file.path(path_app, ".drat"))
