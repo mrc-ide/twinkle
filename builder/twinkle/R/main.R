@@ -69,6 +69,15 @@ main_sync_server <- function(args) {
 }
 
 
+main_sync_app <- function(args) {
+  "Usage:
+  sync_app <name>..." -> usage
+  args <- docopt::docopt(usage, args)
+  sync_apps(args$name)
+  invisible()
+}
+
+
 main_configure_apache <- function(args) {
   "Usage:
   configure_apache [options]

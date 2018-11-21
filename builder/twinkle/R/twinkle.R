@@ -309,6 +309,23 @@ sync_server <- function(root = ".", staging = "/staging",
 }
 
 
+sync_apps <- function(names, root = ".", staging = "/staging",
+                      dest = "/applications", logs = "/logs") {
+  dat <- read_site_yml(root)
+
+  system3("chown", c("shiny.shiny", c(dest, logs)), check = TRUE)
+
+  msg <- setdiff(names, names(dat$apps))
+  if (length(msg) > 0L) {
+    stop("Unknown application: ", paste(squote(msg), collapse = ", "))
+  }
+
+  for (app in dat$apps[names]) {
+    sync_app(app, staging, dest)
+  }
+}
+
+
 sync_app <- function(app, staging, dest, output = TRUE, check = TRUE) {
   message(sprintf("Synchonising '%s'", app$path))
   path_app_src <- application_source_path(app, staging)
