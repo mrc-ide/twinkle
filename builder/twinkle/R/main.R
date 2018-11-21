@@ -14,6 +14,15 @@ main_add_deploy_key <- function(args) {
 }
 
 
+main_add_github_pat <- function(args) {
+  "Usage:
+  add_github_pat [--overwrite] <appname> <pat>" -> usage
+  args <- docopt::docopt(usage, args)
+  add_github_pat(args$appname, args$pat, args$overwrite)
+  invisible()
+}
+
+
 main_import_ssl <- function(args) {
   "Usage:
   import_ssl <key> <cert>...

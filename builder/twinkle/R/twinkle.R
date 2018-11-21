@@ -334,6 +334,25 @@ add_deploy_key <- function(user_repo, overwrite = FALSE) {
 }
 
 
+add_github_pat <- function(appname, pat, overwrite = FALSE) {
+  vault_root <- Sys.getenv("VAULT_ROOT")
+
+  vault_path <- sprintf("%s/github-pat/%s", vault_root, appname)
+
+  vault <- vaultr::vault_client(quiet = TRUE)
+
+  if (!is.null(vault$read(vault_path)) && !overwrite) {
+    message(sprintf("GitHub PAT already exists for '%s'", appname))
+    return()
+  }
+
+  data <- list(value = pat)
+
+  message(sprintf("Writing keys to vault at '%s'", vault_path))
+  vault$write(vault_path, data)
+}
+
+
 ## Ingredients here:
 write_schedule <- function(dest, root = ".", shiny_apps_path = "/shiny/apps") {
   dat <- read_site_yml(root)
