@@ -111,8 +111,8 @@ update_app_source_github <- function(app, dest, output, check) {
                        spec$username, spec$repo)
   } else {
     vault <- vault_client()
+    vault_root <- Sys.getenv("VAULT_ROOT")
     if (app$auth$type == "deploy_key") {
-      vault_root <- Sys.getenv("VAULT_ROOT")
       user_repo <- sprintf("%s/%s", spec$username, spec$repo)
       vault_path <- sprintf("%s/deploy-keys/%s", vault_root, user_repo)
       ssh_id <- tempfile()
@@ -122,6 +122,14 @@ update_app_source_github <- function(app, dest, output, check) {
       env <- sprintf('GIT_SSH_COMMAND="ssh -i %s"', ssh_id)
       git_url <- sprintf("git@github.com:%s/%s.git",
                          spec$username, spec$repo)
+    } else if (app$auth$type == "github_pat") {
+      vault_path <- sprintf("%s/github-pat/%s", app$path)
+      pat <- vault$read(vault_path, "value")
+      if (is.null(pat)) {
+        stop(sprintf("PAT not found for '%s'", app$path))
+      }
+      git_url <- sprintf("https://%s@github.com/%s/%s",
+                         pat, spec$username, spec$repo)
     } else {
       stop("auth mode unsupported")
     }
