@@ -123,7 +123,7 @@ update_app_source_github <- function(app, dest, output, check) {
       git_url <- sprintf("git@github.com:%s/%s.git",
                          spec$username, spec$repo)
     } else if (app$auth$type == "github_pat") {
-      vault_path <- sprintf("%s/github-pat/%s", app$path)
+      vault_path <- sprintf("%s/github-pat/%s", vault_root, app$path)
       pat <- vault$read(vault_path, "value")
       if (is.null(pat)) {
         stop(sprintf("PAT not found for '%s'", app$path))
@@ -164,10 +164,23 @@ provision_app <- function(app, dest, output = TRUE, check = TRUE) {
   ## Root of the app itself within that tree
   path_app <- update_app_source(app, dest, check, output)
 
+  if (identical(app$auth$type, "github_pat")) {
+    vault <- vault_client()
+    vault_root <- Sys.getenv("VAULT_ROOT")
+    vault_path <- sprintf("%s/github-pat/%s", vault_root, app$path)
+    pat <- vault$read(vault_path, "value")
+    if (is.null(pat)) {
+      stop(sprintf("PAT not found for '%s'", app$path))
+    }
+    env <- paste0("GITHUB_PAT=", pat)
+  } else {
+    env <- NULL
+  }
+
   message(sprintf("Provisioning '%s'", app$path))
   provision_app <- twinkle_file("provision_app")
   system3(provision_app, c(path_source, path_app),
-          check = TRUE, output = TRUE)
+          check = TRUE, output = TRUE, env = env)
 
   provision_app_secrets(app, dest)
 }
