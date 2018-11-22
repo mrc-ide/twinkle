@@ -158,7 +158,8 @@ update_app_source_github <- function(app, dest, output, check) {
 }
 
 
-provision_app <- function(app, dest, output = TRUE, check = TRUE) {
+provision_app <- function(app, dest, output = TRUE, check = TRUE,
+                          update_source_only = FALSE) {
   ## Root of the application source tree
   path_source <- file.path(dest, app$path)
   ## Root of the app itself within that tree
@@ -177,10 +178,12 @@ provision_app <- function(app, dest, output = TRUE, check = TRUE) {
     env <- NULL
   }
 
-  message(sprintf("Provisioning '%s'", app$path))
-  provision_app <- twinkle_file("provision_app")
-  system3(provision_app, c(path_source, path_app),
-          check = TRUE, output = TRUE, env = env)
+  if (!update_source_only) {
+    message(sprintf("Provisioning '%s'", app$path))
+    provision_app <- twinkle_file("provision_app")
+    system3(provision_app, c(path_source, path_app),
+            check = TRUE, output = TRUE, env = env)
+  }
 
   provision_app_secrets(app, dest)
 }
@@ -220,7 +223,7 @@ provision_all <- function(root = ".", dest = "/staging") {
 
 
 provision_apps <- function(names, root = ".", dest = "/staging",
-                           preclean = FALSE) {
+                           preclean = FALSE, update_source_only = FALSE) {
   dat <- read_site_yml(root)
   msg <- setdiff(names, names(dat$apps))
   if (length(msg) > 0L) {
@@ -232,7 +235,7 @@ provision_apps <- function(names, root = ".", dest = "/staging",
       message("Removing previous copy of ", squote(app$path))
       unlink(path_app, recursive = TRUE)
     }
-    provision_app(app, dest)
+    provision_app(app, dest, update_source_only = update_source_only)
   }
 }
 

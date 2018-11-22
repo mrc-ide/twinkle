@@ -47,9 +47,10 @@ main_provision_all <- function(args) {
 
 main_provision <- function(args) {
   "Usage:
-  provision [--preclean] <name>..." -> usage
+  provision [--preclean --update-source-only] <name>..." -> usage
   args <- docopt::docopt(usage, args)
-  provision_apps(args$name, preclean = args$preclean)
+  provision_apps(args$name, preclean = args$preclean,
+                 update_source_only = args$"update-source-only")
   invisible()
 }
 
