@@ -140,10 +140,12 @@ update_app_source_github <- function(app, dest, output, check) {
           if (update) "Updating" else "Cloning", app$path))
 
   if (update) {
+    prev <- git_run(c("rev-parse", "--short=7", "HEAD"), path)$output
     git_run("fetch", path, env = env)
   } else {
     dir.create(dirname(path), FALSE, TRUE)
     git_run(c("clone", git_url, path), NULL, env = env)
+    prev <- "(new clone)"
   }
 
   ## NOTE: PR not allowed, master assumed default branch
@@ -153,6 +155,13 @@ update_app_source_github <- function(app, dest, output, check) {
     ref <- paste0("origin/", spec$ref)
   }
   git_run(c("reset", "--hard", ref), path)
+  curr <- git_run(c("rev-parse", "--short=7", "HEAD"), path)$output
+
+  if (prev == curr) {
+    message(sprintf("\tsource unchanged at %s", curr))
+  } else {
+    message(sprintf("\tsource updated %s => %s", prev, curr))
+  }
 
   application_source_path(app, dest)
 }
