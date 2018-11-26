@@ -6,7 +6,7 @@ VAULT_ENV=$ROOT/.vault
 TWINKLE_TAG=$(cat $ROOT/twinkle_tag)
 
 if [[ ! -f $VAULT_ENV ]]; then
-    echo "Run ./util/vault_auth to authenticate with vault server"
+    echo "Run ./scripts/vault_auth to authenticate with vault server"
     exit 1
 fi
 
