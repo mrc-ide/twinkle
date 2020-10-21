@@ -20,12 +20,11 @@ RUN apt-get update && apt-get install -y \
 RUN echo 'if (file.exists(".lib")) .libPaths(c(".lib", .libPaths()))' >> \
     /usr/local/lib/R/etc/Rprofile.site
 
-RUN mkdir -p /shiny/logs /shiny/apps && \
-    chown -R shiny.shiny /shiny
+RUN mkdir -p /shiny/logs /shiny/apps
 
 # Override the rocker defaults with our defaults
 COPY shiny-server.conf /etc/shiny-server/shiny-server.conf
 
 # These will be replaced by our docker compose file but that's ok at
 # least for now.
-COPY --chown=shiny:shiny applications /shiny/apps
+COPY applications /shiny/apps

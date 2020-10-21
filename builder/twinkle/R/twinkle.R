@@ -284,8 +284,6 @@ sync_server <- function(root = ".", staging = "/staging",
                         static = "/static") {
   dat <- read_site_yml(root)
 
-  system3("chown", c("shiny.shiny", c(dest, logs)), check = TRUE)
-
   for (app in dat$apps) {
     sync_app(app, staging, dest)
   }
@@ -296,8 +294,7 @@ sync_server <- function(root = ".", staging = "/staging",
     args <- c(static, "-maxdepth", "1", "-mindepth", "1")
     static_files <- system3("find", args, check = TRUE, output = FALSE)$output
     message("Synchonising static files")
-    chown <- c("--owner", "--group", "--chown=shiny:shiny")
-    common <- c("-vaz", chown)
+    common <- c("-vaz")
     args <- c(common, static_files, paste0(dest, "/"))
     system3("rsync", args, check = TRUE, output = TRUE)
     known <- c(known, sub(paste0(static, "/"), "", static_files))
@@ -320,8 +317,6 @@ sync_apps <- function(names, root = ".", staging = "/staging",
                       dest = "/applications", logs = "/logs") {
   dat <- read_site_yml(root)
 
-  system3("chown", c("shiny.shiny", c(dest, logs)), check = TRUE)
-
   msg <- setdiff(names, names(dat$apps))
   if (length(msg) > 0L) {
     stop("Unknown application: ", paste(squote(msg), collapse = ", "))
@@ -338,8 +333,7 @@ sync_app <- function(app, staging, dest, output = TRUE, check = TRUE) {
   path_app_src <- application_source_path(app, staging)
   path_app_dest <- file.path(dest, app$path)
   protect <- sprintf("--exclude='%s'", app$protect$paths)
-  chown <- c("--owner", "--group", "--chown=shiny:shiny")
-  common <- c("-vaz", "--delete", chown)
+  common <- c("-vaz", "--delete")
   args <- c(common, protect, paste0(path_app_src, "/"), path_app_dest)
   dir.create(path_app_dest, FALSE, TRUE)
   system3("rsync", args, check = check, output = output)
