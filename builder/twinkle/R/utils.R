@@ -47,3 +47,10 @@ squote <- function(x) {
 filter_null <- function(x) {
   x[!vlapply(x, is.null)]
 }
+
+
+docopt_parse <- function(usage, args) {
+  dat <- docopt::docopt(usage, args)
+  names(dat) <- gsub("-", "_", names(dat), fixed = TRUE)
+  dat
+}

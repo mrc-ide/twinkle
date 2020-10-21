@@ -8,7 +8,7 @@ main_vault_auth <- function(args) {
 main_add_deploy_key <- function(args) {
   "Usage:
   add_deploy_key [--overwrite] <repo>" -> usage
-  args <- docopt::docopt(usage, args)
+  args <- docopt_parse(usage, args)
   add_deploy_key(args$repo, args$overwrite)
   invisible()
 }
@@ -17,7 +17,7 @@ main_add_deploy_key <- function(args) {
 main_add_github_pat <- function(args) {
   "Usage:
   add_github_pat [--overwrite] <appname> <pat>" -> usage
-  args <- docopt::docopt(usage, args)
+  args <- docopt_parse(usage, args)
   add_github_pat(args$appname, args$pat, args$overwrite)
   invisible()
 }
@@ -27,7 +27,7 @@ main_import_ssl <- function(args) {
   "Usage:
   import_ssl <key> <cert>...
   import_ssl --self-signed" -> usage
-  args <- docopt::docopt(usage, args)
+  args <- docopt_parse(usage, args)
   if (isTRUE(args$"--self-signed")) {
     tmp <- tempfile()
     message("Generating self-signed certificate")
@@ -48,7 +48,7 @@ main_provision_all <- function(args) {
 main_provision <- function(args) {
   "Usage:
   provision [--preclean --update-source-only] <name>..." -> usage
-  args <- docopt::docopt(usage, args)
+  args <- docopt_parse(usage, args)
   provision_apps(args$name, preclean = args$preclean,
                  update_source_only = args$"update-source-only")
   invisible()
@@ -58,7 +58,7 @@ main_provision <- function(args) {
 main_set_password <- function(args) {
   "Usage:
   set_password <user> [<password>]"-> usage
-  args <- docopt::docopt(usage, args)
+  args <- docopt_parse(usage, args)
   set_password(args$user, args$password)
 }
 
@@ -73,7 +73,7 @@ main_sync_server <- function(args) {
 main_sync_app <- function(args) {
   "Usage:
   sync_app <name>..." -> usage
-  args <- docopt::docopt(usage, args)
+  args <- docopt_parse(usage, args)
   sync_apps(args$name)
   invisible()
 }
@@ -88,7 +88,7 @@ main_configure_apache <- function(args) {
   --port-https=PORT  port to use for https
   --port-admin=PORT  port to use for admin
   --port-stats=PORT  port to use for statistics" -> usage
-  args <- docopt::docopt(usage, args)
+  args <- docopt_parse(usage, args)
   configure_apache(".", args$"self-signed", args$port_http, args$port_https,
                    args$port_admin, args$port_stats)
   invisible()
@@ -119,7 +119,7 @@ main_init <- function(args) {
 main_write_schedule <- function(args) {
   "Usage:
   write_schedule <dest>" -> usage
-  args <- docopt::docopt(usage, args)
+  args <- docopt_parse(usage, args)
   write_schedule(args$dest)
   invisible()
 }
@@ -127,5 +127,5 @@ main_write_schedule <- function(args) {
 
 no_args <- function(name, args) {
   usage <- sprintf("Usage:\n  %s", name)
-  docopt::docopt(usage, args)
+  docopt_parse(usage, args)
 }
