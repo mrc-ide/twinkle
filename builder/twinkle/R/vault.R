@@ -18,12 +18,9 @@ vault_env_str <- function(dat) {
     gh_token <- trimws(getPass::getPass("Enter GitHub token: "))
   }
 
-  cl <- vaultr::vault_client("github", addr = address, gh_token = gh_token)
+  cl <- vaultr::vault_client("github", addr = address, token = gh_token)
 
-  ## There are two ways of getting the token out easily here, but one
-  ## should be added to vault directly I think
-  token <- cl$token$headers[[1]]
-  ## cl$.get("/auth/token/lookup-self")$data$id
+  token <- cl$api()$token
 
   env <- c(VAULT_ADDR = address,
            VAULTR_AUTH_METHOD = "token",
