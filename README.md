@@ -25,7 +25,7 @@ docker run \
   -v ${PWD}:/target \
   -w /target \
   --user="`id -u`:`id -u`" \
-  mrcide/shiny-server-builder:0.0.1 \
+  mrcide/shiny-server-builder:0.0.2 \
   init
 ```
 

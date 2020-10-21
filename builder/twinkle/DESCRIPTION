@@ -1,5 +1,5 @@
 Package: twinkle
-Version: 0.0.1
+Version: 0.0.2
 Title: Load Balanced Shiny Server
 Description: Creates a load balanced, authenticated, shiny server,
   running over https using docker and haproxy.  This package provides
