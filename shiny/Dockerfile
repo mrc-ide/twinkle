@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     libgdal-dev \
     libgeos-dev \
+    libglpk40 \
     libhiredis-dev \
     libmagick++-dev \
     libssl-dev \
