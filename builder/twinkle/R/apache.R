@@ -61,7 +61,7 @@ update_users <- function(path = ".", dat = NULL) {
     vault_root <- Sys.getenv("VAULT_ROOT")
     vault <- vault_client()
 
-    user_keys <- vault$list(sprintf("%s/users", vault_root))
+    user_keys <- vault$list(sprintf("%s/users", vault_root), TRUE)
 
     used <- unique(unlist(dat$groups, FALSE, FALSE))
     unk <- setdiff(used, basename(user_keys))
