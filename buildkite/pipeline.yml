@@ -1,0 +1,3 @@
+steps:
+  - label: ":rstats::twinkle: Build images"
+    command: scripts/build
