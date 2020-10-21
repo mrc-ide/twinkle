@@ -3,7 +3,8 @@ FROM mrcide/shiny-server:${SERVER_VERSION}
 
 RUN apt-get update && apt-get install -y \
   apache2-utils \
-  python3-pip
+  python3-pip \
+  rsync
 
 RUN pip3 install yacron
 
