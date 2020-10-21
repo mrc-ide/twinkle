@@ -36,3 +36,8 @@ vault_auth <- function(path = ".") {
   env <- vault_env_str(dat)
   writeLines(env, file.path(path, ".vault"))
 }
+
+
+vault_client <- function() {
+  vaultr::vault_client(quiet = TRUE, login = "token")
+}

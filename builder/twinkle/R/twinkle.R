@@ -204,7 +204,7 @@ provision_app_secrets <- function(app, dest) {
   }
 
   vault_root <- Sys.getenv("VAULT_ROOT")
-  vault <- vaultr::vault_client(quiet = TRUE)
+  vault <- vault_client()
 
   for (s in app$secret) {
     src <- s$path
@@ -246,11 +246,6 @@ provision_apps <- function(names, root = ".", dest = "/staging",
     }
     provision_app(app, dest, update_source_only = update_source_only)
   }
-}
-
-
-vault_client <- function() {
-  vaultr::vault_client(quiet = TRUE)
 }
 
 
@@ -364,7 +359,7 @@ add_deploy_key <- function(user_repo, overwrite = FALSE) {
   url_key <- sprintf("https://github.com/%s/settings/keys/new", user_repo)
   vault_path <- sprintf("%s/deploy-keys/%s", vault_root, user_repo)
 
-  vault <- vaultr::vault_client(quiet = TRUE)
+  vault <- vault_client()
 
   if (!is.null(vault$read(vault_path)) && !overwrite) {
     message(sprintf("Deploy key already exists for '%s'", user_repo))
@@ -389,7 +384,7 @@ add_github_pat <- function(appname, pat, overwrite = FALSE) {
 
   vault_path <- sprintf("%s/github-pat/%s", vault_root, appname)
 
-  vault <- vaultr::vault_client(quiet = TRUE)
+  vault <- vault_client()
 
   if (!is.null(vault$read(vault_path)) && !overwrite) {
     message(sprintf("GitHub PAT already exists for '%s'", appname))

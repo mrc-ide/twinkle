@@ -17,7 +17,7 @@ add_deploy_key <- function(user_repo, overwrite = FALSE) {
   url_key <- sprintf("https://github.com/%s/settings/keys/new", user_repo)
   vault_path <- sprintf("%s/deploy-keys/%s", vault_root, user_repo)
 
-  vault <- vaultr::vault_client(quiet = TRUE)
+  vault <- vaultr::vault_client(quiet = TRUE, login = "token")
 
   if (!is.null(vault$read(vault_path)) && !overwrite) {
     message(sprintf("Deploy key already exists for '%s'", user_repo))

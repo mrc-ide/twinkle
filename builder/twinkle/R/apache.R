@@ -59,7 +59,7 @@ update_users <- function(path = ".", dat = NULL) {
 
   if (!is.null(dat$groups)) {
     vault_root <- Sys.getenv("VAULT_ROOT")
-    vault <- vaultr::vault_client(quiet = TRUE)
+    vault <- vault_client()
 
     user_keys <- vault$list(sprintf("%s/users", vault_root))
 
@@ -115,7 +115,7 @@ update_httpd_compose <- function(path, twinkle_tag, ports) {
 
 export_ssl <- function(path = ".") {
   vault_root <- Sys.getenv("VAULT_ROOT")
-  vault <- vaultr::vault_client(quiet = TRUE)
+  vault <- vault_client()
   dat <- vault$read(vault_path_ssl(vault_root))
 
   cert <- file.path(path, "certificate.pem")
@@ -136,7 +136,7 @@ import_ssl <- function(cert, key) {
   cert <- vapply(cert, read_string, "")
   key <- read_string(key)
   vault_root <- Sys.getenv("VAULT_ROOT")
-  vault <- vaultr::vault_client(quiet = TRUE)
+  vault <- vault_client()
   vault$write(vault_path_ssl(vault_root), list(cert = cert, key = key))
 }
 
