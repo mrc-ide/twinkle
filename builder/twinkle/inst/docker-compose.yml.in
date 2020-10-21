@@ -6,7 +6,6 @@ services:
 
   shiny:
     image: "mrcide/shiny-server:{{{twinkle_tag}}}"
-    user: shiny
     volumes:
       - "applications:/shiny/apps"
       - "logs:/shiny/logs"
@@ -27,7 +26,6 @@ services:
 
   scheduler:
     image: "mrcide/shiny-server-builder:{{{twinkle_tag}}}"
-    user: shiny
     volumes:
       - "${PWD}/site.yml:/site.yml:ro"
       - "applications:/shiny/apps"
