@@ -28,7 +28,7 @@ main_import_ssl <- function(args) {
   import_ssl <key> <cert>...
   import_ssl --self-signed" -> usage
   args <- docopt_parse(usage, args)
-  if (isTRUE(args$"--self-signed")) {
+  if (isTRUE(args$self_signed)) {
     tmp <- tempfile()
     message("Generating self-signed certificate")
     args <- write_self_signed_ssl(tmp)
@@ -50,7 +50,7 @@ main_provision <- function(args) {
   provision [--preclean --update-source-only] <name>..." -> usage
   args <- docopt_parse(usage, args)
   provision_apps(args$name, preclean = args$preclean,
-                 update_source_only = args$"update-source-only")
+                 update_source_only = args$update_source_only)
   invisible()
 }
 
@@ -89,7 +89,7 @@ main_configure_apache <- function(args) {
   --port-admin=PORT  port to use for admin
   --port-stats=PORT  port to use for statistics" -> usage
   args <- docopt_parse(usage, args)
-  configure_apache(".", args$"self-signed", args$port_http, args$port_https,
+  configure_apache(".", args$self_signed, args$port_http, args$port_https,
                    args$port_admin, args$port_stats)
   invisible()
 }
