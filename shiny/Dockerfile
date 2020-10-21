@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     libmagick++-dev \
     libssl-dev \
     libudunits2-dev \
+    libv8-dev \
     libxml2-dev
 
 # This will allow the use of a per-shiny-app library path, overriding
