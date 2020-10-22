@@ -17,11 +17,18 @@ if (file.exists(provision_yml)) {
       read.dcf(file.path(path_source, "DESCRIPTION"), "Package")[[1L]])
   }
 
+  cran_default <- "https://cran.rstudio.com"
+  cran <- tryCatch(getOption("repos")[["CRAN"]],
+                    error = function(e) cran_default)
+  if (!nzchar(cran) || cran == "@CRAN@") {
+    cran <- cran_default
+  }
+
   src <- provisionr::package_sources(
     github = dat$package_sources$github,
     repos = dat$package_source$repos,
     local = dat$package_source$local,
-    cran = "https://cran.rstudio.com",
+    cran = cran,
     local_drat = file.path(path_app, ".drat"))
 
   ## This will need a little support to enable other forms of updating

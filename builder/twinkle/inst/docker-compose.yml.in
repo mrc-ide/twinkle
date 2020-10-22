@@ -6,7 +6,6 @@ services:
 
   shiny:
     image: "mrcide/shiny-server:{{{twinkle_tag}}}"
-    user: shiny
     volumes:
       - "applications:/shiny/apps"
       - "logs:/shiny/logs"
@@ -22,12 +21,11 @@ services:
       - "applications:/twinkle/apps"
       - "staging:/twinkle/staging"
       - "logs:/twinkle/logs"
-    # Reset from twinke entrypoint back to shiny server
-    entrypoint: "/usr/bin/shiny-server.sh"
+    # Reset from twinkle entrypoint back to shiny server
+    entrypoint: "/init"
 
   scheduler:
     image: "mrcide/shiny-server-builder:{{{twinkle_tag}}}"
-    user: shiny
     volumes:
       - "${PWD}/site.yml:/site.yml:ro"
       - "applications:/shiny/apps"
