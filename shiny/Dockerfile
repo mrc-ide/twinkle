@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     libglpk40 \
     libhiredis-dev \
     libmagick++-dev \
+    libjq-dev \
     libssl-dev \
     libudunits2-dev \
     libv8-dev \
