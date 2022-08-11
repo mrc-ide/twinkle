@@ -7,6 +7,9 @@ ServerName {{{hostname}}}
 
 ServerRoot "/usr/local/apache2"
 
+ServerSignature Off
+ServerTokens Prod
+
 User daemon
 Group daemon
 
