@@ -14,6 +14,7 @@ repo_init <- function(name, username, repo, branch, root) {
     cli::cli_abort("'{name}' already exists at {dest}")
   }
   url <- sprintf("https://github.com/%s/%s", username, repo)
+  dir_create(dirname(dest))
   gert::git_clone(url, dest)
   if (!is.null(branch)) {
     repo_checkout_branch(name, branch, root)

@@ -5,7 +5,7 @@ rsync_mirror_directory <- function(from, to, exclude = NULL) {
   add_trailing_slash <- function(path) {
     if (!grepl("/$", path)) paste0(path, "/") else path
   }
-  dir.create(dirname(to), showWarnings = FALSE, recursive = TRUE)
+  dir_create(dirname(to))
   args <- c("-auv", exclude, "--delete",
             add_trailing_slash(from),
             add_trailing_slash(to))
