@@ -34,11 +34,17 @@ repo_checkout_branch <- function(name, branch, root) {
   if (is.null(branch)) {
     branch <- repo_default_branch(repo)
   }
-  gert::git_reset_hard(repo = repo)
-  gert::git_branch_create(branch,
-                          ref = sprintf("origin/%s", branch),
-                          force = TRUE,
-                          repo = repo)
+  ref_remote <- sprintf("origin/%s", branch)
+  current <- gert::git_branch(repo = repo)
+  if (current == branch) {
+    gert::git_reset_hard(ref = ref_remote, repo = repo)
+  } else {
+    gert::git_reset_hard(repo = repo)
+    gert::git_branch_create(branch,
+                            ref = ref_remote,
+                            force = TRUE,
+                            repo = repo)
+  }
 }
 
 
