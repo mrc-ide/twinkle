@@ -20,7 +20,7 @@ update_app <- function(app, root,
                        update_production = FALSE) {
   repo_update(app$name, app$username, app$repo, app$branch, root)
   if (install_packages) {
-    build_library(app$name, root)
+    build_library(app$name, app$subdir, root)
   }
   if (update_staging) {
     sync_app(app$name, app$subdir, staging = TRUE, root = root)

@@ -22,12 +22,7 @@ sync_app <- function(name, subdir, staging, root) {
   dest <- if (staging) path_app_staging(root, name) else path_app(root, name)
   path_lib <- path_lib(root, name)
 
-  path_src <- path_repo(root, name)
-  if (!is.null(subdir)) {
-    path_src <- file.path(path_src, subdir)
-  }
-
-  rsync_mirror_directory(path_src, dest,
+  rsync_mirror_directory(path_src(root, name, subdir), dest,
                          exclude = c(".git", ".lib", ".Rprofile"))
   rsync_mirror_directory(path_lib(root, name), file.path(dest, ".lib"),
                          exclude = ".conan")
