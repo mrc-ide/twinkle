@@ -1,6 +1,6 @@
 build_library <- function(name, subdir, root) {
   cli::cli_h1("Building library")
-  repo <- path_src(root, subdir, name)
+  repo <- path_src(root, name, subdir)
 
   ## Eventually we might want to prefer pkgdepends.txt as the
   ## installation mechanism, but that will require some logic around
