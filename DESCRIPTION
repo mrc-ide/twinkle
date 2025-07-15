@@ -19,10 +19,10 @@ Imports:
     gert,
     pkgdepends,
     remotes,
+    withr,
     yaml
 Remotes:
     mrc-ide/conan2
 Suggests:
-    testthat (>= 3.0.0),
-    withr
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3

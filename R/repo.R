@@ -9,6 +9,7 @@ repo_update <- function(name, username, repo, branch, root) {
 
 
 repo_init <- function(name, username, repo, branch, root) {
+  cli::cli_h1("Cloning {name} (from github: {username}/{repo})")
   dest <- path_repo(root, name)
   if (file.exists(dest)) {
     cli::cli_abort("'{name}' already exists at {dest}")
@@ -23,6 +24,7 @@ repo_init <- function(name, username, repo, branch, root) {
 
 
 repo_update_existing <- function(name, branch, root) {
+  cli::cli_h1("Updating sources for {name}")
   repo <- path_repo(root, name)
   gert::git_fetch(repo = repo)
   repo_checkout_branch(name, branch, root)

@@ -1,4 +1,5 @@
 build_library <- function(name, root) {
+  cli::cli_h1("Building library")
   repo <- path_repo(root, name)
   path_provision <- file.path(repo, "provision.yml")
   dat <- yaml::read_yaml(path_provision)
@@ -22,7 +23,7 @@ build_library <- function(name, root) {
     path_lib = path_lib,
     path_bootstrap = path_bootstrap,
     path = root)
-  conan2::conan_run(cfg)
+  withr::with_dir(root, conan2::conan_run(cfg))
 }
 
 
