@@ -15,26 +15,6 @@ twinkle_update_app <- function(name,
 }
 
 
-read_config <- function(path_config) {
-  dat <- yaml::read_yaml(path_config)
-  extra <- setdiff(names(dat), "apps")
-  if (length(extra)) {
-    cli::cli_abort("Expected 'site.yml' to only have top-level field 'apps'")
-  }
-  if (!is.null(names(dat$apps))) {
-    cli::cli_abort("Expected 'site.yml:apps' to be a named list")
-  }
-  Map(check_app_config, names(dat$apps), dat$apps)
-}
-
-
-check_app_config <- function(name, cfg) {
-  ## TODO: add some checks here, all pretty standard stuff.
-  cfg$name <- name
-  cfg
-}
-
-
 update_app <- function(name, username, repo, branch, root,
                        install_packages = TRUE,
                        update_staging = TRUE,
