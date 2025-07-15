@@ -3,11 +3,7 @@ twinkle_update_app <- function(name,
                                update_staging = TRUE,
                                update_production = FALSE) {
   root <- find_twinkle_root()
-  cfg <- read_config(find_twinkle_config())
-  app <- cfg[[name]]
-  if (is.null(app)) {
-    cli::cli_abort("No such app '{name}'")
-  }
+  app <- read_app_config(find_twinkle_config(), name)
   update_app(name, app$username, app$repo, app$branch, root,
              install_packages = install_packages,
              update_staging = update_staging,

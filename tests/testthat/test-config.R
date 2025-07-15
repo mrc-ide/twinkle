@@ -36,6 +36,9 @@ test_that("can read an application", {
                                 repo = "app",
                                 branch = "main",
                                 name = "foo"))))
+  expect_equal(read_app_config(path, "foo"), dat$apps$foo)
+  expect_error(read_app_config(path, "bar"),
+               "No such app 'bar'")
 })
 
 

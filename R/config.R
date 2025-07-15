@@ -1,3 +1,13 @@
+read_app_config <- function(path_config, name) {
+  cfg <- read_config(path_config)
+  app <- cfg$apps[[name]]
+  if (is.null(app)) {
+    cli::cli_abort("No such app '{name}'")
+  }
+  app
+}
+
+
 read_config <- function(path_config) {
   if (!file.exists(path_config)) {
     cli::cli_abort("Configuration file '{path_config}' not found")
