@@ -1,0 +1,36 @@
+repo_init <- function(name, username, repo, branch, root) {
+  dest <- path_repo(root, name)
+  if (file.exists(dest)) {
+    cli::cli_abort("'{name}' already exists at {dest}")
+  }
+  url <- sprintf("https://github.com/%s/%s", username, repo)
+  gert::git_clone(url, dest)
+  if (!is.null(branch)) {
+    repo_checkout_branch(name, branch, root)
+  }
+}
+
+
+repo_update <- function(name, branch, root) {
+  repo <- path_repo(root, name)
+  gert::git_fetch(repo = repo)
+  repo_checkout_branch(name, branch, root)
+}
+
+
+repo_checkout_branch <- function(name, branch, root) {
+  repo <- path_repo(root, name)
+  if (is.null(branch)) {
+    branch <- repo_default_branch(repo)
+  }
+  gert::git_reset_hard(repo = repo)
+  gert::git_branch_create(branch,
+                          ref = sprintf("origin/%s", branch),
+                          force = TRUE,
+                          repo = repo)
+}
+
+
+repo_default_branch <- function(repo) {
+  basename(gert::git_remote_info(repo = repo)$head)
+}
