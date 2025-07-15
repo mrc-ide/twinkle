@@ -8,7 +8,7 @@ Authors@R: c(person("Wes", "Hinsley", role = c("aut", "cre"),
              person("Imperial College of Science, Technology and Medicine",
                     role = "cph"))
 Description: Support scripts for the shiny server. This is not intended
-    for public use (though if you find a use for it, that's great too).
+    for public use (though if you find a use for it, that is great too).
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -17,6 +17,7 @@ Imports:
     cli,
     conan2,
     gert,
+    pkgdepends,
     remotes,
     yaml
 Remotes:

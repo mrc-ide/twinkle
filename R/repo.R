@@ -1,3 +1,13 @@
+repo_update <- function(name, username, repo, branch, root) {
+  dest <- path_repo(root, name)
+  if (file.exists(dest)) {
+    repo_init(name, username, repo, branch, root)
+  } else {
+    repo_update_existing(name, branch, root)
+  }
+}
+
+
 repo_init <- function(name, username, repo, branch, root) {
   dest <- path_repo(root, name)
   if (file.exists(dest)) {
@@ -11,7 +21,7 @@ repo_init <- function(name, username, repo, branch, root) {
 }
 
 
-repo_update <- function(name, branch, root) {
+repo_update_existing <- function(name, branch, root) {
   repo <- path_repo(root, name)
   gert::git_fetch(repo = repo)
   repo_checkout_branch(name, branch, root)
