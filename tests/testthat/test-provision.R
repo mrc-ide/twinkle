@@ -37,3 +37,12 @@ test_that("error on unsupported provisioning fields", {
              list(gitlab = "foo/bar")))),
     "Unhandled package_sources")
 })
+
+
+test_that("can splice in self-installs", {
+  expect_equal(
+    translate_provision_to_pkgdepends(
+      list(packages = c("a", "b"), self = TRUE),
+      "foo"),
+    c("a", "b", "local::./repos/foo"))
+})

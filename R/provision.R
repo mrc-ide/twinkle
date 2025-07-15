@@ -7,7 +7,7 @@ build_library <- function(name, subdir, root) {
   ## selecting the required installation approach based on the repo.
   path_provision <- file.path(repo, "provision.yml")
   dat <- suppressWarnings(yaml::read_yaml(path_provision))
-  refs <- translate_provision_to_pkgdepends(dat)
+  refs <- translate_provision_to_pkgdepends(dat, name)
 
   path_lib <- file.path("libs", name)
   path_bootstrap <- .libPaths()[[1]]
@@ -34,8 +34,8 @@ default_cran <- function(repos = getOption("repos")) {
 }
 
 
-translate_provision_to_pkgdepends <- function(dat) {
-  allowed <- c("packages", "package_sources")
+translate_provision_to_pkgdepends <- function(dat, name) {
+  allowed <- c("packages", "package_sources", "self")
   extra <- setdiff(names(dat), allowed)
   if (length(extra) > 0) {
     cli::cli_abort("Unhandled configuration in provision.yml: {extra}")
@@ -52,5 +52,11 @@ translate_provision_to_pkgdepends <- function(dat) {
     github <- NULL
   }
 
-  c(packages, github)
+  if (isTRUE(dat$self)) {
+    self <- sprintf("local::%s", path_repo(".", name))
+  } else {
+    self <- NULL
+  }
+
+  c(packages, github, self)
 }
