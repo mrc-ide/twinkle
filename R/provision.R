@@ -6,7 +6,7 @@ build_library <- function(name, root) {
   ## installation mechanism, but that will require some logic around
   ## selecting the required installation approach based on the repo.
   path_provision <- file.path(repo, "provision.yml")
-  dat <- yaml::read_yaml(path_provision)
+  dat <- suppressWarnings(yaml::read_yaml(path_provision))
   refs <- translate_provision_to_pkgdepends(dat)
 
   path_lib <- file.path("libs", name)

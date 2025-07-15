@@ -16,13 +16,18 @@ rsync_mirror_directory <- function(from, to, exclude = NULL) {
 }
 
 
-sync_app <- function(name, staging, root) {
+sync_app <- function(name, subdir, staging, root) {
   type <- if (staging) "staging" else "production"
   cli::cli_h1("Copying {name} ({type})")
   dest <- if (staging) path_app_staging(root, name) else path_app(root, name)
   path_lib <- path_lib(root, name)
 
-  rsync_mirror_directory(path_repo(root, name), dest,
+  path_src <- path_repo(root, name)
+  if (!is.null(subdir)) {
+    path_src <- file.path(path_src, subdir)
+  }
+
+  rsync_mirror_directory(path_src, dest,
                          exclude = c(".git", ".lib", ".Rprofile"))
   rsync_mirror_directory(path_lib(root, name), file.path(dest, ".lib"),
                          exclude = ".conan")

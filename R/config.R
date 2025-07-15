@@ -26,7 +26,7 @@ read_config <- function(path_config) {
 
 check_app_config <- function(name, cfg) {
   required <- c("username", "repo", "branch")
-  allowed <- required
+  allowed <- c(required, "subdir")
   msg <- setdiff(required, names(cfg))
   if (length(msg) > 0) {
     cli::cli_abort("Required fields missing in 'site.yml:apps:{name}': {msg}")
