@@ -1,3 +1,6 @@
+## It will be nice to be able to override branches to test out a dev
+## branch on staging.  So branch=whatever which would imply
+## update_production = FALSE for sure.
 twinkle_update_app <- function(name,
                                install_packages = TRUE,
                                update_staging = TRUE,

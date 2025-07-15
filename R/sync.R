@@ -17,7 +17,8 @@ rsync_mirror_directory <- function(from, to, exclude = NULL) {
 
 
 sync_app <- function(name, staging, root) {
-  cli::cli_h1("Copying {} app", if (staging) "staging" else "production")
+  type <- if (staging) "staging" else "production"
+  cli::cli_h1("Copying {name} ({type})")
   dest <- if (staging) path_app_staging(root, name) else path_app(root, name)
   path_lib <- path_lib(root, name)
 

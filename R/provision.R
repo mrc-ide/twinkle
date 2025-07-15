@@ -1,18 +1,16 @@
 build_library <- function(name, root) {
   cli::cli_h1("Building library")
   repo <- path_repo(root, name)
+
+  ## Eventually we might want to prefer pkgdepends.txt as the
+  ## installation mechanism, but that will require some logic around
+  ## selecting the required installation approach based on the repo.
   path_provision <- file.path(repo, "provision.yml")
   dat <- yaml::read_yaml(path_provision)
-
-  allowed <- "packages"
-  extra <- setdiff(names(dat), allowed)
-  if (length(extra) > 0) {
-    cli::cli_abort("Unhandled configuration in provision.yml: {extra}")
-  }
+  refs <- translate_provision_to_pkgdepends(dat)
 
   path_lib <- file.path("libs", name)
   path_bootstrap <- .libPaths()[[1]]
-  refs <- dat$packages
 
   cran <- default_cran()
 
@@ -33,4 +31,26 @@ default_cran <- function(repos = getOption("repos")) {
   } else {
     "https://cloud.r-project.org"
   }
+}
+
+
+translate_provision_to_pkgdepends <- function(dat) {
+  allowed <- c("packages", "package_sources")
+  extra <- setdiff(names(dat), allowed)
+  if (length(extra) > 0) {
+    cli::cli_abort("Unhandled configuration in provision.yml: {extra}")
+  }
+
+  packages <- dat$packages
+
+  if (!is.null(dat$package_sources)) {
+    if (!identical(names(dat$package_sources), "github")) {
+      cli::cli_abort("Unhandled package_sources")
+    }
+    github <- sprintf("github::%s", dat$package_sources$github)
+  } else {
+    github <- NULL
+  }
+
+  c(packages, github)
 }
