@@ -1,6 +1,6 @@
 repo_update <- function(name, username, repo, branch, root) {
   dest <- path_repo(root, name)
-  if (file.exists(dest)) {
+  if (!file.exists(dest)) {
     repo_init(name, username, repo, branch, root)
   } else {
     repo_update_existing(name, branch, root)
