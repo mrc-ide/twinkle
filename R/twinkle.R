@@ -14,6 +14,16 @@ twinkle_update_app <- function(name,
 }
 
 
+twinkle_deploy_key_create <- function(name, force = FALSE) {
+  root <- find_twinkle_root()
+  app <- read_app_config(find_twinkle_config(), name)
+  if (!app$private) {
+    cli::cli_abort("Not adding deploy key, as '{name}' is not private")
+  }
+  deploy_key_create(app$name, app$username, app$repo, force, root)
+}
+
+
 update_app <- function(app, root,
                        install_packages = TRUE,
                        update_staging = TRUE,
