@@ -1,18 +1,17 @@
 rsync_mirror_directory <- function(from, to, exclude = NULL) {
+  args <- rsync_mirror_directory_args(from, to, exclude)
+  dir_create(dirname(to))
+  system2_or_throw("rsync", args)
+}
+
+
+rsync_mirror_directory_args <- function(from, to, exclude) {
   if (!is.null(exclude)) {
     exclude <- c(rbind(rep("--exclude", length(exclude)), exclude))
   }
-  add_trailing_slash <- function(path) {
-    if (!grepl("/$", path)) paste0(path, "/") else path
-  }
-  dir_create(dirname(to))
-  args <- c("-auv", exclude, "--delete",
-            add_trailing_slash(from),
-            add_trailing_slash(to))
-  code <- system2("rsync", args)
-  if (code != 0) {
-    cli::cli_abort("Command failed with exit code {code}")
-  }
+  c("-auv", exclude, "--delete",
+    add_trailing_slash(from),
+    add_trailing_slash(to))
 }
 
 
