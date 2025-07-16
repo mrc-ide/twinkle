@@ -17,6 +17,7 @@ Imports:
     cli,
     conan2 (>= 1.9.103),
     gert,
+    openssl,
     pkgdepends,
     remotes,
     withr,
