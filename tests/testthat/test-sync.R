@@ -23,3 +23,20 @@ test_that("can sync an app", {
   expect_true(file.exists(file.path(path, ".Rprofile")))
   expect_false(file.exists(file.path(path, ".git")))
 })
+
+
+test_that("can sync an app in a subdirectory", {
+  root <- withr::local_tempdir()
+  name <- "app"
+  repo <- path_repo(root, name)
+  create_simple_git_repo(repo, subdir = "some/path")
+  create_dummy_library(root, name)
+
+  suppressMessages(sync_app(name, "some/path", TRUE, root, verbose = FALSE))
+
+  path <- path_app(root, name, TRUE)
+  expect_true(file.exists(file.path(path, "app.R")))
+  expect_true(file.exists(file.path(path, ".lib/pkg/file")))
+  expect_true(file.exists(file.path(path, ".Rprofile")))
+  expect_false(file.exists(file.path(path, ".git")))
+})
