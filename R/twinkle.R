@@ -2,15 +2,19 @@
 ## branch on staging.  So branch=whatever which would imply
 ## update_production = FALSE for sure.
 twinkle_update_app <- function(name,
+                               clone_repo = TRUE,
                                install_packages = TRUE,
                                update_staging = TRUE,
-                               update_production = FALSE) {
+                               update_production = FALSE,
+                               branch = NULL) {
   root <- find_twinkle_root()
   app <- read_app_config(find_twinkle_config(), name)
   update_app(app, root,
+             clone_repo = clone_repo,
              install_packages = install_packages,
              update_staging = update_staging,
-             update_production = update_production)
+             update_production = update_production,
+             branch = branch)
 }
 
 
@@ -67,10 +71,17 @@ twinkle_delete_app <- function(name) {
 
 
 update_app <- function(app, root,
+                       clone_repo = TRUE,
                        install_packages = TRUE,
                        update_staging = TRUE,
-                       update_production = FALSE) {
-  repo_update(app$name, app$username, app$repo, app$branch, app$private, root)
+                       update_production = FALSE,
+                       branch = NULL) {
+  if (is.null(branch)) {
+    branch <- app$branch
+  }
+  if (clone_repo) {
+    repo_update(app$name, app$username, app$repo, branch, app$private, root)
+  }
   if (install_packages) {
     build_library(app$name, app$subdir, root)
   }
