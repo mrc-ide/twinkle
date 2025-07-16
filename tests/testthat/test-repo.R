@@ -115,3 +115,35 @@ test_that("can fall back on default branch", {
 test_that("can build github url", {
   expect_equal(repo_url("user", "repo"), "https://github.com/user/repo")
 })
+
+
+test_that("can detect if a repo uses lfs", {
+  path <- withr::local_tempfile()
+  create_simple_git_repo(path)
+  expect_false(repo_uses_lfs(path))
+  writeLines(
+    c("*.RData filter=lfs diff=lfs merge=lfs -text",
+      "*.rds filter=lfs diff=lfs merge=lfs -text"),
+    file.path(path, ".gitattributes"))
+  expect_true(repo_uses_lfs(path))
+})
+
+
+test_that("can update lfs if required", {
+  skip_if_not_installed("mockery")
+  mock_system2 <- mockery::mock(getwd())
+  mockery::stub(repo_update_lfs, "system2_or_throw", mock_system2)
+  path <- withr::local_tempfile()
+  create_simple_git_repo(path)
+  writeLines(
+    c("*.RData filter=lfs diff=lfs merge=lfs -text",
+      "*.rds filter=lfs diff=lfs merge=lfs -text"),
+    file.path(path, ".gitattributes"))
+  expect_true(repo_uses_lfs(path))
+  res <- suppressMessages(repo_update_lfs(path))
+  mockery::expect_called(mock_system2, 1)
+  expect_equal(
+    mockery::mock_args(mock_system2)[[1]],
+    list("git", c("lfs", "pull")))
+  expect_equal(res, path)
+})
