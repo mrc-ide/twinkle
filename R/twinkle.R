@@ -18,7 +18,7 @@ update_app <- function(app, root,
                        install_packages = TRUE,
                        update_staging = TRUE,
                        update_production = FALSE) {
-  repo_update(app$name, app$username, app$repo, app$branch, root)
+  repo_update(app$name, app$username, app$repo, app$branch, app$private, root)
   if (install_packages) {
     build_library(app$name, app$subdir, root)
   }

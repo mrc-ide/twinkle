@@ -35,6 +35,7 @@ test_that("can read an application", {
     list(apps = list(foo = list(username = "bob",
                                 repo = "app",
                                 branch = "main",
+                                private = FALSE,
                                 name = "foo"))))
   expect_equal(read_app_config(path, "foo"), dat$apps$foo)
   expect_error(read_app_config(path, "bar"),
@@ -53,4 +54,27 @@ test_that("can validate application fields", {
   expect_error(
     check_app_config("foo", dat[-1]),
     "Required fields missing in 'site.yml:apps:foo': username")
+})
+
+
+test_that("can read a private application", {
+  path <- withr::local_tempfile()
+  writeLines(
+    c("apps:",
+      "  foo:",
+      "    username: bob",
+      "    repo: app",
+      "    branch: main",
+      "    private: true",
+      "    subdir: foo"),
+    path)
+  dat <- read_config(path)
+  expect_equal(
+    dat,
+    list(apps = list(foo = list(username = "bob",
+                                repo = "app",
+                                branch = "main",
+                                private = TRUE,
+                                subdir = "foo",
+                                name = "foo"))))
 })

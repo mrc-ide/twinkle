@@ -26,7 +26,7 @@ read_config <- function(path_config) {
 
 check_app_config <- function(name, cfg) {
   required <- c("username", "repo", "branch")
-  allowed <- c(required, "subdir")
+  allowed <- c(required, "subdir", "private")
   msg <- setdiff(required, names(cfg))
   if (length(msg) > 0) {
     cli::cli_abort("Required fields missing in 'site.yml:apps:{name}': {msg}")
@@ -35,6 +35,7 @@ check_app_config <- function(name, cfg) {
   if (length(extra) > 0) {
     cli::cli_abort("Unknown fields present in 'site.yml:apps:{name}':  {extra}")
   }
+  cfg$private <- isTRUE(cfg$private)
   cfg$name <- name
   cfg
 }
