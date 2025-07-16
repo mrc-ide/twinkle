@@ -24,3 +24,12 @@ test_that("can run a command, failing if it does not succeed", {
   expect_error(system2_or_throw("false", character()),
                "Command failed with exit code 1")
 })
+
+
+test_that("can require an environment variable is present", {
+  withr::with_envvar(c(FOO = NA_character_, BAR = "hello"), {
+    expect_error(sys_getenv("FOO"),
+                 "Expected environment variable 'FOO' to be set")
+    expect_equal(sys_getenv("BAR"), "hello")
+  })
+})

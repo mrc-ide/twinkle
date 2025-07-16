@@ -28,3 +28,12 @@ system2_or_throw <- function(name, args, ..., verbose = TRUE) {
     cli::cli_abort("Command failed with exit code {code}")
   }
 }
+
+
+sys_getenv <- function(name) {
+  value <- Sys.getenv(name, NA_character_)
+  if (is.na(value)) {
+    cli::cli_abort("Expected environment variable '{name}' to be set")
+  }
+  value
+}

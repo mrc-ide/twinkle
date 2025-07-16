@@ -32,18 +32,10 @@ update_app <- function(app, root,
 
 
 find_twinkle_root <- function() {
-  root <- Sys.getenv("TWINKLE_ROOT", NA_character_)
-  if (is.na(root)) {
-    cli::cli_abort("Expected environment variable 'TWINKLE_ROOT' to be set")
-  }
-  root
+  sys_getenv("TWINKLE_ROOT")
 }
 
 
 find_twinkle_config <- function() {
-  root <- Sys.getenv("TWINKLE_CONFIG", NA_character_)
-  if (is.na(root)) {
-    cli::cli_abort("Expected environment variable 'TWINKLE_CONFIG' to be set")
-  }
-  root
+  sys_getenv("TWINKLE_CONFIG")
 }
