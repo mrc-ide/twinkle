@@ -14,6 +14,19 @@ twinkle_update_app <- function(name,
 }
 
 
+##' Create a deploy key for an private application.  Instructions will
+##' be printed to explain how to add the key to the repository.  You
+##' can have multiple deploy keys for a repository.
+##'
+##' @title Create a deploy key
+##'
+##' @param name Name of the application within the twinkle configuration
+##'
+##' @param force Logical, indicating if we should create the key again
+##'   even if it already exists.
+##'
+##' @return Nothing
+##' @export
 twinkle_deploy_key_create <- function(name, force = FALSE) {
   root <- find_twinkle_root()
   app <- read_app_config(find_twinkle_config(), name)
