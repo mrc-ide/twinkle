@@ -3,13 +3,8 @@ path_repo <- function(root, name) {
 }
 
 
-path_app <- function(root, name) {
-  file.path(root, "apps", name)
-}
-
-
-path_app_staging <- function(root, name) {
-  file.path(root, "apps/staging", name)
+path_app <- function(root, name, staging) {
+  file.path(root, if (staging) "apps/staging" else "apps", name)
 }
 
 

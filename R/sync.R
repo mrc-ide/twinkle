@@ -1,7 +1,7 @@
-rsync_mirror_directory <- function(from, to, exclude = NULL) {
+rsync_mirror_directory <- function(from, to, exclude = NULL, verbose = TRUE) {
   args <- rsync_mirror_directory_args(from, to, exclude)
   dir_create(dirname(to))
-  system2_or_throw("rsync", args)
+  system2_or_throw("rsync", args, verbose = verbose)
 }
 
 
@@ -15,15 +15,17 @@ rsync_mirror_directory_args <- function(from, to, exclude) {
 }
 
 
-sync_app <- function(name, subdir, staging, root) {
+sync_app <- function(name, subdir, staging, root, verbose = TRUE) {
   type <- if (staging) "staging" else "production"
   cli::cli_h1("Copying {name} ({type})")
-  dest <- if (staging) path_app_staging(root, name) else path_app(root, name)
+  dest <- path_app(root, name, staging)
   path_lib <- path_lib(root, name)
 
   rsync_mirror_directory(path_src(root, name, subdir), dest,
-                         exclude = c(".git", ".lib", ".Rprofile"))
+                         exclude = c(".git", ".lib", ".Rprofile"),
+                         verbose = verbose)
   rsync_mirror_directory(path_lib(root, name), file.path(dest, ".lib"),
-                         exclude = ".conan")
+                         exclude = ".conan",
+                         verbose = verbose)
   writeLines('.libPaths(".lib")', file.path(dest, ".Rprofile"))
 }

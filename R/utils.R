@@ -17,8 +17,13 @@ add_trailing_slash <- function(path) {
 }
 
 
-system2_or_throw <- function(name, args, ...) {
-  code <- system2(sys_which(name), args, ...)
+system2_or_throw <- function(name, args, ..., verbose = TRUE) {
+  if (verbose) {
+    stdout <- stderr <- ""
+  } else {
+    stdout <- stderr <- FALSE
+  }
+  code <- system2(sys_which(name), args, ..., stdout = stdout, stderr = stderr)
   if (code != 0) {
     cli::cli_abort("Command failed with exit code {code}")
   }
