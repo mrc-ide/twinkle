@@ -1,21 +1,27 @@
-repo_update <- function(name, username, repo, branch, root, verbose = FALSE) {
+repo_update <- function(name, username, repo, branch, private, root, verbose = FALSE) {
   dest <- path_repo(root, name)
+  key <- repo_key(root, name, private)
   if (!file.exists(dest)) {
     cli::cli_h1("Cloning {name} (from github: {username}/{repo})")
     dir_create(dirname(dest))
-    gert::git_clone(repo_url(username, repo), dest, verbose = verbose)
+    gert::git_clone(repo_url(username, repo, private), dest,
+                    ssh_key = key, verbose = verbose)
     repo_checkout_branch(name, branch, root)
   } else {
     cli::cli_h1("Updating sources for {name}")
-    gert::git_fetch(repo = dest, verbose = verbose)
+    gert::git_fetch(repo = dest, ssh_key = key, verbose = verbose)
   }
   repo_update_lfs(dest)
   repo_checkout_branch(name, branch, root)
 }
 
 
-repo_url <- function(username, repo) {
-  sprintf("https://github.com/%s/%s", username, repo)
+repo_url <- function(username, repo, private) {
+  if (private) {
+    sprintf("git@github.com:%s/%s", username, repo)
+  } else {
+    sprintf("https://github.com/%s/%s", username, repo)
+  }
 }
 
 
@@ -62,4 +68,16 @@ repo_update_lfs <- function(path) {
       path,
       system2_or_throw("git", c("lfs", "pull")))
   }
+}
+
+
+repo_key <- function(root, name, private) {
+  if (!private) {
+    return(NULL)
+  }
+  path <- path_deploy_key(root, name)
+  if (!file.exists(path)) {
+    cli::cli_abort("Deploy key for '{name}' does not exist yet")
+  }
+  path
 }

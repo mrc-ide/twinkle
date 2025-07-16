@@ -17,3 +17,8 @@ path_src <- function(root, name, subdir) {
   ret <- path_repo(root, name)
   if (is.null(subdir)) ret else file.path(ret, subdir)
 }
+
+
+path_deploy_key <- function(root, name) {
+  file.path(root, "keys", name)
+}
