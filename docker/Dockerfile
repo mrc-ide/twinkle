@@ -13,5 +13,5 @@ COPY . /src
 ## user Rprofile file which simplifies handling of package libraries
 ## to look for '.lib' in any containing directory of an application.
 RUN Rscript -e 'remotes::install_deps("/src", upgrade = FALSE)' \
-    && cp /src/docker/Rprofile /root/.Rprofile \
-    && R CMD INSTALL "/src"
+    && R CMD INSTALL "/src" \
+    && cp /src/docker/Rprofile /root/.Rprofile

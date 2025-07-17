@@ -5,10 +5,11 @@ local({
       p <- paste0("/", c(parts[seq_len(i)], ".lib"), collapse = "")
       if (file.exists(p)) {
         message(sprintf("Found R library at '%s'", path))
-        return(p)
+        .libPaths(find_lib())
       }
     }
-    stop(sprintf("Did not find R library from '%s'", path))
+    message(sprintf(
+      "Did not find R library from '%s', falling back on system library",
+      path))
   }
-  .libPaths(find_lib())
 })
