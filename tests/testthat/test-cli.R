@@ -44,6 +44,17 @@ test_that("cli_sync args work for production", {
 })
 
 
+test_that("cli_delete args work", {
+  skip_if_not_installed("mockery")
+  mock_run <- mockery::mock()
+  mockery::stub(cli, "twinkle_delete_app", mock_run)
+  cli(args = c("delete", "myapp"))
+  mockery::expect_called(mock_run, 1)
+  args <- mockery::mock_args(mock_run)[[1]]
+  expect_equal(args, list("myapp"))
+})
+
+
 test_that("install cli script works", {
   path <- tempdir()
   withr::with_path(path, install_cli(path))
