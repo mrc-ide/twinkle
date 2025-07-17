@@ -97,3 +97,39 @@ test_that("Can call build_library", {
   args <- mockery::mock_args(mock_build_library)[[1]]
   expect_equal(args, list("myapp", "inner", root))
 })
+
+
+test_that("Can call sync on staging", {
+  root <- withr::local_tempdir()
+  withr::local_envvar(c(TWINKLE_ROOT = root))
+  mock_read_app_config <- function(config, name) {
+    list(name = "myapp", subdir = "inner")
+  }
+  
+  mockery::stub(twinkle_sync, "read_app_config", mock_read_app_config)
+  mock_sync_app <- mockery::mock()
+  mockery::stub(twinkle_sync, "sync_app", mock_sync_app)
+  
+  twinkle_sync("myapp", TRUE)
+  
+  args <- mockery::mock_args(mock_sync_app)[[1]]
+  expect_equal(args, list("myapp", "inner", staging = TRUE, root = root))
+})
+
+
+test_that("Can call sync on production", {
+  root <- withr::local_tempdir()
+  withr::local_envvar(c(TWINKLE_ROOT = root))
+  mock_read_app_config <- function(config, name) {
+    list(name = "myapp", subdir = "inner")
+  }
+  
+  mockery::stub(twinkle_sync, "read_app_config", mock_read_app_config)
+  mock_sync_app <- mockery::mock()
+  mockery::stub(twinkle_sync, "sync_app", mock_sync_app)
+  
+  twinkle_sync("myapp", FALSE)
+  
+  args <- mockery::mock_args(mock_sync_app)[[1]]
+  expect_equal(args, list("myapp", "inner", staging = FALSE, root = root))
+})
