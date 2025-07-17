@@ -6,6 +6,18 @@ FROM rocker/shiny-verse:latest
 RUN apt-get update && apt-get install -y git git-lfs rsync \
     && rm -rf /var/lib/apt/lists/*
 
+# These are additional, but as we're the only real users of the system
+# that's fine. Used by various packages that our applications require.
+RUN apt-get update && apt-get install -y \
+    cmake \
+    gdal-bin \
+    libgdal-dev \
+    libgeos-dev \
+    libglpk-dev \
+    libproj-dev \
+    libudunits2-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY . /src
 
 ## For some reason 'remotes::install_local("/src")' fails to copy to
