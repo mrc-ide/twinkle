@@ -33,3 +33,14 @@ test_that("can require an environment variable is present", {
     expect_equal(sys_getenv("BAR"), "hello")
   })
 })
+
+
+test_that("dir_create works recursively and silently", {
+  path <- tempdir()
+  withr::with_path(path, dir_create(file.path(path, "potato/guru")))
+  expect_true(file.exists(file.path(path, "potato")))
+  expect_true(file.exists(file.path(path, "potato", "guru")))
+  expect_silent(
+    withr::with_path(path, dir_create(file.path(path, "potato/guru"))))
+})
+
