@@ -36,7 +36,7 @@ twinkle_install_packages <- function(name) {
 ##' Sync an app and its library to the staging or production shiny
 ##' server.
 ##'
-##' @title
+##' @title Sync app
 ##'
 ##' @param name Name of the app
 ##'
