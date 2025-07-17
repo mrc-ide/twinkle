@@ -22,10 +22,9 @@ sync_app <- function(name, subdir, staging, root, verbose = TRUE) {
   path_lib <- path_lib(root, name)
 
   rsync_mirror_directory(path_src(root, name, subdir), dest,
-                         exclude = c(".git", ".lib", ".Rprofile"),
+                         exclude = c(".git", ".lib"),
                          verbose = verbose)
   rsync_mirror_directory(path_lib(root, name), file.path(dest, ".lib"),
                          exclude = ".conan",
                          verbose = verbose)
-  writeLines('.libPaths(".lib")', file.path(dest, ".Rprofile"))
 }

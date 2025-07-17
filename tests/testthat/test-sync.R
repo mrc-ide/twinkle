@@ -20,7 +20,6 @@ test_that("can sync an app", {
   path <- path_app(root, name, TRUE)
   expect_true(file.exists(file.path(path, "app.R")))
   expect_true(file.exists(file.path(path, ".lib/pkg/file")))
-  expect_true(file.exists(file.path(path, ".Rprofile")))
   expect_false(file.exists(file.path(path, ".git")))
 })
 
@@ -37,6 +36,5 @@ test_that("can sync an app in a subdirectory", {
   path <- path_app(root, name, TRUE)
   expect_true(file.exists(file.path(path, "app.R")))
   expect_true(file.exists(file.path(path, ".lib/pkg/file")))
-  expect_true(file.exists(file.path(path, ".Rprofile")))
   expect_false(file.exists(file.path(path, ".git")))
 })
