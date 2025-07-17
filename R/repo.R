@@ -1,4 +1,5 @@
-repo_update <- function(name, username, repo, branch, private, root, verbose = FALSE) {
+repo_update <- function(name, username, repo, branch, private, root,
+                        verbose = TRUE) {
   dest <- path_repo(root, name)
   key <- repo_key(root, name, private)
   if (!file.exists(dest)) {
