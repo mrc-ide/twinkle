@@ -42,3 +42,13 @@ test_that("cli_sync args work for production", {
   args <- mockery::mock_args(mock_run)[[1]]
   expect_equal(args, list("myapp", FALSE))
 })
+
+
+test_that("install cli script works", {
+  path <- tempdir()
+  withr::with_path(path, install_cli(path))
+  f <- file.path(path, "twinkle")
+  expect_true(file.exists(f))
+  d <- readLines(f)
+  expect_equal(length(d), 2)
+})
