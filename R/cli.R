@@ -2,13 +2,13 @@ cli <- function(args = commandArgs(TRUE)) {
 "Twinkle.
   
 Usage:
-  twinkle update-src [--branch=<branch>] <name>
+  twinkle update-src [--branch=NAME] <name>
   twinkle install-packages <name>
   twinkle sync <name> (--production | --staging)
   twinkle delete <name>
   
 Options:
-  --branch=<branch>   Github branch to use
+  --branch=NAME   Github branch to use
 " -> doc
 
   dat <- docopt::docopt(doc, args)
