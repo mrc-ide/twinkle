@@ -1,8 +1,8 @@
 on:
   push:
-    branches: [main, master]
+    branches: ~
   pull_request:
-    branches: [main, master]
+    branches: ~
 
 name: Build and publish Docker image
 
@@ -30,7 +30,6 @@ jobs:
           tags: |
             type=ref,event=branch
             type=ref,event=pr
-            type=ref,event=push
             # Set the latest tag for pushes to the main branch only
             type=raw,value=latest,enable={{is_default_branch}}
 
