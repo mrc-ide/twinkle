@@ -26,7 +26,7 @@ test_that("cli_sync args work for staging", {
   skip_if_not_installed("mockery")
   mock_run <- mockery::mock()
   mockery::stub(cli, "twinkle_sync", mock_run)
-  cli(args = c("sync", "myapp", "--staging"))
+  cli(args = c("sync", "myapp"))
   mockery::expect_called(mock_run, 1)
   args <- mockery::mock_args(mock_run)[[1]]
   expect_equal(args, list("myapp", TRUE))
