@@ -16,6 +16,7 @@ RoxygenNote: 7.3.2
 Imports:
     cli,
     conan2 (>= 1.9.103),
+    docopt,
     gert,
     openssl,
     pkgdepends,
