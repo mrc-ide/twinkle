@@ -1,39 +1,31 @@
-cli_main <- function(args = commandArgs(TRUE)) {
-
-'Twinkle.
+cli <- function(args = commandArgs(TRUE)) {
+"Twinkle.
   
 Usage:
-  twinkle.R update-src <name> [--branch=<branch>]
-  twinkle.R install-packages <name>
-  twinkle.R sync <name> [--production | --staging]
+  twinkle update-src [--branch=<branch>] <name>
+  twinkle install-packages <name>
+  twinkle sync <name> (--production | --staging)
   
 Options:
   --branch=<branch>   Github branch to use
-' -> doc
+" -> doc
 
   dat <- docopt::docopt(doc, args)
   if (dat[["update-src"]]) {
-    twinkle_update_app(name = dat[["name"]],
-                   clone_repo = TRUE,
-                   install_packages = FALSE,
-                   update_staging = FALSE,
-                   update_production = FALSE,
-                   branch = dat[["branch"]])
-  
+    twinkle_update_src(dat$name, branch=dat$branch)
   } else if (dat[["install-packages"]]) {
-    twinkle_update_app(name = dat[["name"]],
-                   clone_repo = FALSE,
-                   install_packages = TRUE,
-                   update_staging = FALSE,
-                   update_production = FALSE,
-                   branch = NULL)
-  
+    twinkle_install_packages(dat$name)
   } else if (dat[["sync"]]) {
-    twinkle_update_app(name = dat[["name"]],
-                   clone_repo = FALSE,
-                   install_packages = FALSE,
-                   update_staging = dat[["staging"]],
-                   update_production = dat[["production"]],
-                   branch = NULL)
+    twinkle_sync(dat$name, !dat[["production"]])
   }
+}
+
+
+install_cli <- function(path) {
+  code <- c("#!/usr/bin/env Rscript",
+            "twinkle2:::cli()")
+  path_bin <- file.path(path, "twinkle")
+  writeLines(code, path_bin)
+  Sys.chmod(path_bin, "755")
+  invisible(path_bin)
 }

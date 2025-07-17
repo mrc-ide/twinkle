@@ -1,20 +1,54 @@
-## It will be nice to be able to override branches to test out a dev
-## branch on staging.  So branch=whatever which would imply
-## update_production = FALSE for sure.
-twinkle_update_app <- function(name,
-                               clone_repo = TRUE,
-                               install_packages = TRUE,
-                               update_staging = TRUE,
-                               update_production = FALSE,
-                               branch = NULL) {
+##' Update source for a twinkle application.
+##'
+##' @title Update twinke app source
+##'
+##' @param name Name of the app
+##'
+##' @param branch Optionally, the branch to use (e.g., if testing a
+##'   branch on staging).  This overrides the configuration within the
+##'   application.
+##'
+##' @return Nothing
+##' @export
+twinkle_update_src <- function(name, branch = NULL) {
   root <- find_twinkle_root()
   app <- read_app_config(find_twinkle_config(), name)
-  update_app(app, root,
-             clone_repo = clone_repo,
-             install_packages = install_packages,
-             update_staging = update_staging,
-             update_production = update_production,
-             branch = branch)
+  branch <- branch %||% app$branch
+  repo_update(app$name, app$username, app$repo, branch, app$private, root)
+}
+
+
+##' Install packages for an app
+##'
+##' @title Install app packages
+##'
+##' @param name Name of the app
+##'
+##' @return Nothing
+##' @export
+twinkle_install_packages <- function(name) {
+  root <- find_twinkle_root()
+  app <- read_app_config(find_twinkle_config(), name)
+  build_library(app$name, app$subdir, root)
+}
+
+
+##' Sync an app and its library to the staging or production shiny
+##' server.
+##'
+##' @title
+##'
+##' @param name Name of the app
+##'
+##' @param staging Logical, indicating if we want to update the
+##'   staging instance.  If `FALSE`, then production is updated.
+##'
+##' @return Nothing
+##' @export
+twinkle_sync <- function(name, staging) {
+  root <- find_twinkle_root()
+  app <- read_app_config(find_twinkle_config(), name)
+  sync_app(app$name, app$subdir, staging = staging, root = root)
 }
 
 
@@ -67,30 +101,6 @@ twinkle_delete_app <- function(name) {
   delete_loudly(path_deploy_key(root, name), "deploy key", name)
   delete_loudly(path_repo(root, name), "source", name,
                 verbose_if_missing = TRUE)
-}
-
-
-update_app <- function(app, root,
-                       clone_repo = TRUE,
-                       install_packages = TRUE,
-                       update_staging = TRUE,
-                       update_production = FALSE,
-                       branch = NULL) {
-  if (is.null(branch)) {
-    branch <- app$branch
-  }
-  if (clone_repo) {
-    repo_update(app$name, app$username, app$repo, branch, app$private, root)
-  }
-  if (install_packages) {
-    build_library(app$name, app$subdir, root)
-  }
-  if (update_staging) {
-    sync_app(app$name, app$subdir, staging = TRUE, root = root)
-  }
-  if (update_production) {
-    sync_app(app$name, app$subdir, staging = FALSE, root = root)
-  }
 }
 
 
