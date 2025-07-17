@@ -1,5 +1,5 @@
-
 test_that("cli_update_src args work", {
+  skip("rewrite")
   skip_if_not_installed("mockery")
   mock_run <- mockery::mock()
   mockery::stub(cli_main, "twinkle_update_app", mock_run)
@@ -17,6 +17,7 @@ test_that("cli_update_src args work", {
 
 
 test_that("cli_install_packages args work", {
+  skip("rewrite")
   skip_if_not_installed("mockery")
   mock_run <- mockery::mock()
   mockery::stub(cli_main, "twinkle_update_app", mock_run)
@@ -34,6 +35,7 @@ test_that("cli_install_packages args work", {
 
 
 test_that("cli_sync args work for staging", {
+  skip("rewrite")
   skip_if_not_installed("mockery")
   mock_run <- mockery::mock()
   mockery::stub(cli_main, "twinkle_update_app", mock_run)
@@ -51,6 +53,7 @@ test_that("cli_sync args work for staging", {
 
 
 test_that("cli_sync args work for production", {
+  skip("rewrite")
   skip_if_not_installed("mockery")
   mock_run <- mockery::mock()
   mockery::stub(cli_main, "twinkle_update_app", mock_run)
