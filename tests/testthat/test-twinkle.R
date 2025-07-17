@@ -18,6 +18,23 @@ test_that("can create a deploy key", {
 })
 
 
+test_that("can refuse create a deploy key for public app", {
+  root <- withr::local_tempdir()
+  cfg <- withr::local_tempfile()
+  withr::local_envvar(c(TWINKLE_ROOT = root, TWINKLE_CONFIG = cfg))
+
+  writeLines(
+    c("apps:",
+      "  myapp:",
+      "    username: user",
+      "    repo: repo",
+      "    branch: main"),
+    cfg)
+  expect_error(twinkle_deploy_key_create("myapp"),
+               "Not adding deploy key, as 'myapp' is not private")
+})
+
+
 test_that("can delete an application", {
   root <- withr::local_tempdir()
   withr::local_envvar(c(TWINKLE_ROOT = root))
