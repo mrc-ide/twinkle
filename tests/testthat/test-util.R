@@ -44,3 +44,7 @@ test_that("dir_create works recursively and silently", {
     withr::with_path(path, dir_create(file.path(path, "potato/guru"))))
 })
 
+test_that("Null switch works", {
+  expect_equal((NULL %||% 2), 2)
+  expect_equal((3 %||% 2), 3)
+})
