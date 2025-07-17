@@ -20,10 +20,17 @@ RUN apt-get update && apt-get install -y \
 
 COPY . /src
 
-## For some reason 'remotes::install_local("/src")' fails to copy to
-## the tempdir, so working around this for now.  We also copy over the
-## user Rprofile file which simplifies handling of package libraries
-## to look for '.lib' in any containing directory of an application.
-RUN Rscript -e 'remotes::install_deps("/src", upgrade = FALSE)' \
+# Avoid rate limits building images without being able to easily add
+# the github token:
+RUN install2.r --error \
+    --repos https://p3m.dev/cran/__linux__/noble/latest \
+    --repos https://mrc-ide.r-universe.dev \
+    cli \
+    conan2 \
+    gert \
+    openssl \
+    pkgdepends \
+    withr \
+    yaml \
     && R CMD INSTALL "/src" \
     && cp /src/docker/Rprofile /root/.Rprofile
