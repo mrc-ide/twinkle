@@ -4,7 +4,7 @@ cli <- function(args = commandArgs(TRUE)) {
 Usage:
   twinkle update-src [--branch=NAME] <name>
   twinkle install-packages <name>
-  twinkle sync <name> (--production | --staging)
+  twinkle sync [--production] <name>
   twinkle delete <name>
   
 Options:
