@@ -37,6 +37,35 @@ twinkle_deploy_key_create <- function(name, force = FALSE) {
 }
 
 
+##' Delete an application.  This removes everything associated with
+##' the application (depending on how far through deployment you might
+##' have been); the real and staging instances, the library, the
+##' deploy key (if private) and the source code.  You might want to
+##' use this when deleting an application that is no longer needed, or
+##' if something untoward has happened and it would be convenient to
+##' start from a clean state.
+##'
+##' @title Delete an application
+##'
+##' @param name Name of the application within the twinkle
+##'   configuration. We don't check that the application actually
+##'   exists within your configuration (or indeed even read your
+##'   configuration at all) because the application for deletion might
+##'   have been removed from the configuration already.
+##'
+##' @return Nothing
+##' @export
+twinkle_delete_app <- function(name) {
+  root <- find_twinkle_root()
+  delete_loudly(path_app(root, name, FALSE), "production instance", name)
+  delete_loudly(path_app(root, name, TRUE), "staging instance", name)
+  delete_loudly(path_lib(root, name), "library", name)
+  delete_loudly(path_deploy_key(root, name), "deploy key", name)
+  delete_loudly(path_repo(root, name), "source", name,
+                verbose_if_missing = TRUE)
+}
+
+
 update_app <- function(app, root,
                        install_packages = TRUE,
                        update_staging = TRUE,
@@ -61,4 +90,14 @@ find_twinkle_root <- function() {
 
 find_twinkle_config <- function() {
   sys_getenv("TWINKLE_CONFIG")
+}
+
+
+delete_loudly <- function(path, what, name, verbose_if_missing = FALSE) {
+  if (file.exists(path)) {
+    unlink(path, recursive = TRUE)
+    cli::cli_alert_success("Deleted {what} for '{name}' ({path})")
+  } else if (verbose_if_missing) {
+    cli::cli_alert_warning("The {what} for '{name}' was not found")
+  }
 }
