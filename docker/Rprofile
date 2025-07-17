@@ -1,0 +1,14 @@
+local({
+  find_lib <- function(path = getwd()) {
+    parts <- strsplit(path, "/")[[1]][-1]
+    for (i in rev(seq_along(parts))) {
+      p <- paste0("/", c(parts[seq_len(i)], ".lib"), collapse = "")
+      if (file.exists(p)) {
+        message(sprintf("Found R library at '%s'", path))
+        return(p)
+      }
+    }
+    stop(sprintf("Did not find R library from '%s'", path))
+  }
+  .libPaths(find_lib())
+})
