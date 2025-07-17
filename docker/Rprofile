@@ -9,9 +9,6 @@ local({
         return(invisible())
       }
     }
-    message(sprintf(
-      "Did not find R library from '%s', falling back on system library",
-      path))
   }
   find_lib()
 })

@@ -33,4 +33,5 @@ RUN install2.r --error \
     withr \
     yaml \
     && R CMD INSTALL "/src" \
-    && cp /src/docker/Rprofile /root/.Rprofile
+    && Rscript -e 'twinkle2:::install_cli("/usr/local/bin")' \
+    && cp /src/docker/Rprofile /home/shiny/.Rprofile

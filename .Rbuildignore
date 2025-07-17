@@ -1,3 +1,5 @@
 ^LICENSE\.md$
 Makefile
 ^\.github$
+^docker$
+^twinkle\.Rproj$

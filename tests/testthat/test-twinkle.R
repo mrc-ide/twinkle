@@ -41,3 +41,95 @@ test_that("can delete an application", {
   expect_length(msg2, 1)
   expect_match(msg2[[1]], "The source for 'app' was not found")
 })
+
+
+test_that("Can call repo_update with branch", {
+  root <- withr::local_tempdir()
+  withr::local_envvar(c(TWINKLE_ROOT = root))
+  mock_read_app_config <- function(config, name) {
+    list(name = "myapp", username = "bob", repo = "repo",
+         branch = "mybranch", private = FALSE)
+  }
+  
+  mockery::stub(twinkle_update_src, "read_app_config", mock_read_app_config)
+  mock_repo_update <- mockery::mock()
+  mockery::stub(twinkle_update_src, "repo_update", mock_repo_update)
+  
+  twinkle_update_src("myapp", "dev-branch")
+
+  args <- mockery::mock_args(mock_repo_update)[[1]]
+  expect_equal(args, list("myapp", "bob", "repo", "dev-branch", FALSE, root))
+})
+
+
+test_that("Can call repo_update without branch", {
+  root <- withr::local_tempdir()
+  withr::local_envvar(c(TWINKLE_ROOT = root))
+  mock_read_app_config <- function(config, name) {
+    list(name = "myapp", username = "bob", repo = "repo",
+         branch = "mybranch", private = TRUE)
+  }
+  
+  mockery::stub(twinkle_update_src, "read_app_config", mock_read_app_config)
+  mock_repo_update <- mockery::mock()
+  mockery::stub(twinkle_update_src, "repo_update", mock_repo_update)
+  
+  twinkle_update_src("myapp")
+  
+  args <- mockery::mock_args(mock_repo_update)[[1]]
+  expect_equal(args, list("myapp", "bob", "repo", "mybranch", TRUE, root))
+})
+
+
+test_that("Can call build_library", {
+  root <- withr::local_tempdir()
+  withr::local_envvar(c(TWINKLE_ROOT = root))
+  mock_read_app_config <- function(config, name) {
+    list(name = "myapp", subdir = "inner")
+  }
+  
+  mockery::stub(twinkle_install_packages, "read_app_config", mock_read_app_config)
+  mock_build_library <- mockery::mock()
+  mockery::stub(twinkle_install_packages, "build_library", mock_build_library)
+  
+  twinkle_install_packages("myapp")
+  
+  args <- mockery::mock_args(mock_build_library)[[1]]
+  expect_equal(args, list("myapp", "inner", root))
+})
+
+
+test_that("Can call sync on staging", {
+  root <- withr::local_tempdir()
+  withr::local_envvar(c(TWINKLE_ROOT = root))
+  mock_read_app_config <- function(config, name) {
+    list(name = "myapp", subdir = "inner")
+  }
+  
+  mockery::stub(twinkle_sync, "read_app_config", mock_read_app_config)
+  mock_sync_app <- mockery::mock()
+  mockery::stub(twinkle_sync, "sync_app", mock_sync_app)
+  
+  twinkle_sync("myapp", TRUE)
+  
+  args <- mockery::mock_args(mock_sync_app)[[1]]
+  expect_equal(args, list("myapp", "inner", staging = TRUE, root = root))
+})
+
+
+test_that("Can call sync on production", {
+  root <- withr::local_tempdir()
+  withr::local_envvar(c(TWINKLE_ROOT = root))
+  mock_read_app_config <- function(config, name) {
+    list(name = "myapp", subdir = "inner")
+  }
+  
+  mockery::stub(twinkle_sync, "read_app_config", mock_read_app_config)
+  mock_sync_app <- mockery::mock()
+  mockery::stub(twinkle_sync, "sync_app", mock_sync_app)
+  
+  twinkle_sync("myapp", FALSE)
+  
+  args <- mockery::mock_args(mock_sync_app)[[1]]
+  expect_equal(args, list("myapp", "inner", staging = FALSE, root = root))
+})

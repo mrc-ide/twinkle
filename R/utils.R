@@ -1,3 +1,7 @@
+`%||%` <- function(a, b) {
+  if (is.null(a)) b else a
+}
+
 dir_create <- function(path) {
   dir.create(path, showWarnings = FALSE, recursive = TRUE)
 }
