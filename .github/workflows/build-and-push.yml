@@ -30,6 +30,7 @@ jobs:
           tags: |
             type=ref,event=branch
             type=ref,event=pr
+            type=ref,event=push
             # Set the latest tag for pushes to the main branch only
             type=raw,value=latest,enable={{is_default_branch}}
 
