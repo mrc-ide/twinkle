@@ -18,6 +18,7 @@ Options:
   } else if (dat[["sync"]]) {
     twinkle_sync(dat$name, !dat[["production"]])
   }
+  invisible()
 }
 
 
