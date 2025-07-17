@@ -4,7 +4,7 @@ local({
     for (i in rev(seq_along(parts))) {
       p <- paste0("/", c(parts[seq_len(i)], ".lib"), collapse = "")
       if (file.exists(p)) {
-        message(sprintf("Found R library at '%s'", path))
+        message(sprintf("Found R library at '%s'", p))
         .libPaths(p)
         return(invisible())
       }
