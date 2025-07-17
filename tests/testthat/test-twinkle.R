@@ -50,11 +50,11 @@ test_that("Can call repo_update with branch", {
     list(name = "myapp", username = "bob", repo = "repo",
          branch = "mybranch", private = FALSE)
   }
-  
+
   mockery::stub(twinkle_update_src, "read_app_config", mock_read_app_config)
   mock_repo_update <- mockery::mock()
   mockery::stub(twinkle_update_src, "repo_update", mock_repo_update)
-  
+
   twinkle_update_src("myapp", "dev-branch")
 
   args <- mockery::mock_args(mock_repo_update)[[1]]
@@ -69,13 +69,13 @@ test_that("Can call repo_update without branch", {
     list(name = "myapp", username = "bob", repo = "repo",
          branch = "mybranch", private = TRUE)
   }
-  
+
   mockery::stub(twinkle_update_src, "read_app_config", mock_read_app_config)
   mock_repo_update <- mockery::mock()
   mockery::stub(twinkle_update_src, "repo_update", mock_repo_update)
-  
+
   twinkle_update_src("myapp")
-  
+
   args <- mockery::mock_args(mock_repo_update)[[1]]
   expect_equal(args, list("myapp", "bob", "repo", "mybranch", TRUE, root))
 })
@@ -87,13 +87,13 @@ test_that("Can call build_library", {
   mock_read_app_config <- function(config, name) {
     list(name = "myapp", subdir = "inner")
   }
-  
+
   mockery::stub(twinkle_install_packages, "read_app_config", mock_read_app_config)
   mock_build_library <- mockery::mock()
   mockery::stub(twinkle_install_packages, "build_library", mock_build_library)
-  
+
   twinkle_install_packages("myapp")
-  
+
   args <- mockery::mock_args(mock_build_library)[[1]]
   expect_equal(args, list("myapp", "inner", root))
 })
@@ -105,13 +105,13 @@ test_that("Can call sync on staging", {
   mock_read_app_config <- function(config, name) {
     list(name = "myapp", subdir = "inner")
   }
-  
+
   mockery::stub(twinkle_sync, "read_app_config", mock_read_app_config)
   mock_sync_app <- mockery::mock()
   mockery::stub(twinkle_sync, "sync_app", mock_sync_app)
-  
+
   twinkle_sync("myapp", TRUE)
-  
+
   args <- mockery::mock_args(mock_sync_app)[[1]]
   expect_equal(args, list("myapp", "inner", staging = TRUE, root = root))
 })
@@ -123,13 +123,84 @@ test_that("Can call sync on production", {
   mock_read_app_config <- function(config, name) {
     list(name = "myapp", subdir = "inner")
   }
-  
+
   mockery::stub(twinkle_sync, "read_app_config", mock_read_app_config)
   mock_sync_app <- mockery::mock()
   mockery::stub(twinkle_sync, "sync_app", mock_sync_app)
-  
+
   twinkle_sync("myapp", FALSE)
-  
+
   args <- mockery::mock_args(mock_sync_app)[[1]]
   expect_equal(args, list("myapp", "inner", staging = FALSE, root = root))
+})
+
+
+test_that("Can update in one shot to staging", {
+  root <- withr::local_tempdir()
+
+  mock_src <- mockery::mock()
+  mock_pkg <- mockery::mock()
+  mock_sync <- mockery::mock()
+
+  mockery::stub(twinkle_deploy, "twinkle_update_src", mock_src)
+  mockery::stub(twinkle_deploy, "twinkle_install_packages", mock_pkg)
+  mockery::stub(twinkle_deploy, "twinkle_sync", mock_sync)
+
+  twinkle_deploy("myapp", FALSE)
+
+  mockery::expect_called(mock_src, 1)
+  expect_equal(mockery::mock_args(mock_src)[[1]], list("myapp"))
+  mockery::expect_called(mock_pkg, 1)
+  expect_equal(mockery::mock_args(mock_pkg)[[1]], list("myapp"))
+  mockery::expect_called(mock_sync, 1)
+  expect_equal(mockery::mock_args(mock_sync)[[1]],
+               list("myapp", staging = TRUE))
+})
+
+
+test_that("Can update in one shot to production", {
+  root <- withr::local_tempdir()
+
+  mock_src <- mockery::mock()
+  mock_pkg <- mockery::mock()
+  mock_sync <- mockery::mock()
+
+  mockery::stub(twinkle_deploy, "twinkle_update_src", mock_src)
+  mockery::stub(twinkle_deploy, "twinkle_install_packages", mock_pkg)
+  mockery::stub(twinkle_deploy, "twinkle_sync", mock_sync)
+
+  twinkle_deploy("myapp", TRUE)
+
+  mockery::expect_called(mock_src, 1)
+  expect_equal(mockery::mock_args(mock_src)[[1]], list("myapp"))
+  mockery::expect_called(mock_pkg, 1)
+  expect_equal(mockery::mock_args(mock_pkg)[[1]], list("myapp"))
+  mockery::expect_called(mock_sync, 2)
+  expect_equal(mockery::mock_args(mock_sync)[[1]],
+               list("myapp", staging = TRUE))
+  expect_equal(mockery::mock_args(mock_sync)[[2]],
+               list("myapp", staging = FALSE))
+})
+
+
+test_that("can list apps", {
+  cfg <- withr::local_tempfile()
+  withr::local_envvar(c(TWINKLE_CONFIG = cfg))
+
+  writeLines(
+    c("apps:",
+      "  myapp:",
+      "    username: user",
+      "    repo: repo",
+      "    branch: main",
+      "  otherapp:",
+      "    username: user",
+      "    repo: other",
+      "    branch: main"),
+    cfg)
+
+  expect_equal(twinkle_list(), c("myapp", "otherapp"))
+  expect_equal(twinkle_list("app"), c("myapp", "otherapp"))
+  expect_equal(twinkle_list("^my"), "myapp")
+  expect_equal(twinkle_list("^x"), character())
 })

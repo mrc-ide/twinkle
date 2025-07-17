@@ -104,6 +104,51 @@ twinkle_delete_app <- function(name) {
 }
 
 
+##' All-in-one deployment.  Runs through all steps (update source,
+##' install packages and sync to staging and possibly to production).
+##' This is intended either for the initial setup of an application or
+##' a full update.  For more control use the individual functions
+##' [twinkle_update_src()], [twinkle_install_packages()] and
+##' [twinkle_sync()]
+##'
+##' @title ALl-in-one deploy
+##'
+##' @param name Name of the application within the twinkle
+##'   configuration. We don't check that the application actually
+##'   exists within your configuration (or indeed even read your
+##'   configuration at all) because the application for deletion might
+##'   have been removed from the configuration already.
+##'
+##' @return Nothing
+##' @export
+twinkle_deploy <- function(name, production = FALSE) {
+  twinkle_update_src(name)
+  twinkle_install_packages(name)
+  twinkle_sync(name, staging = TRUE)
+  if (production) {
+    twinkle_sync(name, staging = FALSE)
+  }
+}
+
+
+##' List known apps from the config
+##'
+##' @title List apps
+##'
+##' @param pattern Optional pattern to search for (a regular expression)
+##'
+##' @return A character vector
+##' @export
+twinkle_list <- function(pattern = NULL) {
+  cfg <- read_config(find_twinkle_config())
+  apps <- names(cfg$apps)
+  if (!is.null(pattern)) {
+    apps <- grep(pattern, apps, value = TRUE)
+  }
+  apps
+}
+
+
 find_twinkle_root <- function() {
   sys_getenv("TWINKLE_ROOT")
 }

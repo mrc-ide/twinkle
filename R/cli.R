@@ -1,10 +1,13 @@
 cli <- function(args = commandArgs(TRUE)) {
-"Twinkle.
+  "Twinkle.
   
 Usage:
+  twinkle create-deploy-key [--force] <name>
   twinkle update-src [--branch=NAME] <name>
   twinkle install-packages <name>
   twinkle sync [--production] <name>
+  twinkle deploy [--production] <name>
+  twinkle list [<pattern>]
   twinkle delete <name>
   
 Options:
@@ -12,7 +15,9 @@ Options:
 " -> doc
 
   dat <- docopt::docopt(doc, args)
-  if (dat[["update-src"]]) {
+  if (dat[["create-deploy-key"]]) {
+    twinkle_deploy_key_create(dat$name, force = dat$force)
+  } else if (dat[["update-src"]]) {
     twinkle_update_src(dat$name, branch=dat$branch)
   } else if (dat[["install-packages"]]) {
     twinkle_install_packages(dat$name)
@@ -20,6 +25,10 @@ Options:
     twinkle_sync(dat$name, !dat[["production"]])
   } else if (dat[["delete"]]) {
     twinkle_delete_app(dat$name)
+  } else if (dat[["deploy"]]) {
+    twinkle_deploy(dat$name, dat$production)
+  } else if (dat[["list"]]) {
+    writeLines(twinkle_list(dat$pattern))
   }
   invisible()
 }
