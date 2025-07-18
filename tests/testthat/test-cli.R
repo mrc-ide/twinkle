@@ -87,6 +87,16 @@ test_that("can list applications through the cli", {
 })
 
 
+test_that("can restart applications through the cli", {
+  skip_if_not_installed("mockery")
+  mock_restart <- mockery::mock()
+  mockery::stub(cli, "twinkle_restart", mock_restart)
+  out <- cli(args = c("restart", "foo"))
+  mockery::expect_called(mock_restart, 1)
+  expect_equal(mockery::mock_args(mock_restart)[[1]], list("foo"))
+})
+
+
 test_that("install cli script works", {
   path <- withr::local_tempdir()
   install_cli(path)

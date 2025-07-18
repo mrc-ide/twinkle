@@ -36,6 +36,24 @@ test_that("can refuse create a deploy key for public app", {
 })
 
 
+test_that("can restart an application", {
+  root <- withr::local_tempdir()
+  cfg <- withr::local_tempfile()
+  withr::local_envvar(c(TWINKLE_ROOT = root, TWINKLE_CONFIG = cfg))
+  dir_create(path_app(root, "foo", FALSE))
+  expect_error(
+    twinkle_restart("foo", FALSE),
+    "Not restarting 'foo' (staging) as it is not synced",
+    fixed = TRUE)
+  expect_message(
+    twinkle_restart("foo", TRUE),
+    "Requested restart of 'foo' (production)",
+    fixed = TRUE)
+  expect_true(file.exists(
+    file.path(path_app(root, "foo", FALSE), "restart.txt")))
+})
+
+
 test_that("can delete an application", {
   root <- withr::local_tempdir()
   withr::local_envvar(c(TWINKLE_ROOT = root))

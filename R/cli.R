@@ -7,11 +7,9 @@ Usage:
   twinkle install-packages <name>
   twinkle sync [--production] <name>
   twinkle deploy [--production] <name>
+  twinkle restart <name>
   twinkle list [<pattern>]
   twinkle delete <name>
-  
-Options:
-  --branch=NAME   Github branch to use
 " -> doc
 
   dat <- docopt::docopt(doc, args)
@@ -23,6 +21,8 @@ Options:
     twinkle_install_packages(dat$name)
   } else if (dat[["sync"]]) {
     twinkle_sync(dat$name, !dat[["production"]])
+  } else if (dat[["restart"]]) {
+    twinkle_restart(dat$name)
   } else if (dat[["delete"]]) {
     twinkle_delete_app(dat$name)
   } else if (dat[["deploy"]]) {

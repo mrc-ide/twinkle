@@ -133,6 +133,43 @@ twinkle_deploy <- function(name, production = FALSE) {
 }
 
 
+##' Tell shiny to restart an application.  This will trigger for
+##' *both* the staging and production versions.  This needs to be done
+##' rarely, but would be needed in the case where the library has been
+##' updated but the application source has not in order to force shiny
+##' to pick up the new packages.
+##'
+##' This will not work for multiple applications that are present
+##' within a directory!  We would need to extend things so that we
+##' knew where these different applications were (either in the
+##' configuration file, or by applying heuristics through the source
+##' tree) and touch a file in every sub application.  This has
+##' historically been an issue for the old odin/shiny shortcourse app,
+##' but that is now obsolete.  You can always restart the server
+##' itself of course.
+##'
+##' @title Restart an application
+##'
+##' @param name Name of the application within the twinkle
+##'   configuration. We don't check that the application actually
+##'   exists within your configuration (or indeed even read your
+##'   configuration at all) because the application for deletion might
+##'   have been removed from the configuration already.
+##'
+##' @return Nothing
+##' @export
+twinkle_restart <- function(name, production) {
+  root <- find_twinkle_root()
+  path <- path_app(root, name, !production)
+  type <- if (production) "production" else "staging"
+  if (!file.exists(path)) {
+    cli::cli_abort("Not restarting '{name}' ({type}) as it is not synced")
+  }
+  file.create(file.path(path, "restart.txt"))
+  cli::cli_alert_success("Requested restart of '{name}' ({type})")
+}
+
+
 ##' List known apps from the config
 ##'
 ##' @title List apps
