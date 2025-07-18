@@ -20,6 +20,7 @@ Imports:
     gert,
     openssl,
     pkgdepends,
+    rlang,
     withr,
     yaml
 Remotes:
