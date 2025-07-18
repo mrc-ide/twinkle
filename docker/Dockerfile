@@ -3,7 +3,11 @@ FROM rocker/shiny-verse:latest
 # We need to install a few of these because they're required for use
 # with twinkle (both git/git-lfs and rsync will be called as shell
 # commands).
-RUN apt-get update && apt-get install -y git git-lfs rsync \
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    git-lfs \
+    rsync \
     && rm -rf /var/lib/apt/lists/*
 
 # These are additional, but as we're the only real users of the system
@@ -17,6 +21,18 @@ RUN apt-get update && apt-get install -y \
     libproj-dev \
     libudunits2-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# Expect that people will probably use quarto in the future, so let's
+# install that too
+RUN curl -LO https://quarto.org/download/latest/quarto-linux-amd64.deb \
+    && dpkg --install quarto-linux-amd64.deb \
+    && rm -f quarto-linux-amd64.deb
+
+# We could allow use of a minimal LaTeX distribution too; this would
+# install the distibution within the shiny user's directories and
+# should make it available.  However, it will add another 200MB to an
+# already fairly-large image.
+# RUN sudo -u shiny -H Rscript -e 'tinytex::install_tinytex()'
 
 COPY . /src
 
