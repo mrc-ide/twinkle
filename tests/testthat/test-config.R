@@ -26,15 +26,14 @@ test_that("can read an application", {
     c("apps:",
       "  foo:",
       "    username: bob",
-      "    repo: app",
-      "    branch: main"),
+      "    repo: app"),
     path)
   dat <- read_config(path)
   expect_equal(
     dat,
     list(apps = list(foo = list(username = "bob",
                                 repo = "app",
-                                branch = "main",
+                                branch = NULL,
                                 private = FALSE,
                                 name = "foo"))))
   expect_equal(read_app_config(path, "foo"), dat$apps$foo)
