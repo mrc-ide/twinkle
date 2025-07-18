@@ -58,7 +58,7 @@ test_that("can provision a library", {
   expect_length(args, 1)
   expect_equal(args[[1]],
                conan2::conan_configure(
-                 "pkgdepends",
+                 method = "pkgdepends",
                  refs = c("pkg1", "pkg2", "pkg3"),
                  cran = default_cran(),
                  path_lib = "libs/pkg",
@@ -80,4 +80,41 @@ test_that("can select default cran", {
   withr::with_options(
     list(repos = c(CRAN = "https://cran.example.com", "https://other.com")),
     expect_equal(default_cran(), "https://cran.example.com"))
+})
+
+
+test_that("error if no provisioning method obvious", {
+  path <- withr::local_tempdir()
+  expect_error(provision_configuration(path),
+               "Did not find provisioning information")
+})
+
+
+test_that("can translate provision.yml into pkgdepends format", {
+  path <- withr::local_tempdir()
+  writeLines("packages: [pkg1, pkg2, pkg3]", file.path(path, "provision.yml"))
+  expect_message(
+    cfg <- provision_configuration(path),
+    "Translating 'provision.yml' into pkgdepends format")
+  expect_equal(cfg,
+               list(method = "pkgdepends", refs = c("pkg1", "pkg2", "pkg3")))
+})
+
+
+test_that("can detect conan script format", {
+  path <- withr::local_tempdir()
+  writeLines("packages: [pkg1, pkg2, pkg3]", file.path(path, "provision.yml"))
+  file.create(file.path(path, "conan.R"))
+  file.create(file.path(path, "pkgdepends.txt"))
+  cfg <- provision_configuration(path)
+  expect_equal(cfg, list(method = "script", script = "conan.R"))
+})
+
+
+test_that("can detect pkgdepends format", {
+  path <- withr::local_tempdir()
+  writeLines("packages: [pkg1, pkg2, pkg3]", file.path(path, "provision.yml"))
+  file.create(file.path(path, "pkgdepends.txt"))
+  cfg <- provision_configuration(path)
+  expect_equal(cfg, list(method = "pkgdepends", refs = NULL))
 })

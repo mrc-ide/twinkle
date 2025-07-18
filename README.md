@@ -51,9 +51,28 @@ The valid fields within each application are:
 
 # Packages
 
-Applications will depend on a number of packages in order to run.  This should be indicated within the application root of the repository (so in the repository root if `subdir` is not used, or within `subdir` otherwise).  Currently we support the legacy `provision.yml` format that was used by the original DIDE shiny server.  We will describe the new format here once implemented.
+Applications will depend on a number of packages in order to run.  This should be indicated within the application root of the repository (so in the repository root if `subdir` is not used, or within `subdir` otherwise).
 
-The actual package installation is performed with [`pkgdepends`](https://github.com/r-lib/pkgdepends) via [`conan2`](https://github.com/mrc-ide/conan2/).
+Most applications can use the same `pkgdepends.txt` format that is supported by [`conan2`](https://mrc-ide.github.io/conan2/), as used in [`hipercow`](https://mrc-ide.github.io/hipercow/articles/packages.html).  See [the docs here](https://mrc-ide.github.io/hipercow/articles/packages.html#using-pkgdepends) for details.  Typically this is simply a file `pkgdepends.txt` in the application root, with each line being the name of a package or a github specification like `mrc-ide/malariasimulation@v1.6.0`, for example:
+
+```
+# Also use the mrc-ide universe
+repo::https://mrc-ide.r-universe.dev
+
+# Specific version of malaria simulation, via a tag
+mrc-ide/malariasimulation@v1.6.0
+
+# Package from CRAN
+coda
+```
+
+The actual package installation is performed with [`pkgdepends`](https://github.com/r-lib/pkgdepends).
+
+Alternatively, you can use a script `conan.R` and install packages within that however you want.  This is useful for cases where pkgdepends is failing to resolve things and you need to manually override bits of dependency resolution that is failing to get right.
+
+Finally, we support legacy `provision.yml` files used with the original shiny server, but as we don't want new projects to use this method we do not describe it.  There is no pressing need to migrate old projects, however.
+
+The precedence order is `conan.R` (highest precedence), then `pkgdepends.txt`, then `provision.yml` (lowest precedence).
 
 # Interaction
 
