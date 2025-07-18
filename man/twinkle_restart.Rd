@@ -12,6 +12,9 @@ configuration. We don't check that the application actually
 exists within your configuration (or indeed even read your
 configuration at all) because the application for deletion might
 have been removed from the configuration already.}
+
+\item{production}{Logical, indicating if we should restart the
+production version (rather than the staging version).}
 }
 \value{
 Nothing

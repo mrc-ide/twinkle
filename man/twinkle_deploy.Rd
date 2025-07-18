@@ -12,6 +12,8 @@ configuration. We don't check that the application actually
 exists within your configuration (or indeed even read your
 configuration at all) because the application for deletion might
 have been removed from the configuration already.}
+
+\item{production}{Deploy to production (\strong{in addition} to staging)}
 }
 \value{
 Nothing

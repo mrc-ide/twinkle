@@ -2,7 +2,7 @@ build_library <- function(name, subdir, root) {
   cli::cli_h1("Building library")
   repo <- path_src(root, name, subdir)
 
-  dat <- provision_configuration(repo)
+  dat <- provision_configuration(repo, name)
 
   cfg <- rlang::inject(
     conan2::conan_configure(
@@ -24,7 +24,7 @@ default_cran <- function(repos = getOption("repos")) {
 }
 
 
-provision_configuration <- function(path) {
+provision_configuration <- function(path, name) {
   if (file.exists(file.path(path, "conan.R"))) {
     list(method = "script", script = "conan.R")
   } else if (file.exists(file.path(path, "pkgdepends.txt"))) {
