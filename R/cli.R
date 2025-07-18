@@ -20,7 +20,7 @@ Usage:
   } else if (dat[["install-packages"]]) {
     twinkle_install_packages(dat$name)
   } else if (dat[["sync"]]) {
-    twinkle_sync(dat$name, !dat[["production"]])
+    twinkle_sync(dat$name, dat[["production"]])
   } else if (dat[["restart"]]) {
     twinkle_restart(dat$name)
   } else if (dat[["delete"]]) {

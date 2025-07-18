@@ -40,15 +40,15 @@ twinkle_install_packages <- function(name) {
 ##'
 ##' @param name Name of the app
 ##'
-##' @param staging Logical, indicating if we want to update the
-##'   staging instance.  If `FALSE`, then production is updated.
+##' @param production Logical, indicating if we want to update the
+##'   production instance.  If `FALSE`, then staging is updated.
 ##'
 ##' @return Nothing
 ##' @export
-twinkle_sync <- function(name, staging) {
+twinkle_sync <- function(name, production) {
   root <- find_twinkle_root()
   app <- read_app_config(find_twinkle_config(), name)
-  sync_app(app$name, app$subdir, staging = staging, root = root)
+  sync_app(app$name, app$subdir, production = production, root = root)
 }
 
 
@@ -97,8 +97,8 @@ twinkle_deploy_key <- function(name, recreate = FALSE) {
 ##' @export
 twinkle_delete_app <- function(name) {
   root <- find_twinkle_root()
-  delete_loudly(path_app(root, name, FALSE), "production instance", name)
-  delete_loudly(path_app(root, name, TRUE), "staging instance", name)
+  delete_loudly(path_app(root, name, TRUE), "production instance", name)
+  delete_loudly(path_app(root, name, FALSE), "staging ginstance", name)
   delete_loudly(path_lib(root, name), "library", name)
   delete_loudly(path_deploy_key(root, name), "deploy key", name)
   delete_loudly(path_repo(root, name), "source", name,
@@ -128,9 +128,9 @@ twinkle_delete_app <- function(name) {
 twinkle_deploy <- function(name, production = FALSE) {
   twinkle_update_src(name)
   twinkle_install_packages(name)
-  twinkle_sync(name, staging = TRUE)
+  twinkle_sync(name, production = FALSE)
   if (production) {
-    twinkle_sync(name, staging = FALSE)
+    twinkle_sync(name, production = TRUE)
   }
 }
 
@@ -165,7 +165,7 @@ twinkle_deploy <- function(name, production = FALSE) {
 ##' @export
 twinkle_restart <- function(name, production) {
   root <- find_twinkle_root()
-  path <- path_app(root, name, !production)
+  path <- path_app(root, name, production)
   type <- if (production) "production" else "staging"
   if (!file.exists(path)) {
     cli::cli_abort("Not restarting '{name}' ({type}) as it is not synced")

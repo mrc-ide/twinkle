@@ -29,7 +29,7 @@ test_that("cli_sync args work for staging", {
   cli(args = c("sync", "myapp"))
   mockery::expect_called(mock_run, 1)
   args <- mockery::mock_args(mock_run)[[1]]
-  expect_equal(args, list("myapp", TRUE))
+  expect_equal(args, list("myapp", FALSE))
 })
 
 
@@ -40,7 +40,7 @@ test_that("cli_sync args work for production", {
   cli(args = c("sync", "myapp", "--production"))
   mockery::expect_called(mock_run, 1)
   args <- mockery::mock_args(mock_run)[[1]]
-  expect_equal(args, list("myapp", FALSE))
+  expect_equal(args, list("myapp", TRUE))
 })
 
 

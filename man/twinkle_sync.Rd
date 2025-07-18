@@ -4,13 +4,13 @@
 \alias{twinkle_sync}
 \title{Sync app}
 \usage{
-twinkle_sync(name, staging)
+twinkle_sync(name, production)
 }
 \arguments{
 \item{name}{Name of the app}
 
-\item{staging}{Logical, indicating if we want to update the
-staging instance.  If \code{FALSE}, then production is updated.}
+\item{production}{Logical, indicating if we want to update the
+production instance.  If \code{FALSE}, then staging is updated.}
 }
 \value{
 Nothing

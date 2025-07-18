@@ -40,7 +40,7 @@ test_that("can restart an application", {
   root <- withr::local_tempdir()
   cfg <- withr::local_tempfile()
   withr::local_envvar(c(TWINKLE_ROOT = root, TWINKLE_CONFIG = cfg))
-  dir_create(path_app(root, "foo", FALSE))
+  dir_create(path_app(root, "foo", TRUE))
   expect_error(
     twinkle_restart("foo", FALSE),
     "Not restarting 'foo' (staging) as it is not synced",
@@ -50,7 +50,7 @@ test_that("can restart an application", {
     "Requested restart of 'foo' (production)",
     fixed = TRUE)
   expect_true(file.exists(
-    file.path(path_app(root, "foo", FALSE), "restart.txt")))
+    file.path(path_app(root, "foo", TRUE), "restart.txt")))
 })
 
 
@@ -146,10 +146,10 @@ test_that("Can call sync on staging", {
   mock_sync_app <- mockery::mock()
   mockery::stub(twinkle_sync, "sync_app", mock_sync_app)
 
-  twinkle_sync("myapp", TRUE)
+  twinkle_sync("myapp", FALSE)
 
   args <- mockery::mock_args(mock_sync_app)[[1]]
-  expect_equal(args, list("myapp", "inner", staging = TRUE, root = root))
+  expect_equal(args, list("myapp", "inner", production = FALSE, root = root))
 })
 
 
@@ -164,10 +164,10 @@ test_that("Can call sync on production", {
   mock_sync_app <- mockery::mock()
   mockery::stub(twinkle_sync, "sync_app", mock_sync_app)
 
-  twinkle_sync("myapp", FALSE)
+  twinkle_sync("myapp", TRUE)
 
   args <- mockery::mock_args(mock_sync_app)[[1]]
-  expect_equal(args, list("myapp", "inner", staging = FALSE, root = root))
+  expect_equal(args, list("myapp", "inner", production = TRUE, root = root))
 })
 
 
@@ -190,7 +190,7 @@ test_that("Can update in one shot to staging", {
   expect_equal(mockery::mock_args(mock_pkg)[[1]], list("myapp"))
   mockery::expect_called(mock_sync, 1)
   expect_equal(mockery::mock_args(mock_sync)[[1]],
-               list("myapp", staging = TRUE))
+               list("myapp", production = FALSE))
 })
 
 
@@ -213,9 +213,9 @@ test_that("Can update in one shot to production", {
   expect_equal(mockery::mock_args(mock_pkg)[[1]], list("myapp"))
   mockery::expect_called(mock_sync, 2)
   expect_equal(mockery::mock_args(mock_sync)[[1]],
-               list("myapp", staging = TRUE))
+               list("myapp", production = FALSE))
   expect_equal(mockery::mock_args(mock_sync)[[2]],
-               list("myapp", staging = FALSE))
+               list("myapp", production = TRUE))
 })
 
 
