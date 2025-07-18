@@ -2,7 +2,7 @@ cli <- function(args = commandArgs(TRUE)) {
   "Twinkle.
   
 Usage:
-  twinkle create-deploy-key [--force] <name>
+  twinkle deploy-key [--recreate] <name>
   twinkle update-src [--branch=NAME] <name>
   twinkle install-packages <name>
   twinkle sync [--production] <name>
@@ -15,8 +15,8 @@ Options:
 " -> doc
 
   dat <- docopt::docopt(doc, args)
-  if (dat[["create-deploy-key"]]) {
-    twinkle_deploy_key_create(dat$name, force = dat$force)
+  if (dat[["deploy-key"]]) {
+    twinkle_deploy_key(dat$name, recreate = dat$recreate)
   } else if (dat[["update-src"]]) {
     twinkle_update_src(dat$name, branch=dat$branch)
   } else if (dat[["install-packages"]]) {

@@ -52,26 +52,28 @@ twinkle_sync <- function(name, staging) {
 }
 
 
-##' Create a deploy key for an private application.  Instructions will
-##' be printed to explain how to add the key to the repository.  You
-##' can have multiple deploy keys for a repository.
+##' Show (and if needed, create or recreate) a deploy key for an
+##' private application.  Instructions will be printed to explain how
+##' to add the key to the repository.  You can have multiple deploy
+##' keys for a repository.
 ##'
-##' @title Create a deploy key
+##' @title Show or create a deploy key
 ##'
 ##' @param name Name of the application within the twinkle configuration
 ##'
-##' @param force Logical, indicating if we should create the key again
-##'   even if it already exists.
+##' @param recreate Logical, indicating if we should create the key
+##'   again even if it already exists.
 ##'
-##' @return Nothing
+##' @return Invisibly, the public key as a string
 ##' @export
-twinkle_deploy_key_create <- function(name, force = FALSE) {
+twinkle_deploy_key <- function(name, recreate = FALSE) {
   root <- find_twinkle_root()
   app <- read_app_config(find_twinkle_config(), name)
   if (!app$private) {
     cli::cli_abort("Not adding deploy key, as '{name}' is not private")
   }
-  deploy_key_create(app$name, app$username, app$repo, force, root)
+  deploy_key_create(name, recreate, root)
+  deploy_key_show_instructions(name, app$username, app$repo, root)
 }
 
 

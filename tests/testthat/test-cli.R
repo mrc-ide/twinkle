@@ -57,12 +57,12 @@ test_that("cli_delete args work", {
 
 test_that("can create a deploy key with the cli", {
   skip_if_not_installed("mockery")
-  mock_create <- mockery::mock()
-  mockery::stub(cli, "twinkle_deploy_key_create", mock_create)
-  cli(args = c("create-deploy-key", "myapp", "--force"))
-  mockery::expect_called(mock_create, 1)
-  expect_equal(mockery::mock_args(mock_create)[[1]],
-               list("myapp", force = TRUE))
+  mock_deploy_key <- mockery::mock()
+  mockery::stub(cli, "twinkle_deploy_key", mock_deploy_key)
+  cli(args = c("deploy-key", "myapp"))
+  mockery::expect_called(mock_deploy_key, 1)
+  expect_equal(mockery::mock_args(mock_deploy_key)[[1]],
+               list("myapp", recreate = FALSE))
 })
 
 

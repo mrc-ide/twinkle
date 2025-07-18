@@ -9,26 +9,25 @@ test_that("can write a deploy key", {
 
 test_that("can create a deploy key", {
   root <- withr::local_tempfile()
+  deploy_key_create("app", FALSE, root)
+  key <- readLines(path_deploy_key(root, "app"))
+
+  deploy_key_create("app", FALSE, root)
+  expect_identical(readLines(path_deploy_key(root, "app")), key)
+
+  deploy_key_create("app", TRUE, root)
+  expect_false(identical(readLines(path_deploy_key(root, "app")), key))
+})
+
+
+test_that("can print instructions for using a deploy key", {
+  root <- withr::local_tempfile()
+  deploy_key_create("app", FALSE, root)
   msg <- capture_messages(
-    deploy_key_create("app", "user", "repo", FALSE, root))
+    pub <- deploy_key_show_instructions("app", "user", "repo", root))
   expect_length(msg, 2)
   expect_match(
     msg[[1]],
     "https://github.com/user/repo/settings/keys/new")
-  expect_match(msg[[2]], "^ssh-rsa ")
-})
-
-
-test_that("Don't overwrite keys without force", {
-  root <- withr::local_tempfile()
-  suppressMessages(
-    deploy_key_create("app", "user", "repo", FALSE, root))
-  key <- readLines(path_deploy_key(root, "app"))
-  expect_error(
-    deploy_key_create("app", "user", "repo", FALSE, root),
-    "Deploy key for 'app' already exists")
-  expect_equal(readLines(path_deploy_key(root, "app")), key)
-  suppressMessages(
-    deploy_key_create("app", "user", "repo", TRUE, root))
-  expect_false(identical(readLines(path_deploy_key(root, "app")), key))
+  expect_equal(trimws(msg[[2]]), pub)
 })

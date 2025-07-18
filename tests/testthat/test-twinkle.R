@@ -11,9 +11,10 @@ test_that("can create a deploy key", {
       "    branch: main",
       "    private: true"),
     cfg)
-  msg <- capture_messages(twinkle_deploy_key_create("myapp"))
+  msg <- capture_messages(pub <- twinkle_deploy_key("myapp"))
   expect_length(msg, 2)
   expect_match(msg[[1]], "Add the public key to github at")
+  expect_equal(trimws(msg[[2]]), pub)
   expect_true(file.exists(path_deploy_key(root, "myapp")))
 })
 
@@ -30,7 +31,7 @@ test_that("can refuse create a deploy key for public app", {
       "    repo: repo",
       "    branch: main"),
     cfg)
-  expect_error(twinkle_deploy_key_create("myapp"),
+  expect_error(twinkle_deploy_key("myapp"),
                "Not adding deploy key, as 'myapp' is not private")
 })
 
