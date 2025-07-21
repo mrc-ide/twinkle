@@ -46,7 +46,7 @@ test_that("can drop repeated package names from refs if used in github", {
     translate_provision_to_pkgdepends(
       list(packages = c("pkg1", "pkg2", "pkg3"),
            package_sources = list(github = github))),
-    c("pkg1", "pkg3", github))
+    c("pkg1", "pkg3", paste0("github::", github)))
 })
 
 
