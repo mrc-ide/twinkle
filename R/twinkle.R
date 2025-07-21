@@ -254,15 +254,15 @@ twinkle_logs <- function(name, list = FALSE, filename = NULL) {
 }
 
 
-##' Query history for an application
+##' Query status for an application
 ##'
-##' @title Query application history
+##' @title Query application status
 ##'
 ##' @param name Name of the application
 ##'
 ##' @return Nothing
 ##' @export
-twinkle_history <- function(name) {
+twinkle_status <- function(name) {
   root <- find_twinkle_root()
 
   dat <- history_status(root, name)
