@@ -324,13 +324,13 @@ test_that("can get status", {
   mockery::stub(twinkle_status, "history_status", mock_status)
   mockery::stub(twinkle_status, "history_render", mock_render)
 
-  twinkle_status("foo")
+  twinkle_status("myapp")
 
   mockery::expect_called(mock_status, 1)
-  expect_equal(mockery::mock_args(mock_status)[[1]], list(root, "foo"))
+  expect_equal(mockery::mock_args(mock_status)[[1]], list(root, "myapp"))
 
   mockery::expect_called(mock_render, 1)
-  expect_equal(mockery::mock_args(mock_render)[[1]], list("foo", dat))
+  expect_equal(mockery::mock_args(mock_render)[[1]], list("myapp", dat))
 })
 
 
@@ -351,7 +351,7 @@ test_that("can print status for app", {
   expect_error(twinkle_status("myapp"), "No history for 'myapp'")
   expect_error(twinkle_status("other"), "No such app 'other'")
 
-  sha <- paste(sample(c(0:9, letters[1:6]), 32, replace = TRUE), collapse = "")
+  sha <- random_sha()
   history_update(root, "myapp", "update-src", list(sha = sha))
   msg <- capture_messages(twinkle_status("myapp"))
   expect_match(msg, "Package source at '.+', updated", all = FALSE)

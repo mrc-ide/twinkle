@@ -42,10 +42,12 @@ history_status <- function(root, name) {
   ret <- lapply(events, last_occurence)
   names(ret) <- events
 
+  sha_src <- ret[["update-src"]]$data$sha
+  sha_pkg <- ret[["install-packages"]]$data$sha
+  lib_pkg <- ret[["install-packages"]]$data$lib
+
   if (!is.null(ret[["install-packages"]])) {
-    current <- ret[["install-packages"]]$data$sha ==
-      ret[["update-src"]]$data$sha
-    if (!current) {
+    if (!identical(ret[["install-packages"]]$data$sha, sha_src)) {
       ret[["install-packages"]]$warning <-
         "Source has changed since last installation"
     }
@@ -53,13 +55,13 @@ history_status <- function(root, name) {
 
   for (i in c("sync-staging", "sync-production")) {
     if (!is.null(ret[[i]])) {
-      current_sha <- ret[["update-src"]]$data$sha == ret[[i]]$data$sha
-      current_lib <- ret[["install-packages"]]$data$lib == ret[[i]]$data$lib
-      if (!current_sha && !current_lib) {
+      is_old_sha <- !identical(ret[[i]]$data$sha, sha_src)
+      is_old_lib <- !identical(ret[[i]]$data$lib, lib_pkg)
+      if (is_old_sha && is_old_lib) {
         ret[[i]]$warning <- "Source and packages have changed since last sync"
-      } else if (!current_sha) {
+      } else if (is_old_sha) {
         ret[[i]]$warning <- "Source has changed since last sync"
-      } else if (!current_lib) {
+      } else if (is_old_lib) {
         ret[[i]]$warning <- "Packages have changed since last sync"
       }
     }
@@ -71,37 +73,47 @@ history_status <- function(root, name) {
 
 history_render <- function(name, dat) {
   cli::cli_h1("{name}")
+  history_render_update_src(dat[["update-src"]])
+  history_render_install_packages(dat[["install-packages"]])
+  history_render_sync(dat[["sync-staging"]], "staging")
+  history_render_sync(dat[["sync-production"]], "production")
+}
 
-  if (is.null(dat[["update-src"]])) {
+
+history_render_update_src <- function(info) {
+  if (is.null(info)) {
     cli::cli_alert_danger("Package source never updated")
   } else {
-    src <- dat[["update-src"]]
-    sha <- substr(src$data$sha, 1, 8)
+    sha <- substr(info$data$sha, 1, 8)
     cli::cli_alert_success(
-      "Package source at '{sha}', updated {src$time}")
+      "Package source at '{sha}', updated {info$time}")
   }
+}
 
-  if (is.null(dat[["install-packages"]])) {
+
+history_render_install_packages <- function(info) {
+  if (is.null(info)) {
     cli::cli_alert_danger("Library never updated")
   } else {
-    pkg <- dat[["install-packages"]]
-    if (is.null(pkg$warning)) {
-      cli::cli_alert_success("Packages installed at {pkg$time}")
+    if (is.null(info$warning)) {
+      cli::cli_alert_success("Packages installed at {info$time}")
     } else {
-      cli::cli_alert_warning("Packages installed at {pkg$time} ({pkg$warning})")
+      cli::cli_alert_warning(
+        "Packages installed at {info$time} ({info$warning})")
     }
   }
+}
 
-  for (i in c("staging", "production")) {
-    info <- dat[[paste0("sync-", i)]]
-    if (is.null(info)) {
-      cli::cli_alert_danger("Never deployed to {i}")
+
+history_render_sync <- function(info, where) {
+  if (is.null(info)) {
+    cli::cli_alert_danger("Never deployed to {where}")
+  } else {
+    if (is.null(info$warning)) {
+      cli::cli_alert_success("Deployed to {where} at {info$time}")
     } else {
-      if (is.null(info$warning)) {
-        cli::cli_alert_success("Deployed to {i} at {info$time}")
-      } else {
-        cli::cli_alert_warning("Deployed to {i} {info$time} ({info$warning})")
-      }
+      cli::cli_alert_warning(
+        "Deployed to {where} {info$time} ({info$warning})")
     }
   }
 }

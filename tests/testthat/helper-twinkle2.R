@@ -27,3 +27,8 @@ create_dummy_library <- function(root, name) {
 system_file <- function(...) {
   system.file(..., mustWork = TRUE)
 }
+
+
+random_sha <- function() {
+  paste(sample(c(0:9, letters[1:6]), 32, replace = TRUE), collapse = "")
+}
