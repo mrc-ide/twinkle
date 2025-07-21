@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y \
     libgeos-dev \
     libglpk-dev \
     libproj-dev \
+    libsodium-dev \
     libudunits2-dev \
     && rm -rf /var/lib/apt/lists/*
 
