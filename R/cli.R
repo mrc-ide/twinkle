@@ -34,7 +34,7 @@ Usage:
   } else if (dat[["list"]]) {
     writeLines(twinkle_list(dat$pattern))
   } else if (dat[["logs"]]) {
-    writeLines(twinkle_logs(dat$name, dat$list, dat$filename))
+    writeLines(twinkle_logs(dat$name, dat[["--list"]], dat$filename))
   }
   invisible()
 }
