@@ -93,12 +93,20 @@ twinkle_deploy_key <- function(name, recreate = FALSE) {
 ##'   configuration at all) because the application for deletion might
 ##'   have been removed from the configuration already.
 ##'
+##' @param production Logical, indicating if we should *additionally*
+##'   delete on production too. Otherwise production is left alone.
+##'   This allows you to totally redeploy an application but leave it
+##'   running until you are happy with the version, then sync it into
+##'   place.
+##'
 ##' @return Nothing
 ##' @export
-twinkle_delete_app <- function(name) {
+twinkle_delete_app <- function(name, production = FALSE) {
   root <- find_twinkle_root()
-  delete_loudly(path_app(root, name, TRUE), "production instance", name)
-  delete_loudly(path_app(root, name, FALSE), "staging ginstance", name)
+  if (production) {
+    delete_loudly(path_app(root, name, TRUE), "production instance", name)
+  }
+  delete_loudly(path_app(root, name, FALSE), "staging instance", name)
   delete_loudly(path_lib(root, name), "library", name)
   delete_loudly(path_deploy_key(root, name), "deploy key", name)
   delete_loudly(path_repo(root, name), "source", name,

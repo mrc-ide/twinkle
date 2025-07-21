@@ -9,8 +9,8 @@ Usage:
   twinkle deploy [--production] <name>
   twinkle restart <name>
   twinkle list [<pattern>]
-  twinkle delete <name>
-  twinkle logs <name> [--list | --filename=FILENAME]
+  twinkle delete [--production] <name>
+  twinkle logs [--list | --filename=FILENAME] <name>
 " -> doc
 
   dat <- docopt::docopt(doc, args)
@@ -25,7 +25,7 @@ Usage:
   } else if (dat[["restart"]]) {
     twinkle_restart(dat$name)
   } else if (dat[["delete"]]) {
-    twinkle_delete_app(dat$name)
+    twinkle_delete_app(dat$name, dat$production)
   } else if (dat[["deploy"]]) {
     twinkle_deploy(dat$name, dat$production)
   } else if (dat[["list"]]) {

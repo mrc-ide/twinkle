@@ -51,7 +51,7 @@ test_that("cli_delete args work", {
   cli(args = c("delete", "myapp"))
   mockery::expect_called(mock_run, 1)
   args <- mockery::mock_args(mock_run)[[1]]
-  expect_equal(args, list("myapp"))
+  expect_equal(args, list("myapp", FALSE))
 })
 
 

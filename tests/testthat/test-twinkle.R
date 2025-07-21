@@ -67,7 +67,7 @@ test_that("can delete an application", {
     dir_create(p)
   }
 
-  msg1 <- capture_messages(twinkle_delete_app(name))
+  msg1 <- capture_messages(twinkle_delete_app(name, TRUE))
   expect_length(msg1, 4)
   expect_match(msg1[[1]], "Deleted production instance for 'app'")
   expect_match(msg1[[4]], "Deleted source for 'app'")
@@ -76,6 +76,28 @@ test_that("can delete an application", {
   msg2 <- capture_messages(twinkle_delete_app(name))
   expect_length(msg2, 1)
   expect_match(msg2[[1]], "The source for 'app' was not found")
+})
+
+
+test_that("can delete an application but leave production alone", {
+  root <- withr::local_tempdir()
+  withr::local_envvar(c(TWINKLE_ROOT = root))
+
+  name <- "app"
+  paths <- c(path_app(root, name, TRUE),
+             path_app(root, name, FALSE),
+             path_lib(root, name),
+             path_repo(root, name))
+  for (p in paths) {
+    dir_create(p)
+  }
+
+  msg1 <- capture_messages(twinkle_delete_app(name))
+  expect_length(msg1, 3)
+  expect_match(msg1[[1]], "Deleted staging instance for 'app'")
+  expect_match(msg1[[3]], "Deleted source for 'app'")
+  expect_false(any(file.exists(paths[-1])))
+  expect_true(file.exists(paths[[1]]))
 })
 
 
