@@ -56,13 +56,16 @@ translate_provision_to_pkgdepends <- function(dat, name) {
     cli::cli_abort("Unhandled configuration in provision.yml: {extra}")
   }
 
-  packages <- dat$packages
+  packages <- unique(dat$packages)
 
   if (!is.null(dat$package_sources)) {
     if (!identical(names(dat$package_sources), "github")) {
       cli::cli_abort("Unhandled package_sources")
     }
     github <- sprintf("github::%s", dat$package_sources$github)
+    re <- "^[^/]+/([^/@#]+).*$"
+    github_packages <- sub(re, "\\1", github)
+    packages <- setdiff(packages, github_packages)
   } else {
     github <- NULL
   }

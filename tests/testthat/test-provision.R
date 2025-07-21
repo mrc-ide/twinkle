@@ -40,6 +40,16 @@ test_that("can splice in self-installs", {
 })
 
 
+test_that("can drop repeated package names from refs if used in github", {
+  github <- c("user/pkg2@branch", "user/other")
+  expect_equal(
+    translate_provision_to_pkgdepends(
+      list(packages = c("pkg1", "pkg2", "pkg3"),
+           package_sources = list(github = github))),
+    c("pkg1", "pkg3", github))
+})
+
+
 test_that("can provision a library", {
   skip_if_not_installed("mockery")
   mock_run <- mockery::mock()
