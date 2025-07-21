@@ -119,6 +119,17 @@ test_that("can list logs through the cli", {
 })
 
 
+test_that("can show status through the cli", {
+  skip_if_not_installed("mockery")
+  mock_status <- mockery::mock()
+  mockery::stub(cli, "twinkle_status", mock_status)
+  cli(args = c("status", "foo"))
+  mockery::expect_called(mock_status, 1)
+  expect_equal(mockery::mock_args(mock_status)[[1]],
+               list("foo"))
+})
+
+
 test_that("install cli script works", {
   path <- withr::local_tempdir()
   install_cli(path)

@@ -67,3 +67,41 @@ history_status <- function(root, name) {
 
   ret
 }
+
+
+history_render <- function(name, dat) {
+  cli::cli_h1("{name}")
+
+  if (is.null(dat[["update-src"]])) {
+    cli::cli_alert_danger("Package source never updated")
+  } else {
+    src <- dat[["update-src"]]
+    sha <- substr(src$data$sha, 1, 8)
+    cli::cli_alert_success(
+      "Package source at '{sha}', updated {src$time}")
+  }
+
+  if (is.null(dat[["install-packages"]])) {
+    cli::cli_alert_danger("Library never updated")
+  } else {
+    pkg <- dat[["install-packages"]]
+    if (is.null(pkg$warning)) {
+      cli::cli_alert_success("Packages installed at {pkg$time}")
+    } else {
+      cli::cli_alert_warning("Packages installed at {pkg$time} ({pkg$warning})")
+    }
+  }
+
+  for (i in c("staging", "production")) {
+    info <- dat[[paste0("sync-", i)]]
+    if (is.null(info)) {
+      cli::cli_alert_danger("Never deployed to {i}")
+    } else {
+      if (is.null(info$warning)) {
+        cli::cli_alert_success("Deployed to {i} at {info$time}")
+      } else {
+        cli::cli_alert_warning("Deployed to {i} {info$time} ({info$warning})")
+      }
+    }
+  }
+}

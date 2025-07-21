@@ -301,3 +301,59 @@ test_that("Can show logs", {
     twinkle_logs("starmeds-budget-tool", list = TRUE, filename = "yeah"),
     "Can't specify both 'list' and 'filename'")
 })
+
+
+test_that("can get status", {
+  root <- withr::local_tempdir()
+  cfg <- withr::local_tempfile()
+  withr::local_envvar(c(TWINKLE_ROOT = root, TWINKLE_CONFIG = cfg))
+
+  writeLines(
+    c("apps:",
+      "  myapp:",
+      "    username: user",
+      "    repo: repo",
+      "    branch: main",
+      "    private: true"),
+    cfg)
+
+  dat <- new.env()
+  mock_status <- mockery::mock(dat)
+  mock_render <- mockery::mock()
+
+  mockery::stub(twinkle_status, "history_status", mock_status)
+  mockery::stub(twinkle_status, "history_render", mock_render)
+
+  twinkle_status("foo")
+
+  mockery::expect_called(mock_status, 1)
+  expect_equal(mockery::mock_args(mock_status)[[1]], list(root, "foo"))
+
+  mockery::expect_called(mock_render, 1)
+  expect_equal(mockery::mock_args(mock_render)[[1]], list("foo", dat))
+})
+
+
+test_that("can print status for app", {
+  root <- withr::local_tempdir()
+  cfg <- withr::local_tempfile()
+  withr::local_envvar(c(TWINKLE_ROOT = root, TWINKLE_CONFIG = cfg))
+
+  writeLines(
+    c("apps:",
+      "  myapp:",
+      "    username: user",
+      "    repo: repo",
+      "    branch: main",
+      "    private: true"),
+    cfg)
+
+  expect_error(twinkle_status("myapp"), "No history for 'myapp'")
+  expect_error(twinkle_status("other"), "No such app 'other'")
+
+  sha <- paste(sample(c(0:9, letters[1:6]), 32, replace = TRUE), collapse = "")
+  history_update(root, "myapp", "update-src", list(sha = sha))
+  msg <- capture_messages(twinkle_status("myapp"))
+  expect_match(msg, "Package source at '.+', updated", all = FALSE)
+  expect_match(msg, "Library never updated", all = FALSE)
+})
