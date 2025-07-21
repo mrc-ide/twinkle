@@ -51,4 +51,5 @@ RUN install2.r --error \
     yaml \
     && R CMD INSTALL "/src" \
     && Rscript -e 'twinkle2:::install_cli("/usr/local/bin")' \
+    && cp /src/docker/delete-old-logs /usr/local/bin \
     && cp /src/docker/Rprofile /home/shiny/.Rprofile
