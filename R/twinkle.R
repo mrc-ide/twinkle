@@ -193,6 +193,45 @@ twinkle_list <- function(pattern = NULL) {
 }
 
 
+##' List or view logs from the shiny server.
+##'
+##' @title List of view logs
+##'
+##' @param name Name of the application
+##'
+##' @param list Logical, indicating if we should list filenames of log
+##'   files, rather than show the last, or a particular, log file.
+##'
+##' @param filename Optional filename, to show a particular log.
+##'   Otherwise we print the most recent log.
+##'
+##' @return A character vector
+##' @export
+twinkle_logs <- function(name, list = FALSE, filename = NULL) {
+  if (list && !is.null(filename)) {
+    cli::cli_abort("Can't specify both 'list' and 'filename'")
+  }
+  root <- find_twinkle_root()
+  path <- path_logs(root)
+  if (!is.null(filename)) {
+    path <- file.path(path, filename)
+    if (!file.exists(path)) {
+      cli::cli_abort("Log file '{filename}' was not found")
+    }
+    return(readLines(path))
+  }
+  pattern <- sprintf("^%s-shiny-[0-9]{8}-[0-9]{6}", name)
+  files <- sort(dir(path, pattern), decreasing = TRUE)
+  if (length(files) == 0) {
+    cli::cli_abort("No logs found for '{name}'")
+  }
+  if (list) {
+    return(files)
+  }
+  readLines(file.path(path, files[[1]]))
+}
+
+
 find_twinkle_root <- function() {
   sys_getenv("TWINKLE_ROOT")
 }

@@ -10,6 +10,7 @@ Usage:
   twinkle restart <name>
   twinkle list [<pattern>]
   twinkle delete <name>
+  twinkle logs <name> [--list | --filename=FILENAME]
 " -> doc
 
   dat <- docopt::docopt(doc, args)
@@ -29,6 +30,8 @@ Usage:
     twinkle_deploy(dat$name, dat$production)
   } else if (dat[["list"]]) {
     writeLines(twinkle_list(dat$pattern))
+  } else if (dat[["logs"]]) {
+    writeLines(twinkle_logs(dat$name, dat$list, dat$filename))
   }
   invisible()
 }

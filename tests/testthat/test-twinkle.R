@@ -240,3 +240,42 @@ test_that("can list apps", {
   expect_equal(twinkle_list("^my"), "myapp")
   expect_equal(twinkle_list("^x"), character())
 })
+
+
+test_that("Can show logs", {
+  root <- withr::local_tempdir()
+  cfg <- withr::local_tempfile()
+  withr::local_envvar(c(TWINKLE_ROOT = root, TWINKLE_CONFIG = cfg))
+  dir_create(file.path(root, "logs"))
+
+  files <- c(
+    "epiestim-shiny-20250721-133754-35995.log",
+    "starmeds-budget-tool-shiny-20250717-142545-35579.log",
+    "starmeds-budget-tool-shiny-20250717-142722-38769.log",
+    "starmeds-budget-tool-shiny-20250717-142857-35669.log",
+    "starmeds-budget-tool-shiny-20250718-153936-36235.log")
+  for (i in seq_along(files)) {
+    writeLines(rep(letters[i], 5), file.path(root, "logs", files[[i]]))
+  }
+
+  expect_equal(twinkle_logs("starmeds-budget-tool"), rep("e", 5))
+  expect_equal(
+    twinkle_logs(
+      "starmeds-budget-tool",
+      filename = "starmeds-budget-tool-shiny-20250717-142857-35669.log"),
+    rep("d", 5))
+  expect_equal(
+    twinkle_logs("starmeds-budget-tool", list = TRUE),
+    rev(files[-1]))
+  expect_equal(twinkle_logs("epiestim"), rep("a", 5))
+  expect_error(twinkle_logs("other"),
+               "No logs found for 'other'")
+  expect_error(
+    twinkle_logs(
+      "starmeds-budget-tool",
+      filename = "20250717-142857-35669.log"),
+    "Log file '20250717-142857-35669.log' was not found")
+  expect_error(
+    twinkle_logs("starmeds-budget-tool", list = TRUE, filename = "yeah"),
+    "Can't specify both 'list' and 'filename'")
+})

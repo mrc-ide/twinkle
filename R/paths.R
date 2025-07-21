@@ -22,3 +22,8 @@ path_src <- function(root, name, subdir) {
 path_deploy_key <- function(root, name) {
   file.path(root, "keys", name)
 }
+
+
+path_logs <- function(root) {
+  file.path(root, "logs")
+}

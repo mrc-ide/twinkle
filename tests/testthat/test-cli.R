@@ -97,6 +97,17 @@ test_that("can restart applications through the cli", {
 })
 
 
+test_that("can show logs through the cli", {
+  skip_if_not_installed("mockery")
+  mock_logs <- mockery::mock(c("some", "logs"))
+  mockery::stub(cli, "twinkle_logs", mock_logs)
+  expect_output(out <- cli(args = c("logs", "foo")), "some\nlogs")
+  mockery::expect_called(mock_logs, 1)
+  expect_equal(mockery::mock_args(mock_logs)[[1]],
+               list("foo", FALSE, NULL))
+})
+
+
 test_that("install cli script works", {
   path <- withr::local_tempdir()
   install_cli(path)
