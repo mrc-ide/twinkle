@@ -1,0 +1,69 @@
+history_update <- function(root, name, action, data) {
+  file <- path_history(root, name)
+  if (file.exists(file)) {
+    prev <- readRDS(file)
+  } else {
+    prev <- NULL
+  }
+  new <- data.frame(name = name,
+                    time = Sys.time(),
+                    action = action,
+                    data = I(list(data)))
+  dir_create(dirname(file))
+  saveRDS(rbind(prev, new), file)
+}
+
+
+history_read <- function(root, name) {
+  file <- path_history(root, name)
+  if (!file.exists(file)) {
+    cli::cli_abort("No history for '{name}'")
+  }
+  readRDS(file)
+}
+
+
+history_status <- function(root, name) {
+  dat <- history_read(root, name)
+
+  last_occurence <- function(action) {
+    i <- dat$action == action
+    if (any(i)) {
+      ret <- as.list(dat[last(which(i)), ])
+      ret$data <- ret$data[[1]]
+      ret
+    } else {
+      NULL
+    }
+  }
+
+  events <- c(
+    "update-src", "install-packages", "sync-staging", "sync-production")
+  ret <- lapply(events, last_occurence)
+  names(ret) <- events
+
+  if (!is.null(ret[["install-packages"]])) {
+    current <- ret[["install-packages"]]$data$sha ==
+      ret[["update-src"]]$data$sha
+    if (!current) {
+      ret[["install-packages"]]$warning <-
+        "Source has changed since last installation"
+    }
+  }
+
+  for (i in c("sync-staging", "sync-production")) {
+    if (!is.null(ret[[i]])) {
+      current_sha <- ret[["update-src"]]$data$sha == ret[[i]]$data$sha
+      current_lib <- ret[["install-packages"]]$data$lib == ret[[i]]$data$lib
+      if (!current_sha && !current_lib) {
+        ret[[i]]$warning <- "Source and packages have changed since last sync"
+      } else if (!current_sha) {
+        ret[[i]]$warning <- "Source has changed since last sync"
+      } else if (!current_lib) {
+        ret[[i]]$warning <- "Packages have changed since last sync"
+      }
+    }
+  }
+
+  ret
+}

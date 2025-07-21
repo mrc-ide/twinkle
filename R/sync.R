@@ -27,4 +27,7 @@ sync_app <- function(name, subdir, production, root, verbose = TRUE) {
   rsync_mirror_directory(path_lib(root, name), file.path(dest, ".lib"),
                          exclude = ".conan",
                          verbose = verbose)
+
+  list(sha = last_repo_id(root, name),
+       lib = last_conan_id(root, name))
 }

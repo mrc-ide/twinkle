@@ -14,7 +14,7 @@ branch on staging).  This overrides the configuration within the
 application.}
 }
 \value{
-Nothing
+Invisibly, the sha of the HEAD of the repository
 }
 \description{
 Update source for a twinkle application.

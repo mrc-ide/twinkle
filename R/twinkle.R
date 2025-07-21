@@ -8,13 +8,16 @@
 ##'   branch on staging).  This overrides the configuration within the
 ##'   application.
 ##'
-##' @return Nothing
+##' @return Invisibly, the sha of the HEAD of the repository
 ##' @export
 twinkle_update_src <- function(name, branch = NULL) {
   root <- find_twinkle_root()
   app <- read_app_config(find_twinkle_config(), name)
   branch <- branch %||% app$branch
-  repo_update(app$name, app$username, app$repo, branch, app$private, root)
+  sha <- repo_update(app$name, app$username, app$repo, branch, app$private,
+                     root)
+  history_update(root, name, "update-src", list(sha = sha))
+  invisible(sha)
 }
 
 
@@ -24,12 +27,16 @@ twinkle_update_src <- function(name, branch = NULL) {
 ##'
 ##' @param name Name of the app
 ##'
-##' @return Nothing
+##' @return Invisibly, a list containing the sha that the installation
+##'   was based on and the conan installation id from the installation
+##'
 ##' @export
 twinkle_install_packages <- function(name) {
   root <- find_twinkle_root()
   app <- read_app_config(find_twinkle_config(), name)
-  build_library(app$name, app$subdir, root)
+  dat <- build_library(app$name, app$subdir, root)
+  history_update(root, name, "install-packages", dat)
+  invisible(dat)
 }
 
 
@@ -43,12 +50,18 @@ twinkle_install_packages <- function(name) {
 ##' @param production Logical, indicating if we want to update the
 ##'   production instance.  If `FALSE`, then staging is updated.
 ##'
-##' @return Nothing
+##' @return A named character vector with the ids of the repo (last
+##'   SHA) and the library (conan id)
+##'
 ##' @export
 twinkle_sync <- function(name, production) {
   root <- find_twinkle_root()
   app <- read_app_config(find_twinkle_config(), name)
-  sync_app(app$name, app$subdir, production = production, root = root)
+  dat <- sync_app(app$name, app$subdir, production = production, root = root)
+  dat$production <- production
+  event <- if (production) "sync-production" else "sync-staging"
+  history_update(root, name, event, dat)
+  invisible(dat)
 }
 
 
@@ -111,6 +124,7 @@ twinkle_delete_app <- function(name, production = FALSE) {
   delete_loudly(path_deploy_key(root, name), "deploy key", name)
   delete_loudly(path_repo(root, name), "source", name,
                 verbose_if_missing = TRUE)
+  history_update(root, name, "delete", list(production = production))
 }
 
 
@@ -237,6 +251,56 @@ twinkle_logs <- function(name, list = FALSE, filename = NULL) {
     return(files)
   }
   readLines(file.path(path, files[[1]]))
+}
+
+
+##' Query history for an application
+##'
+##' @title Query application history
+##'
+##' @param name Name of the application
+##'
+##' @return Nothing
+##' @export
+twinkle_history <- function(name) {
+  root <- find_twinkle_root()
+
+  dat <- history_status(root, name)
+
+  cli::cli_h1("{name}")
+
+  if (is.null(dat[["update-src"]])) {
+    cli::cli_alert_danger("Package source never updated")
+  } else {
+    src <- dat[["update-src"]]
+    sha <- substr(src$data$sha, 1, 8)
+    cli::cli_alert_success(
+      "Package source at '{sha}', updated {src$time}")
+  }
+
+  if (is.null(dat[["install-packages"]])) {
+    cli::cli_alert_danger("Library never updated")
+  } else {
+    pkg <- dat[["install-packages"]]
+    if (is.null(pkg$warning)) {
+      cli::cli_alert_success("Packages installed at {pkg$time}")
+    } else {
+      cli::cli_alert_warning("Packages installed at {pkg$time} ({pkg$warning})")
+    }
+  }
+
+  for (i in c("staging", "production")) {
+    info <- dat[[paste0("sync-", i)]]
+    if (is.null(info)) {
+      cli::cli_alert_danger("Never deployed to {i}")
+    } else {
+      if (is.null(info$warning)) {
+        cli::cli_alert_success("Deployed to {i} at {info$time}")
+      } else {
+        cli::cli_alert_warning("Deployed to {i} {info$time} ({info$warning})")
+      }
+    }
+  }
 }
 
 
