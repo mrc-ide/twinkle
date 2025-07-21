@@ -85,7 +85,7 @@ test_that("can select default cran", {
 
 test_that("error if no provisioning method obvious", {
   path <- withr::local_tempdir()
-  expect_error(provision_configuration(path),
+  expect_error(provision_configuration(path, path),
                "Did not find provisioning information")
 })
 
@@ -94,7 +94,7 @@ test_that("can translate provision.yml into pkgdepends format", {
   path <- withr::local_tempdir()
   writeLines("packages: [pkg1, pkg2, pkg3]", file.path(path, "provision.yml"))
   expect_message(
-    cfg <- provision_configuration(path),
+    cfg <- provision_configuration(path, path),
     "Translating 'provision.yml' into pkgdepends format")
   expect_equal(cfg,
                list(method = "pkgdepends", refs = c("pkg1", "pkg2", "pkg3")))
@@ -102,19 +102,29 @@ test_that("can translate provision.yml into pkgdepends format", {
 
 
 test_that("can detect conan script format", {
-  path <- withr::local_tempdir()
-  writeLines("packages: [pkg1, pkg2, pkg3]", file.path(path, "provision.yml"))
+  root <- withr::local_tempdir()
+  name <- "foo"
+  subdir <- NULL
+  path <- path_src(root, name, subdir)
+  dir_create(path)
   file.create(file.path(path, "conan.R"))
-  file.create(file.path(path, "pkgdepends.txt"))
-  cfg <- provision_configuration(path)
-  expect_equal(cfg, list(method = "script", script = "conan.R"))
+
+  cfg <- provision_conan_configuration(name, subdir, root)
+  expect_equal(cfg$method, "script")
+  expect_equal(cfg$script, "repos/foo/conan.R")
 })
 
 
-test_that("can detect pkgdepends format", {
-  path <- withr::local_tempdir()
-  writeLines("packages: [pkg1, pkg2, pkg3]", file.path(path, "provision.yml"))
-  file.create(file.path(path, "pkgdepends.txt"))
-  cfg <- provision_configuration(path)
-  expect_equal(cfg, list(method = "pkgdepends", refs = NULL))
+test_that("Can build configuration with pkgdepends.txt", {
+  root <- withr::local_tempdir()
+  name <- "foo"
+  subdir <- "subdir"
+  path <- path_src(root, name, subdir)
+  dir_create(path)
+  writeLines("pkg", file.path(path, "pkgdepends.txt"))
+
+  cfg <- provision_conan_configuration(name, subdir, root)
+  expect_equal(cfg$method, "pkgdepends")
+  expect_equal(cfg$filename, "repos/foo/subdir/pkgdepends.txt")
+  expect_equal(cfg$pkgdepends, list(repos = NULL, refs = "pkg"))
 })

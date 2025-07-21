@@ -1,16 +1,6 @@
 build_library <- function(name, subdir, root) {
   cli::cli_h1("Building library")
-  repo <- path_src(root, name, subdir)
-
-  dat <- provision_configuration(repo, name)
-
-  cfg <- rlang::inject(
-    conan2::conan_configure(
-      !!!dat,
-      cran = default_cran(),
-      path_lib = file.path("libs", name),
-      path_bootstrap = .libPaths()[[1]],
-      path = root))
+  cfg <- provision_conan_configuration(name, subdir, root)
   withr::with_dir(root, conan2::conan_run(cfg))
 }
 
@@ -24,11 +14,26 @@ default_cran <- function(repos = getOption("repos")) {
 }
 
 
-provision_configuration <- function(path, name) {
+provision_conan_configuration <- function(name, subdir, root) {
+  repo <- path_src(root, name, subdir)
+  dat <- provision_configuration(root, repo, name)
+  rlang::inject(
+    conan2::conan_configure(
+      !!!dat,
+      cran = default_cran(),
+      path_lib = file.path("libs", name),
+      path_bootstrap = .libPaths()[[1]],
+      path = root))
+}
+
+
+provision_configuration <- function(root, path, name) {
   if (file.exists(file.path(path, "conan.R"))) {
-    list(method = "script", script = "conan.R")
+    script <- file.path(fs::path_rel(path, root), "conan.R")
+    list(method = "script", script = script)
   } else if (file.exists(file.path(path, "pkgdepends.txt"))) {
-    list(method = "pkgdepends", refs = NULL)
+    filename <- file.path(fs::path_rel(path, root), "pkgdepends.txt")
+    list(method = "pkgdepends", refs = NULL, filename = filename)
   } else if (file.exists(file.path(path, "provision.yml"))) {
     cli::cli_alert_warning(
       "Translating 'provision.yml' into pkgdepends format")
