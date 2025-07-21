@@ -8,6 +8,7 @@ Usage:
   twinkle sync [--production] <name>
   twinkle deploy [--production] <name>
   twinkle restart <name>
+  twinkle status <name>
   twinkle list [<pattern>]
   twinkle delete [--production] <name>
   twinkle logs [--list | --filename=FILENAME] <name>
@@ -24,6 +25,8 @@ Usage:
     twinkle_sync(dat$name, dat[["production"]])
   } else if (dat[["restart"]]) {
     twinkle_restart(dat$name)
+  } else if (dat[["status"]]) {
+    twinkle_status(dat$name)
   } else if (dat[["delete"]]) {
     twinkle_delete_app(dat$name, dat$production)
   } else if (dat[["deploy"]]) {
