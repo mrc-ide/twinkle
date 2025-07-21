@@ -1,26 +1,6 @@
 build_library <- function(name, subdir, root) {
   cli::cli_h1("Building library")
-  repo <- path_src(root, name, subdir)
-
-  ## Eventually we might want to prefer pkgdepends.txt as the
-  ## installation mechanism, but that will require some logic around
-  ## selecting the required installation approach based on the repo.
-  path_provision <- file.path(repo, "provision.yml")
-  dat <- suppressWarnings(yaml::read_yaml(path_provision))
-  refs <- translate_provision_to_pkgdepends(dat, name)
-
-  path_lib <- file.path("libs", name)
-  path_bootstrap <- .libPaths()[[1]]
-
-  cran <- default_cran()
-
-  cfg <- conan2::conan_configure(
-    "pkgdepends",
-    refs = refs,
-    cran = cran,
-    path_lib = path_lib,
-    path_bootstrap = path_bootstrap,
-    path = root)
+  cfg <- provision_conan_configuration(name, subdir, root)
   withr::with_dir(root, conan2::conan_run(cfg))
 }
 
@@ -34,6 +14,41 @@ default_cran <- function(repos = getOption("repos")) {
 }
 
 
+provision_conan_configuration <- function(name, subdir, root) {
+  repo <- path_src(root, name, subdir)
+  dat <- provision_configuration(root, repo, name)
+  rlang::inject(
+    conan2::conan_configure(
+      !!!dat,
+      cran = default_cran(),
+      path_lib = file.path("libs", name),
+      path_bootstrap = .libPaths()[[1]],
+      path = root))
+}
+
+
+provision_configuration <- function(root, path, name) {
+  if (file.exists(file.path(path, "conan.R"))) {
+    script <- file.path(fs::path_rel(path, root), "conan.R")
+    list(method = "script", script = script)
+  } else if (file.exists(file.path(path, "pkgdepends.txt"))) {
+    filename <- file.path(fs::path_rel(path, root), "pkgdepends.txt")
+    list(method = "pkgdepends", refs = NULL, filename = filename)
+  } else if (file.exists(file.path(path, "provision.yml"))) {
+    cli::cli_alert_warning(
+      "Translating 'provision.yml' into pkgdepends format")
+    dat <- suppressWarnings(yaml::read_yaml(file.path(path, "provision.yml")))
+    refs <- translate_provision_to_pkgdepends(dat, name)
+    list(method = "pkgdepends", refs = refs)
+  } else {
+    cli::cli_abort(
+      c("Did not find provisioning information",
+        i = paste("Expected to find one of 'pkgdepends.txt', 'conan.R' or",
+                  "'provision.yml' in '{path}'")))
+  }
+}
+
+
 translate_provision_to_pkgdepends <- function(dat, name) {
   allowed <- c("packages", "package_sources", "self")
   extra <- setdiff(names(dat), allowed)
@@ -41,13 +56,16 @@ translate_provision_to_pkgdepends <- function(dat, name) {
     cli::cli_abort("Unhandled configuration in provision.yml: {extra}")
   }
 
-  packages <- dat$packages
+  packages <- unique(dat$packages)
 
   if (!is.null(dat$package_sources)) {
     if (!identical(names(dat$package_sources), "github")) {
       cli::cli_abort("Unhandled package_sources")
     }
     github <- sprintf("github::%s", dat$package_sources$github)
+    re <- "^[^/]+/([^/@#]+).*$"
+    github_packages <- sub(re, "\\1", github)
+    packages <- setdiff(packages, github_packages)
   } else {
     github <- NULL
   }

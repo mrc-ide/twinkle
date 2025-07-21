@@ -15,10 +15,10 @@ rsync_mirror_directory_args <- function(from, to, exclude) {
 }
 
 
-sync_app <- function(name, subdir, staging, root, verbose = TRUE) {
-  type <- if (staging) "staging" else "production"
+sync_app <- function(name, subdir, production, root, verbose = TRUE) {
+  type <- if (production) "production" else "staging"
   cli::cli_h1("Copying {name} ({type})")
-  dest <- path_app(root, name, staging)
+  dest <- path_app(root, name, production)
   path_lib <- path_lib(root, name)
 
   rsync_mirror_directory(path_src(root, name, subdir), dest,

@@ -4,7 +4,7 @@
 \alias{twinkle_delete_app}
 \title{Delete an application}
 \usage{
-twinkle_delete_app(name)
+twinkle_delete_app(name, production = FALSE)
 }
 \arguments{
 \item{name}{Name of the application within the twinkle
@@ -12,6 +12,12 @@ configuration. We don't check that the application actually
 exists within your configuration (or indeed even read your
 configuration at all) because the application for deletion might
 have been removed from the configuration already.}
+
+\item{production}{Logical, indicating if we should \emph{additionally}
+delete on production too. Otherwise production is left alone.
+This allows you to totally redeploy an application but leave it
+running until you are happy with the version, then sync it into
+place.}
 }
 \value{
 Nothing

@@ -3,3 +3,4 @@ Makefile
 ^\.github$
 ^docker$
 ^twinkle\.Rproj$
+^_pkgdown\.yml$

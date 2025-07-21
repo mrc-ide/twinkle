@@ -1,10 +1,8 @@
-deploy_key_create <- function(name, username, repo, force, root) {
+deploy_key_create <- function(name, recreate, root) {
   path <- path_deploy_key(root, name)
-  if (file.exists(path) && !force) {
-    cli::cli_abort("Deploy key for '{name}' already exists")
+  if (recreate || !file.exists(path)) {
+    deploy_key_generate(path)
   }
-  deploy_key_generate(path)
-  deploy_key_show_instructions(name, username, repo, root)
 }
 
 
@@ -29,4 +27,5 @@ deploy_key_show_instructions <- function(name, username, repo, root) {
   cli::cli_alert_info(
     "Add the public key to github at: {.url {url_key}} with content:")
   cli::cli_verbatim(pub)
+  invisible(pub)
 }

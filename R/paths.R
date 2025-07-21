@@ -3,8 +3,8 @@ path_repo <- function(root, name) {
 }
 
 
-path_app <- function(root, name, staging) {
-  file.path(root, if (staging) "apps/staging" else "apps", name)
+path_app <- function(root, name, production) {
+  file.path(root, if (production) "apps" else "apps/staging", name)
 }
 
 
@@ -21,4 +21,9 @@ path_src <- function(root, name, subdir) {
 
 path_deploy_key <- function(root, name) {
   file.path(root, "keys", name)
+}
+
+
+path_logs <- function(root) {
+  file.path(root, "logs")
 }

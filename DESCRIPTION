@@ -15,11 +15,12 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports:
     cli,
-    conan2 (>= 1.9.103),
+    conan2 (>= 1.9.104),
     docopt,
     gert,
     openssl,
     pkgdepends,
+    rlang,
     withr,
     yaml
 Remotes:
