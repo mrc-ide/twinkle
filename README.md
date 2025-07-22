@@ -1,8 +1,8 @@
-# twinkle2
+# twinkle
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/mrc-ide/twinkle2/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mrc-ide/twinkle2/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/mrc-ide/twinkle2/graph/badge.svg)](https://app.codecov.io/gh/mrc-ide/twinkle2)
+[![R-CMD-check](https://github.com/mrc-ide/twinkle/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mrc-ide/twinkle/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/mrc-ide/twinkle/graph/badge.svg)](https://app.codecov.io/gh/mrc-ide/twinkle)
 <!-- badges: end -->
 
 `twinkle` is a package designed to help manage a set of shiny applications.  The package itself does not actually contain any shiny-specific code but mostly helps:
@@ -25,7 +25,7 @@ We like this setup, compared with something like [shinyproxy](https://shinyproxy
 
 We are reasonably agnostic about how deployments are configured, and the actual configuration is fairly basic; see [`shiny-dev`](https://github.com/reside-ic/shiny-dev/tree/docker-compose) for a full example using `docker compose` and minimal configuration for the three services above.
 
-We then imagine some persistant storage (such as a docker volume) holding all the data for applications; this is where `shiny` will serve from but also some persistant storage that we need in order to set the applications up.  The `reside-ic/twinkle2` container contains a cli application `twinkle` that can perform simple administrative commands based on a configuration that describes the applications.
+We then imagine some persistant storage (such as a docker volume) holding all the data for applications; this is where `shiny` will serve from but also some persistant storage that we need in order to set the applications up.  The `reside-ic/twinkle` container contains a cli application `twinkle` that can perform simple administrative commands based on a configuration that describes the applications.
 
 # Configuration
 
@@ -53,7 +53,7 @@ The valid fields within each application are:
 
 Applications will depend on a number of packages in order to run.  This should be indicated within the application root of the repository (so in the repository root if `subdir` is not used, or within `subdir` otherwise).
 
-Most applications can use the same `pkgdepends.txt` format that is supported by [`conan2`](https://mrc-ide.github.io/conan2/), as used in [`hipercow`](https://mrc-ide.github.io/hipercow/articles/packages.html).  See [the docs here](https://mrc-ide.github.io/hipercow/articles/packages.html#using-pkgdepends) for details.  Typically this is simply a file `pkgdepends.txt` in the application root, with each line being the name of a package or a github specification like `mrc-ide/malariasimulation@v1.6.0`, for example:
+Most applications can use the same `pkgdepends.txt` format that is supported by [`conan`](https://mrc-ide.github.io/conan/), as used in [`hipercow`](https://mrc-ide.github.io/hipercow/articles/packages.html).  See [the docs here](https://mrc-ide.github.io/hipercow/articles/packages.html#using-pkgdepends) for details.  Typically this is simply a file `pkgdepends.txt` in the application root, with each line being the name of a package or a github specification like `mrc-ide/malariasimulation@v1.6.0`, for example:
 
 ```
 # Also use the mrc-ide universe
@@ -117,4 +117,4 @@ We assume that two environment variables are set
 * `TWINKLE_ROOT`: points at the directory where all twinkle data will be stored.  The applications to be served will be found at `${TWINKLE_ROOT}/apps` and the staging applications at `${TWINKLE_ROOT}/staging`
 * `TWINKE_CONFIG`: points at the location of the configuration
 
-In the [`shiny-dev`](https://github.com/reside-ic/shiny-dev/tree/docker-compose) setup, we set these in the compose file, bind-mounting the configuration in from the host (read-only) and using a docker volume for the root, shared among all workers.  Practicaly, the server configuration needs to kept in sync with this configuration, with `site_dir` set to `${TWINKLE_ROOT}/apps`
+In the [`shiny-dev`](https://github.com/reside-ic/shiny-dev/tree/docker-compose) setup, we set these in the compose file, bind-mounting the configuration in from the host and using a docker volume for the root, shared among all workers.  Practicaly, the server configuration needs to kept in sync with this configuration, with `site_dir` set to `${TWINKLE_ROOT}/apps`

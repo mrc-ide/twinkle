@@ -1,7 +1,7 @@
 build_library <- function(name, subdir, root) {
   cli::cli_h1("Building library")
   cfg <- provision_conan_configuration(name, subdir, root)
-  withr::with_dir(root, conan2::conan_run(cfg))
+  withr::with_dir(root, conan::conan_run(cfg))
   list(sha = last_repo_id(root, name),
        lib = last_conan_id(root, name))
 }
@@ -20,7 +20,7 @@ provision_conan_configuration <- function(name, subdir, root) {
   repo <- path_src(root, name, subdir)
   dat <- provision_configuration(root, repo, name)
   rlang::inject(
-    conan2::conan_configure(
+    conan::conan_configure(
       !!!dat,
       cran = default_cran(),
       path_lib = file.path("libs", name),
@@ -83,5 +83,5 @@ translate_provision_to_pkgdepends <- function(dat, name) {
 
 
 last_conan_id <- function(root, name) {
-  max(conan2::conan_list(path_lib(root, name))$name)
+  max(conan::conan_list(path_lib(root, name))$name)
 }
