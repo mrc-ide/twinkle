@@ -113,7 +113,7 @@ history_render_sync <- function(info, where) {
       cli::cli_alert_success("Deployed to {where} at {info$time}")
     } else {
       cli::cli_alert_warning(
-        "Deployed to {where} {info$time} ({info$warning})")
+        "Deployed to {where} at {info$time} ({info$warning})")
     }
   }
 }

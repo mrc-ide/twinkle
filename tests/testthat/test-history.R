@@ -92,3 +92,61 @@ test_that("report on sync", {
   expect_equal(d$data, list(sha = sha2, lib = lib1))
   expect_equal(d$warning, "Packages have changed since last sync")
 })
+
+
+test_that("can render empty source information", {
+  expect_message(history_render_update_src(NULL),
+                 "Package source never updated")
+})
+
+
+test_that("can render real source information", {
+  sha <- "f0f59031666998ffc7e37c4c2994cf5c"
+  time <- structure(1753121341.34682, class = c("POSIXct", "POSIXt"))
+  info <- list(data = list(sha = sha), time = time)
+  expect_message(
+    history_render_update_src(info),
+    "Package source at 'f0f59031', updated 2025-07-21")
+})
+
+
+test_that("can render empty package installation information", {
+  expect_message(history_render_install_packages(NULL),
+                 "Library never updated")
+})
+
+
+test_that("can render real installation information", {
+  sha <- "f0f59031666998ffc7e37c4c2994cf5c"
+  lib <- "20240105152157"
+  time <- structure(1753121341.34682, class = c("POSIXct", "POSIXt"))
+  info <- list(data = list(sha = sha, lib = lib), time = time)
+  expect_message(
+    history_render_install_packages(info),
+    "Packages installed at 2025-07-21")
+
+  info$warning <- "Some warning"
+  expect_message(
+    history_render_install_packages(info),
+    "Packages installed at 2025-07-21.+ \\(Some warning\\)")
+})
+
+
+test_that("can render empty deploy information", {
+  expect_message(history_render_sync(NULL, "production"),
+                 "Never deployed to production")
+})
+
+
+test_that("can render real deploy information", {
+  time <- structure(1753121341.34682, class = c("POSIXct", "POSIXt"))
+  info <- list(data = list(), time = time)
+  expect_message(
+    history_render_sync(info, "production"),
+    "Deployed to production at 2025-07-21")
+
+  info$warning <- "Some warning"
+  expect_message(
+    history_render_sync(info, "staging"),
+    "Deployed to staging at 2025-07-21.+ \\(Some warning\\)")
+})
