@@ -23,6 +23,22 @@ history_read <- function(root, name) {
 }
 
 
+history_render <- function(name, dat) {
+  time <- dat$time
+  action <- dat$action
+  data <- dat$data
+  cli::cli_h1("{name}")
+  for (i in seq_len(nrow(dat))) {
+    d <- data[[i]]
+    if ("sha" %in% names(d)) {
+      d$sha <- substr(d$sha, 1, 8)
+    }
+    d <- sprintf("%s=%s", names(d), unlist(d))
+    cli::cli_text("{time[[i]]} {action[[i]]} {d}")
+  }
+}
+
+
 history_status <- function(root, name) {
   dat <- history_read(root, name)
 

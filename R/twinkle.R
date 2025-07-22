@@ -270,6 +270,22 @@ twinkle_status <- function(name) {
 }
 
 
+##' Show history of an application
+##'
+##' @title Show application history
+##'
+##' @param name Name of the application
+##'
+##' @return Nothing
+##' @export
+twinkle_history <- function(name) {
+  root <- find_twinkle_root()
+  read_app_config(find_twinkle_config(), name)
+  dat <- history_read(root, name)
+  history_render(name, dat)
+}
+
+
 find_twinkle_root <- function() {
   sys_getenv("TWINKLE_ROOT")
 }

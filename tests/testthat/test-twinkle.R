@@ -357,3 +357,25 @@ test_that("can print status for app", {
   expect_match(msg, "Package source at '.+', updated", all = FALSE)
   expect_match(msg, "Library never updated", all = FALSE)
 })
+
+
+test_that("can show history for app", {
+  root <- withr::local_tempdir()
+  cfg <- withr::local_tempfile()
+  withr::local_envvar(c(TWINKLE_ROOT = root, TWINKLE_CONFIG = cfg))
+
+  writeLines(
+    c("apps:",
+      "  myapp:",
+      "    username: user",
+      "    repo: repo",
+      "    branch: main",
+      "    private: true"),
+    cfg)
+
+  sha <- random_sha()
+  history_update(root, "myapp", "update-src", list(sha = sha))
+  msg <- capture_messages(twinkle_history("myapp"))
+
+  expect_match(msg, "update-src sha=", all = FALSE)
+})

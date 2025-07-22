@@ -3,6 +3,7 @@
 export(twinkle_delete_app)
 export(twinkle_deploy)
 export(twinkle_deploy_key)
+export(twinkle_history)
 export(twinkle_install_packages)
 export(twinkle_list)
 export(twinkle_logs)

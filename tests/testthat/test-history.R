@@ -150,3 +150,15 @@ test_that("can render real deploy information", {
     history_status_render_sync(info, "staging"),
     "Deployed to staging at 2025-07-21.+ \\(Some warning\\)")
 })
+
+
+test_that("can show history", {
+  root <- withr::local_tempdir()
+  sha1 <- random_sha()
+  sha2 <- random_sha()
+  history_update(root, "myapp", "update-src", list(sha = sha1))
+  history_update(root, "myapp", "update-src", list(sha = sha2))
+  dat <- history_read(root, "myapp")
+  msg <- capture_messages(history_render("myapp", dat))
+  expect_match(msg, "update-src sha=", all = FALSE)
+})

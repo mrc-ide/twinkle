@@ -130,6 +130,17 @@ test_that("can show status through the cli", {
 })
 
 
+test_that("can show history through the cli", {
+  skip_if_not_installed("mockery")
+  mock_history <- mockery::mock()
+  mockery::stub(cli, "twinkle_history", mock_history)
+  cli(args = c("history", "foo"))
+  mockery::expect_called(mock_history, 1)
+  expect_equal(mockery::mock_args(mock_history)[[1]],
+               list("foo"))
+})
+
+
 test_that("install cli script works", {
   path <- withr::local_tempdir()
   install_cli(path)
