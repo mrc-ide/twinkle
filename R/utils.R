@@ -41,3 +41,8 @@ sys_getenv <- function(name) {
   }
   value
 }
+
+
+last <- function(x) {
+  x[[length(x)]]
+}

@@ -40,6 +40,7 @@ repo_checkout_branch <- function(name, branch, root) {
                             force = TRUE,
                             repo = repo)
   }
+  last_repo_id(root, name)
 }
 
 
@@ -81,4 +82,10 @@ repo_key <- function(root, name, private) {
     cli::cli_abort("Deploy key for '{name}' does not exist yet")
   }
   path
+}
+
+
+last_repo_id <- function(root, name) {
+  repo <- path_repo(root, name)
+  gert::git_info(repo = repo)$commit
 }

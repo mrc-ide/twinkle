@@ -1,0 +1,20 @@
+#!/bin/bash
+if [ -z "$TWINKLE_ROOT" ]; then
+  echo "Expected environment variable 'TWINKLE_ROOT' to be set"
+  exit 1
+fi
+
+if [[ $# -ne 1 ]]; then
+    echo "Usage: delete-old-logs <days-old>"
+    exit 1
+fi
+
+AGE=$1
+
+if [[ $AGE -lt 10 ]]; then
+    echo "Refusing to delete logs that are so young"
+    exit 1
+fi
+
+
+find "$TWINKLE_ROOT/logs" ! -ctime "-${1}" -type f -name '*.log' -delete

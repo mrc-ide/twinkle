@@ -12,10 +12,11 @@ test_that("can sync an app", {
   root <- withr::local_tempdir()
   name <- "app"
   repo <- path_repo(root, name)
-  create_simple_git_repo(repo)
-  create_dummy_library(root, name)
+  sha <- create_simple_git_repo(repo)
+  lib <- create_dummy_library(root, name)
 
-  suppressMessages(sync_app(name, NULL, TRUE, root, verbose = FALSE))
+  suppressMessages(res <- sync_app(name, NULL, TRUE, root, verbose = FALSE))
+  expect_mapequal(res, list(sha = sha, lib = lib))
 
   path <- path_app(root, name, TRUE)
   expect_true(file.exists(file.path(path, "app.R")))

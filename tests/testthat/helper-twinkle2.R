@@ -16,9 +16,19 @@ create_dummy_library <- function(root, name) {
   dest <- file.path(path, "pkg", "file")
   dir_create(dirname(dest))
   file.create(dest)
+  dir_create(file.path(path, ".conan"))
+  d <- readRDS("example-conan-installation.rds")
+  name <- "20240105152157"
+  saveRDS(d, file.path(path, ".conan", name))
+  name
 }
 
 
 system_file <- function(...) {
   system.file(..., mustWork = TRUE)
+}
+
+
+random_sha <- function() {
+  paste(sample(c(0:9, letters[1:6]), 32, replace = TRUE), collapse = "")
 }

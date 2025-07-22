@@ -53,14 +53,18 @@ test_that("can drop repeated package names from refs if used in github", {
 test_that("can provision a library", {
   skip_if_not_installed("mockery")
   mock_run <- mockery::mock()
+  mock_last_repo_id <- mockery::mock("abc123")
+  mock_last_conan_id <- mockery::mock("20250721")
   mockery::stub(build_library, "conan2::conan_run", mock_run)
+  mockery::stub(build_library, "last_repo_id", mock_last_repo_id)
+  mockery::stub(build_library, "last_conan_id", mock_last_conan_id)
 
   path <- withr::local_tempdir()
 
   path_provision <- file.path(path, "repos", "pkg", "provision.yml")
   dir_create(dirname(path_provision))
   writeLines("packages: [pkg1, pkg2, pkg3]", path_provision)
-  msg <- capture_messages(build_library("pkg", NULL, path))
+  msg <- capture_messages(res <- build_library("pkg", NULL, path))
   expect_match(msg, "Building library", all = FALSE)
 
   mockery::expect_called(mock_run, 1)
@@ -74,6 +78,7 @@ test_that("can provision a library", {
                  path_lib = "libs/pkg",
                  path_bootstrap = .libPaths()[[1]],
                  path = path))
+  expect_equal(res, list(sha = "abc123", lib = "20250721"))
 })
 
 

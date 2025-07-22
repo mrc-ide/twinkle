@@ -10,7 +10,8 @@ twinkle_install_packages(name)
 \item{name}{Name of the app}
 }
 \value{
-Nothing
+Invisibly, a list containing the sha that the installation
+was based on and the conan installation id from the installation
 }
 \description{
 Install packages for an app

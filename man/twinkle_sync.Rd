@@ -13,7 +13,8 @@ twinkle_sync(name, production)
 production instance.  If \code{FALSE}, then staging is updated.}
 }
 \value{
-Nothing
+A named character vector with the ids of the repo (last
+SHA) and the library (conan id)
 }
 \description{
 Sync an app and its library to the staging or production shiny

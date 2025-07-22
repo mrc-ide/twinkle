@@ -13,6 +13,11 @@ path_lib <- function(root, name) {
 }
 
 
+path_history <- function(root, name) {
+  file.path(root, "history", name)
+}
+
+
 path_src <- function(root, name, subdir) {
   ret <- path_repo(root, name)
   if (is.null(subdir)) ret else file.path(ret, subdir)
