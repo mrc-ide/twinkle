@@ -1,6 +1,6 @@
 #!/bin/bash
-if [ -z "$TWINKLE_ROOT" ]; then
-  echo "Expected environment variable 'TWINKLE_ROOT' to be set"
+if [ -z "$TWINKLE_LOGS" ]; then
+  echo "Expected environment variable 'TWINKLE_LOGS' to be set"
   exit 1
 fi
 
@@ -17,4 +17,4 @@ if [[ $AGE -lt 10 ]]; then
 fi
 
 
-find "$TWINKLE_ROOT/logs" ! -ctime "-${1}" -type f -name '*.log' -delete
+find "$TWINKLE_LOGS" ! -ctime "-${AGE}" -type f -name '*.log' -delete
