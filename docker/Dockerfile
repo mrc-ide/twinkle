@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get update && apt-get install -y \
     cmake \
     gdal-bin \
+    libabsl-dev \
     libgdal-dev \
     libgeos-dev \
     libglpk-dev \
