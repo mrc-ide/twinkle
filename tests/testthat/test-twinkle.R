@@ -265,10 +265,9 @@ test_that("can list apps", {
 
 
 test_that("Can show logs", {
-  root <- withr::local_tempdir()
+  logs <- withr::local_tempdir()
   cfg <- withr::local_tempfile()
-  withr::local_envvar(c(TWINKLE_ROOT = root, TWINKLE_CONFIG = cfg))
-  dir_create(file.path(root, "logs"))
+  withr::local_envvar(c(TWINKLE_LOGS = logs, TWINKLE_CONFIG = cfg))
 
   files <- c(
     "epiestim-shiny-20250721-133754-35995.log",
@@ -277,7 +276,7 @@ test_that("Can show logs", {
     "starmeds-budget-tool-shiny-20250717-142857-35669.log",
     "starmeds-budget-tool-shiny-20250718-153936-36235.log")
   for (i in seq_along(files)) {
-    writeLines(rep(letters[i], 5), file.path(root, "logs", files[[i]]))
+    writeLines(rep(letters[i], 5), file.path(logs, files[[i]]))
   }
 
   expect_equal(twinkle_logs("starmeds-budget-tool"), rep("e", 5))

@@ -233,8 +233,7 @@ twinkle_logs <- function(name, list = FALSE, filename = NULL) {
   if (list && !is.null(filename)) {
     cli::cli_abort("Can't specify both 'list' and 'filename'")
   }
-  root <- find_twinkle_root()
-  path <- path_logs(root)
+  path <- find_twinkle_logs()
   if (!is.null(filename)) {
     path <- file.path(path, filename)
     if (!file.exists(path)) {
@@ -288,6 +287,11 @@ twinkle_history <- function(name) {
 
 find_twinkle_root <- function() {
   sys_getenv("TWINKLE_ROOT")
+}
+
+
+find_twinkle_logs <- function() {
+  sys_getenv("TWINKLE_LOGS")
 }
 
 
