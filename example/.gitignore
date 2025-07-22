@@ -1,7 +1,0 @@
-.vault
-sources
-apache
-docker-compose.yml
-restart.txt
-scripts/*
-!scripts/init

@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-set -e
-SERVER=$1
-echo "Disabling $SERVER"
-echo "disable server servers/$SERVER" | \
-    socat stdio /var/run/hapee-lb.sock > /dev/null

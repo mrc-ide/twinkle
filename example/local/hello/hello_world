@@ -1,3 +1,0 @@
-#!/usr/bin/env Rscript
-message("hello world")
-saveRDS(runif(1), "data.rds")
