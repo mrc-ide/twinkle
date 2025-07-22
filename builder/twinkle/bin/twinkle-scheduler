@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-set -e
-DEST=/shiny/yacron.yml
-twinkle write_schedule $DEST
-yacron -c $DEST

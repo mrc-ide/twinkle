@@ -1,9 +1,0 @@
-#!/usr/bin/env Rscript
-local({
-  args <- commandArgs(TRUE)
-  if (length(args) == 0L) {
-    stop("Usage: twinkle <command> [<args>...]", call. = FALSE)
-  }
-  entrypoint <- getExportedValue("twinkle", paste0("main_", args[[1L]]))
-  do.call(entrypoint, list(args[-1L]), envir = .GlobalEnv)
-})

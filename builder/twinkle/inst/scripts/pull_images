@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-set -e
-ROOT=$(realpath $(dirname $0)/..)
-TWINKLE_TAG=$(cat $ROOT/twinkle_tag)
-docker pull mrcide/haproxy:${TWINKLE_TAG}
-docker pull mrcide/shiny-server:${TWINKLE_TAG}
-docker pull mrcide/shiny-server-builder:${TWINKLE_TAG}
-docker pull httpd:2.4
