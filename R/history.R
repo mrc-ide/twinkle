@@ -71,16 +71,16 @@ history_status <- function(root, name) {
 }
 
 
-history_render <- function(name, dat) {
+history_status_render <- function(name, dat) {
   cli::cli_h1("{name}")
-  history_render_update_src(dat[["update-src"]])
-  history_render_install_packages(dat[["install-packages"]])
-  history_render_sync(dat[["sync-staging"]], "staging")
-  history_render_sync(dat[["sync-production"]], "production")
+  history_status_render_update_src(dat[["update-src"]])
+  history_status_render_install_packages(dat[["install-packages"]])
+  history_status_render_sync(dat[["sync-staging"]], "staging")
+  history_status_render_sync(dat[["sync-production"]], "production")
 }
 
 
-history_render_update_src <- function(info) {
+history_status_render_update_src <- function(info) {
   if (is.null(info)) {
     cli::cli_alert_danger("Package source never updated")
   } else {
@@ -91,7 +91,7 @@ history_render_update_src <- function(info) {
 }
 
 
-history_render_install_packages <- function(info) {
+history_status_render_install_packages <- function(info) {
   if (is.null(info)) {
     cli::cli_alert_danger("Library never updated")
   } else {
@@ -105,7 +105,7 @@ history_render_install_packages <- function(info) {
 }
 
 
-history_render_sync <- function(info, where) {
+history_status_render_sync <- function(info, where) {
   if (is.null(info)) {
     cli::cli_alert_danger("Never deployed to {where}")
   } else {

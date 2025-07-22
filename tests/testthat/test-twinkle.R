@@ -322,7 +322,7 @@ test_that("can get status", {
   mock_render <- mockery::mock()
 
   mockery::stub(twinkle_status, "history_status", mock_status)
-  mockery::stub(twinkle_status, "history_render", mock_render)
+  mockery::stub(twinkle_status, "history_status_render", mock_render)
 
   twinkle_status("myapp")
 

@@ -266,7 +266,7 @@ twinkle_status <- function(name) {
   root <- find_twinkle_root()
   read_app_config(find_twinkle_config(), name)
   dat <- history_status(root, name)
-  history_render(name, dat)
+  history_status_render(name, dat)
 }
 
 
