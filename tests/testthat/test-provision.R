@@ -55,7 +55,7 @@ test_that("can provision a library", {
   mock_run <- mockery::mock()
   mock_last_repo_id <- mockery::mock("abc123")
   mock_last_conan_id <- mockery::mock("20250721")
-  mockery::stub(build_library, "conan2::conan_run", mock_run)
+  mockery::stub(build_library, "conan::conan_run", mock_run)
   mockery::stub(build_library, "last_repo_id", mock_last_repo_id)
   mockery::stub(build_library, "last_conan_id", mock_last_conan_id)
 
@@ -71,7 +71,7 @@ test_that("can provision a library", {
   args <- mockery::mock_args(mock_run)[[1]]
   expect_length(args, 1)
   expect_equal(args[[1]],
-               conan2::conan_configure(
+               conan::conan_configure(
                  method = "pkgdepends",
                  refs = c("pkg1", "pkg2", "pkg3"),
                  cran = default_cran(),

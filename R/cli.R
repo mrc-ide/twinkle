@@ -45,7 +45,7 @@ Usage:
 
 install_cli <- function(path) {
   code <- c("#!/usr/bin/env Rscript",
-            "twinkle2:::cli()")
+            "twinkle:::cli()")
   path_bin <- file.path(path, "twinkle")
   writeLines(code, path_bin)
   Sys.chmod(path_bin, "755")

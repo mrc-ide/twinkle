@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(twinkle2)
+library(twinkle)
 
-test_check("twinkle2")
+test_check("twinkle")

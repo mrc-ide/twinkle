@@ -43,14 +43,14 @@ RUN install2.r --error \
     --repos https://p3m.dev/cran/__linux__/noble/latest \
     --repos https://mrc-ide.r-universe.dev \
     cli \
-    conan2 \
+    conan \
     gert \
     openssl \
     pkgdepends \
     withr \
     yaml \
     && R CMD INSTALL "/src" \
-    && Rscript -e 'twinkle2:::install_cli("/usr/local/bin")' \
+    && Rscript -e 'twinkle:::install_cli("/usr/local/bin")' \
     && cp /src/docker/delete-old-logs /usr/local/bin \
     && cp /src/docker/Rprofile /home/shiny/.Rprofile \
     && rm -rf /src
