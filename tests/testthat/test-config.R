@@ -77,3 +77,24 @@ test_that("can read a private application", {
                                 subdir = "foo",
                                 name = "foo"))))
 })
+
+
+test_that("can have a post-sync script", {
+  path <- withr::local_tempfile()
+  writeLines(
+    c("apps:",
+      "  foo:",
+      "    username: bob",
+      "    repo: app",
+      "    script: whatever.R"),
+    path)
+  dat <- read_app_config(path, "foo")
+  expect_equal(
+    dat,
+    list(username = "bob",
+         repo = "app",
+         script = "whatever.R",
+         branch = NULL,
+         private = FALSE,
+         name = "foo"))
+})
