@@ -174,3 +174,19 @@ test_that("private repos need repo keys", {
   file.create(path_key)
   expect_equal(repo_key(path, "app", TRUE), path_key)
 })
+
+
+test_that("can error if the repo url changes", {
+  path <- withr::local_tempdir()
+  sha <- create_simple_git_repo(path)
+  url <- "https://example.com/git"
+  gert::git_remote_add(url, repo = path)
+
+  expect_no_error(repo_check_remote(path, url))
+  expect_error(
+    repo_check_remote(path, "git@example.com/git"),
+    "Remote url has changed, can't update sources")
+  expect_error(
+    repo_check_remote(path, "https://github.com/user/repo"),
+    "Remote url has changed, can't update sources")
+})
