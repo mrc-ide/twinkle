@@ -81,8 +81,8 @@ repo_key <- function(root, name, private) {
   path <- path_deploy_key(root, name)
   if (!file.exists(path)) {
     cli::cli_abort(
-      "Deploy key for '{name}' does not exist yet",
-      i = "You might run {.code ./twinkle deploy-key {name}}")
+      c("Deploy key for '{name}' does not exist yet",
+        i = "You might run {.code ./twinkle deploy-key {name}}"))
   }
   path
 }
