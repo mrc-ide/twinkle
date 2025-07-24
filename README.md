@@ -23,9 +23,9 @@ where `apache` presents the interface to the world and looks after https, `hapro
 
 We like this setup, compared with something like [shinyproxy](https://shinyproxy.io/) where balancing occurs **between applications** but multiple users of the same appliation compete (this at least [used to be the case](https://support.openanalytics.eu/t/more-than-one-user-per-container/373)).  In our experience, multiple users tend to correlate on the **same** application, e.g., when running a workshop or after launching an app related to a new publication.
 
-We are reasonably agnostic about how deployments are configured, and the actual configuration is fairly basic; see [`shiny-dev`](https://github.com/reside-ic/shiny-dev) for a full example using `docker compose` and minimal configuration for the three services above.
+We are reasonably agnostic about how deployments are configured, and the actual configuration is fairly basic; see [`shiny-dide`](https://github.com/mrc-ide/shiny-dide) for a full example using `docker compose` and minimal configuration for the three services above, which is deployed at [`shiny.dide.ic.ac.uk`](https://shiny.dide.ic.ac.uk)
 
-We then imagine some persistant storage (such as a docker volume) holding all the data for applications; this is where `shiny` will serve from but also some persistant storage that we need in order to set the applications up.  The `reside-ic/twinkle` container contains a cli application `twinkle` that can perform simple administrative commands based on a configuration that describes the applications.
+We then imagine some persistant storage (such as a docker volume) holding all the data for applications; this is where `shiny` will serve from but also some persistant storage that we need in order to set the applications up.  The `mrc-ide/twinkle` container contains a cli application `twinkle` that can perform simple administrative commands based on a configuration that describes the applications.
 
 # Configuration
 
@@ -50,7 +50,7 @@ The valid fields within each application are:
 * `private`: a boolean indicating if the repository is private. If so, you will need to add a deploy key to the repository in order to clone it over ssh
 * `script`: an optional script to run after the app has been sync-ed to the destination (either staging or production).
 
-The intention for use of `script` is for apps that are installed into a directory that is read-only at app runtime, which is the case in [`shiny-dev`](https://github.com/reside-ic/shiny-dev) so that we can safely run many workers on the same tree.  This causes issues where it is convenient to have the code in the application perform some calculation after cloning but before running.  Examples that we have seen where this was used (or could have been used) are:
+The intention for use of `script` is for apps that are installed into a directory that is read-only at app runtime, which is the case in [`shiny-dide`](https://github.com/mrc-ide/shiny-dide) so that we can safely run many workers on the same tree.  This causes issues where it is convenient to have the code in the application perform some calculation after cloning but before running.  Examples that we have seen where this was used (or could have been used) are:
 
 * downloading some data that is not able to be stored in the git repository
 * prerending rmarkdown for use with `learnr`
@@ -84,7 +84,7 @@ The precedence order is `conan.R` (highest precedence), then `pkgdepends.txt`, t
 
 # Interaction
 
-Here, we assume the exact setup used in [`shiny-dev`](https://github.com/reside-ic/shiny-dev), and we assume that the system is running (i.e., `docker compose ps` shows services running).
+Here, we assume the exact setup used in [`shiny-dide`](https://github.com/mrc-ide/shiny-dide), and we assume that the system is running (i.e., `docker compose ps` shows services running).
 
 You should be able to run
 
@@ -126,4 +126,4 @@ We assume that three environment variables are set
 * `TWINKLE_LOGS`: points at the location that the logs will be written
 * `TWINKLE_CONFIG`: points at the location of the configuration
 
-In the [`shiny-dev`](https://github.com/reside-ic/shiny-dev) setup, we set these in the compose file, bind-mounting the configuration in from the host and using a docker volume for the root, shared among all workers.  Practically, the server configuration needs to be kept in sync with this configuration, with `site_dir` set to `${TWINKLE_ROOT}/apps`
+In the [`shiny-dide`](https://github.com/mrc-ide/shiny-dide) setup, we set these in the compose file, bind-mounting the configuration in from the host and using a docker volume for the root, shared among all workers.  Practically, the server configuration needs to be kept in sync with this configuration, with `site_dir` set to `${TWINKLE_ROOT}/apps`
