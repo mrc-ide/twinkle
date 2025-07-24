@@ -171,7 +171,9 @@ test_that("Can call sync on staging", {
   twinkle_sync("myapp", FALSE)
 
   args <- mockery::mock_args(mock_sync_app)[[1]]
-  expect_equal(args, list("myapp", "inner", production = FALSE, root = root))
+  expect_equal(
+    args,
+    list("myapp", "inner", production = FALSE, root = root, verbose = TRUE))
 })
 
 
@@ -189,7 +191,9 @@ test_that("Can call sync on production", {
   twinkle_sync("myapp", TRUE)
 
   args <- mockery::mock_args(mock_sync_app)[[1]]
-  expect_equal(args, list("myapp", "inner", production = TRUE, root = root))
+  expect_equal(
+    args,
+    list("myapp", "inner", production = TRUE, root = root, verbose = TRUE))
 })
 
 
@@ -377,4 +381,32 @@ test_that("can show history for app", {
   msg <- capture_messages(twinkle_history("myapp"))
 
   expect_match(msg, "update-src sha=", all = FALSE)
+})
+
+
+## This one actually runs things
+test_that("can run a script after sync", {
+  root <- withr::local_tempdir()
+  cfg <- withr::local_tempfile()
+  withr::local_envvar(c(TWINKLE_ROOT = root, TWINKLE_CONFIG = cfg))
+
+  writeLines(
+    c("apps:",
+      "  myapp:",
+      "    username: user",
+      "    repo: repo",
+      "    script: script.R"),
+    cfg)
+
+  name <- "myapp"
+  repo <- path_repo(root, name)
+  sha <- create_simple_git_repo(repo)
+  lib <- create_dummy_library(root, name)
+  writeLines("saveRDS(1:10, 'data.rds')", file.path(repo, "script.R"))
+
+  evaluate_promise(twinkle_sync(name, FALSE, verbose = FALSE))
+
+  dest <- path_app(root, name, FALSE)
+  expect_true(file.exists(file.path(dest, "data.rds")))
+  expect_equal(readRDS(file.path(dest, "data.rds")), 1:10)
 })

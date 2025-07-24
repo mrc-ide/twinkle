@@ -46,3 +46,26 @@ sys_getenv <- function(name) {
 last <- function(x) {
   x[[length(x)]]
 }
+
+
+run_script <- function(path, filename, verbose = TRUE) {
+  if (grepl("\\.[rR]", filename)) {
+    cmd <- find_rscript()
+    args <- filename
+  } else {
+    cmd <- paste0("./", filename)
+    args <- character()
+  }
+
+  withr::local_dir(path)
+  if (!file.exists(filename)) {
+    cli::cli_abort("Did not find script '{filename}' (within '{path}')")
+  }
+
+  system2_or_throw(cmd, args, verbose = verbose)
+}
+
+
+find_rscript <- function() {
+  file.path(R.home(), "bin", "Rscript")
+}
