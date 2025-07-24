@@ -9,6 +9,10 @@ test_that("can clone project", {
 
 
 test_that("can update a git mirror to track upstream", {
+  skip_if_not_installed("mockery")
+  mock_check_remote <- mockery::mock()
+  mockery::stub(repo_update, "repo_check_remote", mock_check_remote)
+
   upstream <- withr::local_tempdir()
   root <- withr::local_tempdir()
   name <- "foo"
@@ -39,10 +43,19 @@ test_that("can update a git mirror to track upstream", {
   suppressMessages(
     repo_update(name, user, repo, NULL, FALSE, root, verbose = FALSE))
   expect_equal(gert::git_info(dest)$commit, sha3)
+
+  mockery::expect_called(mock_check_remote, 2)
+  expect_equal(
+    mockery::mock_args(mock_check_remote),
+    rep(list(list(dest, "https://github.com/user/repo")), 2))
 })
 
 
 test_that("can update a git mirror to track upstream", {
+  skip_if_not_installed("mockery")
+  mock_check_remote <- mockery::mock()
+  mockery::stub(repo_update, "repo_check_remote", mock_check_remote)
+
   upstream <- withr::local_tempdir()
   root <- withr::local_tempdir()
   name <- "foo"
@@ -173,4 +186,20 @@ test_that("private repos need repo keys", {
   dir_create(dirname(path_key))
   file.create(path_key)
   expect_equal(repo_key(path, "app", TRUE), path_key)
+})
+
+
+test_that("can error if the repo url changes", {
+  path <- withr::local_tempdir()
+  sha <- create_simple_git_repo(path)
+  url <- "https://example.com/git"
+  gert::git_remote_add(url, repo = path)
+
+  expect_no_error(repo_check_remote(path, url))
+  expect_error(
+    repo_check_remote(path, "git@example.com/git"),
+    "Remote url has changed, can't update sources")
+  expect_error(
+    repo_check_remote(path, "https://github.com/user/repo"),
+    "Remote url has changed, can't update sources")
 })

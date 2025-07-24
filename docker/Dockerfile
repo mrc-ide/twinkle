@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y \
     libgdal-dev \
     libgeos-dev \
     libglpk-dev \
+    libnode-dev \
     libproj-dev \
     libsodium-dev \
     libudunits2-dev \

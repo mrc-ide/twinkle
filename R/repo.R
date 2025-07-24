@@ -2,14 +2,15 @@ repo_update <- function(name, username, repo, branch, private, root,
                         verbose = TRUE) {
   dest <- path_repo(root, name)
   key <- repo_key(root, name, private)
+  url <- repo_url(username, repo, private)
   if (!file.exists(dest)) {
     cli::cli_h1("Cloning {name} (from github: {username}/{repo})")
     dir_create(dirname(dest))
-    gert::git_clone(repo_url(username, repo, private), dest,
-                    ssh_key = key, verbose = verbose)
+    gert::git_clone(url, dest, ssh_key = key, verbose = verbose)
     repo_checkout_branch(name, branch, root)
   } else {
     cli::cli_h1("Updating sources for {name}")
+    repo_check_remote(dest, url)
     gert::git_fetch(repo = dest, ssh_key = key, verbose = verbose)
   }
   repo_update_lfs(dest)
@@ -80,10 +81,22 @@ repo_key <- function(root, name, private) {
   path <- path_deploy_key(root, name)
   if (!file.exists(path)) {
     cli::cli_abort(
-      "Deploy key for '{name}' does not exist yet",
-      i = "You might run {.code ./twinkle deploy-key {name}}")
+      c("Deploy key for '{name}' does not exist yet",
+        i = "You might run {.code ./twinkle deploy-key {name}}"))
   }
   path
+}
+
+
+repo_check_remote <- function(path, url) {
+  prev <- gert::git_remote_info("origin", repo = path)$url
+  if (!identical(prev, url)) {
+    cli::cli_abort(
+      c("Remote url has changed, can't update sources",
+        i = "Previous: {prev}",
+        i = "Current: {url}",
+        i = "You should delete the application and try again"))
+  }
 }
 
 
