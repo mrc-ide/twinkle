@@ -171,7 +171,9 @@ test_that("Can call sync on staging", {
   twinkle_sync("myapp", FALSE)
 
   args <- mockery::mock_args(mock_sync_app)[[1]]
-  expect_equal(args, list("myapp", "inner", production = FALSE, root = root))
+  expect_equal(
+    args,
+    list("myapp", "inner", production = FALSE, root = root, verbose = TRUE))
 })
 
 
@@ -189,7 +191,9 @@ test_that("Can call sync on production", {
   twinkle_sync("myapp", TRUE)
 
   args <- mockery::mock_args(mock_sync_app)[[1]]
-  expect_equal(args, list("myapp", "inner", production = TRUE, root = root))
+  expect_equal(
+    args,
+    list("myapp", "inner", production = TRUE, root = root, verbose = TRUE))
 })
 
 
