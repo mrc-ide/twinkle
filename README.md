@@ -126,4 +126,4 @@ We assume that three environment variables are set
 * `TWINKLE_LOGS`: points at the location that the logs will be written
 * `TWINKLE_CONFIG`: points at the location of the configuration
 
-In the [`shiny-dev`](https://github.com/reside-ic/shiny-dev) setup, we set these in the compose file, bind-mounting the configuration in from the host and using a docker volume for the root, shared among all workers.  Practicaly, the server configuration needs to kept in sync with this configuration, with `site_dir` set to `${TWINKLE_ROOT}/apps`
+In the [`shiny-dev`](https://github.com/reside-ic/shiny-dev) setup, we set these in the compose file, bind-mounting the configuration in from the host and using a docker volume for the root, shared among all workers.  Practically, the server configuration needs to be kept in sync with this configuration, with `site_dir` set to `${TWINKLE_ROOT}/apps`
