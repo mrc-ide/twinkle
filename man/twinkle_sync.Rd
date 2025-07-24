@@ -4,13 +4,17 @@
 \alias{twinkle_sync}
 \title{Sync app}
 \usage{
-twinkle_sync(name, production)
+twinkle_sync(name, production, verbose = TRUE)
 }
 \arguments{
 \item{name}{Name of the app}
 
 \item{production}{Logical, indicating if we want to update the
 production instance.  If \code{FALSE}, then staging is updated.}
+
+\item{verbose}{Logical, indicating if output should be shown
+(passed to system commands, which are otherwise hard to capture
+output from)}
 }
 \value{
 A named character vector with the ids of the repo (last

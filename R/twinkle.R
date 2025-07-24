@@ -50,14 +50,24 @@ twinkle_install_packages <- function(name) {
 ##' @param production Logical, indicating if we want to update the
 ##'   production instance.  If `FALSE`, then staging is updated.
 ##'
+##' @param verbose Logical, indicating if output should be shown
+##'   (passed to system commands, which are otherwise hard to capture
+##'   output from)
+##'
 ##' @return A named character vector with the ids of the repo (last
 ##'   SHA) and the library (conan id)
 ##'
 ##' @export
-twinkle_sync <- function(name, production) {
+twinkle_sync <- function(name, production, verbose = TRUE) {
   root <- find_twinkle_root()
   app <- read_app_config(find_twinkle_config(), name)
-  dat <- sync_app(app$name, app$subdir, production = production, root = root)
+  dat <- sync_app(app$name, app$subdir, production = production, root = root,
+                  verbose = verbose)
+  if (!is.null(app$script)) {
+    cli::cli_h2("Running post-sync script '{app$script}'")
+    run_script(path_app(root, name, production), app$script, verbose = verbose)
+  }
+
   dat$production <- production
   event <- if (production) "sync-production" else "sync-staging"
   history_update(root, name, event, dat)
